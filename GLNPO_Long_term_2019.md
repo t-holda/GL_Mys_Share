@@ -1,7 +1,7 @@
 Great Lakes Mysid Abundance Trends 1997-2019
 ================
 
-# Upload GLNPO Data and Evaluate Usability of Zooplankton Net Mysid Catches
+# 1\. Upload GLNPO Data and Evaluate Usability of Zooplankton Net Mysid Catches
 
 ### Setup data
 
@@ -54,39 +54,70 @@ GLNPO =
 
 ## Begin plotting relationships between nets
 
+First, which variable on ‘Y’ and which on ‘X’ axis? Plot the more
+variable data on the ‘Y’ axis.
+
+Mysid net data are likely to be less variable than Zooplankton net data,
+because the mysid data is based on sampling of about 8x more area than
+the zooplankton net. The mysid net opening is 0.785, and is towed twice.
+The zooplankton net opening is 0.196, and is towed just once.
+
+This is borne out by comparing their CV’s in this dataset:
+
+  - Mysid Net Density CV: 1.13
+  - Zoop Net Density CV: 2.59
+  - Mysid Net Biomass CV: 1.11
+  - Zoop Net Biomass CV: 3.68
+
+OK: plot `Zoop...` data on ‘Y’ axis and `Mys...` data on ‘X’ axis.
+
 ![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-2.png)<!-- -->
 
-  - Correlations look good, but  
+*(Adjusted r^2 values for the linear fits plotted above):*
+
+  - *Density: 0.61*
+  - *Biomass: 0.33*
+
+<br> Conclusions:
+
+  - Correlations look good. Can use the data.
   - Lines do not seem to match 1:1 lines nor include them in confidence
-    intervals.
+    intervals. Zooplankton net values cannot be considered the same as
+    the values one would obtain with mysid net.
 
-Adjusted r^2 values for the linear fits plotted above:  
-Density: 0.61  
-Biomass: 0.33
-
-How do regression model assumptions perform, and should the data need to
-be transformed?
+<br>
 
 <br>
 
 #### Transform density data?
 
-Make plots of density regression diagnostics using:  
-1\. Linear (untransformed) data  
-2\. Log\_e transformed data 3. Square-root transformed data  
-4\. Fourth-root transformed data
+Do regression model assumptions perform well, or should the data need to
+be transformed?  
+Make plots of density regression diagnostics using:
+
+1.  Linear (untransformed) data
+
+2.  Log\_e transformed data
+
+3.  Square-root transformed data
+
+4.  Fourth-root transformed data
 
 In addition, make a plot for each of these with data displayed in
 transformed units, with 1:1 reference line, and with linear lm fit line.
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-5.png)<!-- -->
 
-Repeat the same thing for biomass data: Make plots of density regression
-diagnostics using:  
-1\. Linear (untransformed) data  
-2\. Log\_e transformed data  
-3\. Square-root transformed data  
-4\. Fourth-root transformed data
+Repeat the same thing for biomass data. Make plots of density regression
+diagnostics using:
+
+1.  Linear (untransformed) data
+
+2.  Log\_e transformed data
+
+3.  Square-root transformed data
+
+4.  Fourth-root transformed data
 
 In addition, make a plot for each of these with data displayed in
 transformed units, with 1:1 reference line, and with linear lm fit line.
@@ -109,12 +140,13 @@ transformed units, with 1:1 reference line, and with linear lm fit line.
     more than the others and scale loction looks better (density and
     biomass).
 
-Thus, the Fourth-Root transformation seems to perform the best overall
-in terms of the regression diagnostics.
+#### **Thus:**
 
-The Fourth-Root transformations also clearly performs the best in terms
-of the actual fit. The slopes are very close to 1, and primarily have
-intercept offsets.
+  - **The Fourth-Root transformation seems to perform the best overall
+    in terms of the regression diagnostics.**
+  - The Fourth-Root transformations also clearly performs the best in
+    terms of the actual fit. The slopes are very close to 1, and
+    primarily have intercept offsets.
 
 <br>
 
@@ -160,15 +192,45 @@ intercept offsets.
 
 <br>
 
-# Upload Remaining Annual Monitoring Data And Compile Into Single Tibble Object
+#### *Some other observations:*
+
+  - *There are some points that show up clearly in the plots of
+    transformed data where 0 mysids were caught in the zooplankton net
+    while at least 1 mysid was caught in the mysid net.*
+  - *These points behave nicely with the rest of the data, especially in
+    the 4th-root case.*
+  - *We also no longer intend to convert the zooplankton net values to
+    predicted ‘mysid’ net values for the subsequent analyses, so these
+    0’s in the zooplankton net become unconcerning for those
+    portions.*
+  - *The fact that 4th-root transformed variables turn out to be just an
+    offset of each other is good for subsequent GAM analyses.*
+  - *When we tranform the data later on for the GAM, and include
+    collection procedure (`ColPrcdr`) as a non-smoothed additive
+    categorical predictor, this should work out well.*
+  - *It may make sense at that time to try square-root or 4th-root
+    tranformation rather than natural log.*
+      - *For the present data (with `Zoop...` on ‘Y’ and `Mys...` on
+        ‘X’), we find that 4th-root performs best.*
+      - *When we had previously intended to predict mysid net catches
+        from zooplankton net catches, we had modeled these data with
+        `Mys...` on ‘Y’ and `Zoop...` on ‘X’). In that case, natural log
+        transformation worked best. Perhaps square-root (which is
+        somewhere in-between in degree of transformation) would be best
+        for the GAM model. Just take a look at what makes the most sense
+        when it comes to that point.*
 
 <br>
 
-# Compare Values Among Lakes
+# 2\. Upload Remaining Annual Monitoring Data And Compile Into Single Tibble Object
 
 <br>
 
-# Examine Time Series Trends in Each Lake
+# 3\. Compare Values Among Lakes
+
+<br>
+
+# 4\. Examine Time Series Trends in Each Lake
 
 <br> <br>
 
