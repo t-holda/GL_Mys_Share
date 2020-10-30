@@ -973,14 +973,12 @@ Plots below are mean value predicted +/- 2 SE.
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-4.png)<!-- -->
 
-…And versions with data plotted for supplementary figure:
+<br>
 
-    ## Warning: Removed 17 rows containing missing values (geom_point).
+…And versions with data plotted for supplementary figure:
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/time%20trends%20with%20data%20by%20lake%20and%20season-1.png)<!-- -->
 
 <br> <br>
 
 -----
-
-# End of Script.
