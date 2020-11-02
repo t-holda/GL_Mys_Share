@@ -958,12 +958,12 @@ Superior_Dens_GAM
     ## Link function: identity 
     ## 
     ## Formula:
-    ## LogDens ~ s(Year, bs = "tp") + s(Year, Season, bs = "fs") + Group
+    ## LogDens ~ s(Year, bs = "tp") + Season + Group
     ## 
     ## Estimated degrees of freedom:
-    ## 1.00 5.43  total = 8.43 
+    ## 2.19  total = 5.19 
     ## 
-    ## REML score: 650.7707
+    ## REML score: 658.2985
 
 <br>
 
@@ -973,12 +973,14 @@ Plots below are mean value predicted +/- 2 SE.
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-4.png)<!-- -->
 
-<br>
-
 …And versions with data plotted for supplementary figure:
+
+    ## Warning: Removed 17 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/time%20trends%20with%20data%20by%20lake%20and%20season-1.png)<!-- -->
 
 <br> <br>
 
 -----
+
+# End of Script.
