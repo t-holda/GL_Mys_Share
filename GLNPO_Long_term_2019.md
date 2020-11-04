@@ -596,21 +596,20 @@ Data summary
 ``` r
 # Add NOAA data from Historic Published studies by Pothoven...
 
-DFO <- 
+DFO_NOAA <- 
   read_csv("Historic_Published_Mysid_Data_Densities_20200609.csv")
 
-DFO %>% 
-  filter(Lake == "Ontario", StartYear >= 1997) %>% 
-  filter(Lake == "Ontario") %>% 
+DFO_NOAA %>% 
+  filter(Lake == "Ontario" | StartYear >= 1997) %>% 
   count(reference)
 
-DFO %>% 
+DFO_NOAA %>% 
   filter(Lake == "Ontario", StartYear >= 1997) %>% 
   filter(reference %in% c(
     "Johannsson et al. 2011"
   ))
 
-DFO %>% 
+DFO_NOAA %>% 
   filter(Lake == "Ontario", StartYear >= 1997) %>% 
   filter(reference %in% c(
     "Rudstam et al. 2017 (GLFC)"
@@ -618,36 +617,46 @@ DFO %>%
 
 # `Rudstam et al. 2017 (GLFC)` has same data for more years, and includes 2 depth zones + `SE` values.
 # Two notes: 50-100 m zone includes both samples less than 70 m and samples more than 70 m.
-# Expecting to get DFO data by sample or by visit - that will be better.
+# Expecting to get DFO_NOAA data by sample or by visit - that will be better.
 
-DFO <- 
-  DFO %>% 
-  filter(Lake == "Ontario", StartYear >= 1997) %>% 
-  filter(reference %in% c(
-    "Rudstam et al. 2017 (GLFC)"
-  ))
+DFO_NOAA <- 
+  DFO_NOAA %>% 
+  filter(Lake %in% c("Michigan", "Ontario"), 
+         StartYear >= 1995) %>% 
+  filter(Lake == "Michigan" | StartYear >= 1997) %>% 
+  filter(Lake == "Michigan" | reference == "Rudstam et al. 2017 (GLFC)")
 
-DFO <- 
-  DFO %>% 
-  mutate(Visit = NA, Season = "Fall", StationDepth = mean(c(minDepth, maxDepth)), DepthZone = "Offshore", Biom = NA, DN = "Night", TimeEDT = NA) %>% 
+DFO_NOAA <- 
+  DFO_NOAA %>% 
+  mutate(Visit = NA, 
+         Season = ifelse(Lake == "Ontario", "Fall", NA), 
+         StationDepth = (minDepth + maxDepth) / 2, 
+         Biom = NA, 
+         DN = "Night", 
+         TimeEDT = NA) %>% 
+  mutate(Season = 
+           ifelse(Lake == "Michigan", recode(
+             quarters.Date(Date), Q2 = "Spring", Q3 = "Summer", Q4 = "Fall", Q1 = "Winter"
+             ), Season),
+         DepthZone = ifelse(StationDepth >= 70, "Offshore", "MidDepth")) %>% 
   select(Visit, Lake, Year = StartYear, Date, Month = month, Season, Station = StationName, StationDepth, DepthZone, Dens = DensPerm2, Biom, DN, TimeEDT)
 ```
 
-#### Examine `DFO` tibble
+#### Examine `DFO_NOAA` tibble
 
-|                                                  |      |
-| :----------------------------------------------- | :--- |
-| Name                                             | DFO  |
-| Number of rows                                   | 41   |
-| Number of columns                                | 13   |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |      |
-| Column type frequency:                           |      |
-| character                                        | 6    |
-| Date                                             | 1    |
-| logical                                          | 3    |
-| numeric                                          | 3    |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |      |
-| Group variables                                  | None |
+|                                                  |           |
+| :----------------------------------------------- | :-------- |
+| Name                                             | DFO\_NOAA |
+| Number of rows                                   | 166       |
+| Number of columns                                | 13        |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |           |
+| Column type frequency:                           |           |
+| character                                        | 6         |
+| Date                                             | 1         |
+| logical                                          | 3         |
+| numeric                                          | 3         |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |           |
+| Group variables                                  | None      |
 
 Data summary
 
@@ -655,34 +664,34 @@ Data summary
 
 | skim\_variable | n\_missing | complete\_rate | min | max | empty | n\_unique | whitespace |
 | :------------- | ---------: | -------------: | --: | --: | ----: | --------: | ---------: |
-| Lake           |          0 |              1 |   7 |   7 |     0 |         1 |          0 |
-| Month          |          0 |              1 |   7 |   7 |     0 |         1 |          0 |
-| Season         |          0 |              1 |   4 |   4 |     0 |         1 |          0 |
-| Station        |         41 |              0 |  \- |  \- |     0 |         0 |          0 |
-| DepthZone      |          0 |              1 |   8 |   8 |     0 |         1 |          0 |
-| DN             |          0 |              1 |   5 |   5 |     0 |         1 |          0 |
+| Lake           |          0 |           1.00 |   7 |   8 |     0 |         2 |          0 |
+| Month          |          0 |           1.00 |   3 |   7 |     0 |        14 |          0 |
+| Season         |          0 |           1.00 |   4 |   6 |     0 |         4 |          0 |
+| Station        |        115 |           0.31 |   8 |  11 |     0 |        10 |          0 |
+| DepthZone      |          0 |           1.00 |   8 |   8 |     0 |         2 |          0 |
+| DN             |          0 |           1.00 |   5 |   5 |     0 |         1 |          0 |
 
 **Variable type: Date**
 
 | skim\_variable | n\_missing | complete\_rate | min        | max        | median     | n\_unique |
 | :------------- | ---------: | -------------: | :--------- | :--------- | :--------- | --------: |
-| Date           |          0 |              1 | 2002-11-01 | 2016-11-01 | 2008-11-01 |        14 |
+| Date           |          0 |              1 | 1995-05-02 | 2016-11-01 | 2000-08-15 |        42 |
 
 **Variable type: logical**
 
 | skim\_variable | n\_missing | complete\_rate | mean | count |
 | :------------- | ---------: | -------------: | ---: | :---- |
-| Visit          |         41 |              0 |   \- | :     |
-| Biom           |         41 |              0 |   \- | :     |
-| TimeEDT        |         41 |              0 |   \- | :     |
+| Visit          |        166 |              0 |   \- | :     |
+| Biom           |        166 |              0 |   \- | :     |
+| TimeEDT        |        166 |              0 |   \- | :     |
 
 **Variable type: numeric**
 
-| skim\_variable | n\_missing | complete\_rate |    mean |     sd |      p0 |     p25 |     p50 |     p75 |    p100 | hist  |
-| :------------- | ---------: | -------------: | ------: | -----: | ------: | ------: | ------: | ------: | ------: | :---- |
-| Year           |          0 |              1 | 2008.54 |   4.25 | 2002.00 | 2005.00 | 2008.00 | 2012.00 | 2016.00 | ▇▇▇▇▅ |
-| StationDepth   |          0 |              1 |  143.29 |   0.00 |  143.29 |  143.29 |  143.29 |  143.29 |  143.29 | ▁▁▇▁▁ |
-| Dens           |          0 |              1 |  209.95 | 108.24 |   26.78 |  100.00 |  200.00 |  299.48 |  403.29 | ▇▅▅▇▆ |
+| skim\_variable | n\_missing | complete\_rate |    mean |     sd |   p0 |    p25 |    p50 |  p75 | p100 | hist  |
+| :------------- | ---------: | -------------: | ------: | -----: | ---: | -----: | -----: | ---: | ---: | :---- |
+| Year           |          0 |              1 | 2001.41 |   4.88 | 1995 | 2000.0 | 2000.0 | 2001 | 2016 | ▃▇▁▁▁ |
+| StationDepth   |          0 |              1 |   88.49 |  46.34 |   40 |   45.0 |   75.0 |  110 |  175 | ▇▅▆▁▃ |
+| Dens           |          0 |              1 |  138.11 | 109.53 |    0 |   59.2 |  100.7 |  200 |  458 | ▇▅▃▂▁ |
 
 <br>
 
@@ -759,12 +768,12 @@ Data summary
     ##  [6] "Station"      "StationDepth" "DepthZone"    "Dens"         "Biom"        
     ## [11] "DN"           "TimeEDT"
 
-#### Examine `DFO` tibble
+#### Examine `DFO_NOAA` tibble
 
 |                                                  |        |
 | :----------------------------------------------- | :----- |
 | Name                                             | Mysids |
-| Number of rows                                   | 1643   |
+| Number of rows                                   | 1705   |
 | Number of columns                                | 14     |
 | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |        |
 | Column type frequency:                           |        |
@@ -782,8 +791,8 @@ Data summary
 
 | skim\_variable | n\_missing | complete\_rate | min | max | empty | n\_unique | whitespace |
 | :------------- | ---------: | -------------: | --: | --: | ----: | --------: | ---------: |
-| Visit          |         41 |           0.98 |   6 |  15 |     0 |      1077 |          0 |
-| Station        |        276 |           0.83 |   3 |  11 |     0 |        62 |          0 |
+| Visit          |        103 |           0.94 |   6 |  15 |     0 |      1077 |          0 |
+| Station        |        312 |           0.82 |   3 |  11 |     0 |        72 |          0 |
 | DepthZone      |          0 |           1.00 |   8 |   8 |     0 |         1 |          0 |
 | DN             |          0 |           1.00 |   5 |   5 |     0 |         1 |          0 |
 
@@ -791,83 +800,99 @@ Data summary
 
 | skim\_variable | n\_missing | complete\_rate | min        | max        | median     | n\_unique |
 | :------------- | ---------: | -------------: | :--------- | :--------- | :--------- | --------: |
-| Date           |          0 |              1 | 1997-08-15 | 2019-11-19 | 2010-08-19 |       730 |
+| Date           |          0 |              1 | 1995-05-02 | 2019-11-19 | 2010-04-20 |       755 |
 
 **Variable type: factor**
 
 | skim\_variable | n\_missing | complete\_rate | ordered | n\_unique | top\_counts                            |
 | :------------- | ---------: | -------------: | :------ | --------: | :------------------------------------- |
-| Lake           |          0 |              1 | FALSE   |         4 | Mic: 565, Sup: 485, Hur: 344, Ont: 249 |
-| Season         |          0 |              1 | FALSE   |         4 | Sum: 824, Spr: 655, Lat: 91, Fal: 73   |
-| Group          |          0 |              1 | FALSE   |         5 | GLN: 845, GLN: 413, USG: 235, NOA: 109 |
-| Period         |          0 |              1 | TRUE    |         3 | 200: 988, 199: 389, 201: 266           |
+| Lake           |          0 |              1 | FALSE   |         4 | Mic: 627, Sup: 485, Hur: 344, Ont: 249 |
+| Season         |          0 |              1 | FALSE   |         4 | Sum: 846, Spr: 679, Lat: 91, Fal: 89   |
+| Group          |          0 |              1 | FALSE   |         5 | GLN: 845, GLN: 413, USG: 235, NOA: 171 |
+| Period         |       1705 |              0 | TRUE    |         0 | 199: 0, 200: 0, 201: 0                 |
 
 **Variable type: numeric**
 
 | skim\_variable | n\_missing | complete\_rate |    mean |     sd |     p0 |     p25 |     p50 |     p75 |    p100 | hist  |
 | :------------- | ---------: | -------------: | ------: | -----: | -----: | ------: | ------: | ------: | ------: | :---- |
-| Year           |          0 |           1.00 | 2009.87 |   5.90 | 1997.0 | 2006.00 | 2010.00 | 2015.00 | 2019.00 | ▃▃▇▆▇ |
-| StationDepth   |          0 |           1.00 |  144.02 |  52.12 |   70.1 |  102.00 |  139.00 |  165.00 |  308.00 | ▇▇▃▂▁ |
-| Dens           |         17 |           0.99 |  134.96 | 149.61 |    0.0 |   38.42 |   92.70 |  181.88 | 1314.06 | ▇▁▁▁▁ |
-| Biom           |        337 |           0.79 |  242.06 | 342.03 |    0.0 |   47.55 |  142.34 |  302.68 | 3457.38 | ▇▁▁▁▁ |
+| Year           |          0 |           1.00 | 2009.48 |   6.14 | 1995.0 | 2005.00 | 2010.00 | 2015.00 | 2019.00 | ▂▅▇▇▇ |
+| StationDepth   |          0 |           1.00 |  142.29 |  52.52 |   70.1 |  100.00 |  131.10 |  168.00 |  308.00 | ▇▆▃▂▁ |
+| Dens           |         17 |           0.99 |  135.62 | 148.38 |    0.0 |   40.12 |   93.28 |  183.49 | 1314.06 | ▇▁▁▁▁ |
+| Biom           |        399 |           0.77 |  242.06 | 342.03 |    0.0 |   47.55 |  142.34 |  302.68 | 3457.38 | ▇▁▁▁▁ |
 
 **Variable type: POSIXct**
 
 | skim\_variable | n\_missing | complete\_rate | min                 | max                 | median              | n\_unique |
 | :------------- | ---------: | -------------: | :------------------ | :------------------ | :------------------ | --------: |
-| TimeEDT        |        153 |           0.91 | 1997-08-15 01:15:00 | 2019-10-03 23:41:00 | 2010-08-04 01:31:00 |      1172 |
+| TimeEDT        |        215 |           0.87 | 1997-08-15 01:15:00 | 2019-10-03 23:41:00 | 2010-08-04 01:31:00 |      1172 |
 
 <br>
 
 # 3\. Compare Values Among Lakes
 
-| Group       | Season | 1997-2005 | 2006-2016 | 2017-2019 | Lake     |
-| :---------- | :----- | --------: | --------: | --------: | :------- |
-| GLNPO\_Mys  | Spring |        \- |     109.2 |      50.1 | Michigan |
-| GLNPO\_Zoop | Spring |     169.2 |      91.3 |      31.4 | Michigan |
-| NOAA        | Spring |        \- |      50.4 |      17.7 | Michigan |
-| GLNPO\_Mys  | Summer |        \- |     172.7 |      84.5 | Michigan |
-| GLNPO\_Zoop | Summer |     429.1 |     169.6 |      75.3 | Michigan |
-| NOAA        | Summer |        \- |      97.5 |      29.0 | Michigan |
-| USGS        | Summer |     352.5 |     195.5 |      84.7 | Michigan |
-| NOAA        | Fall   |        \- |      79.0 |      28.7 | Michigan |
+| Group       | Season |    NA | Lake     |
+| :---------- | :----- | ----: | :------- |
+| GLNPO\_Mys  | Spring |  95.5 | Michigan |
+| GLNPO\_Zoop | Spring | 116.1 | Michigan |
+| NOAA        | Spring |  72.4 | Michigan |
+| GLNPO\_Mys  | Summer | 153.1 | Michigan |
+| GLNPO\_Zoop | Summer | 288.4 | Michigan |
+| NOAA        | Summer | 131.3 | Michigan |
+| USGS        | Summer | 193.8 | Michigan |
+| NOAA        | Fall   |  84.9 | Michigan |
 
 Lake Michigan
 
+    ## Warning: Removed 8 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 8 rows containing missing values (geom_point).
+
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-1.png)<!-- -->
 
-| Group       | Season | 1997-2005 | 2006-2016 | 2017-2019 | Lake    |
-| :---------- | :----- | --------: | --------: | --------: | :------ |
-| GLNPO\_Mys  | Spring |        \- |     143.3 |     190.7 | Ontario |
-| GLNPO\_Zoop | Spring |      91.1 |     162.9 |     122.8 | Ontario |
-| GLNPO\_Mys  | Summer |        \- |     349.7 |     286.4 | Ontario |
-| GLNPO\_Zoop | Summer |     207.3 |     268.8 |     225.9 | Ontario |
-| DFO         | Fall   |     239.6 |     197.7 |        \- | Ontario |
+| Group       | Season |    NA | Lake    |
+| :---------- | :----- | ----: | :------ |
+| GLNPO\_Mys  | Spring | 153.6 | Ontario |
+| GLNPO\_Zoop | Spring | 130.0 | Ontario |
+| GLNPO\_Mys  | Summer | 332.8 | Ontario |
+| GLNPO\_Zoop | Summer | 243.1 | Ontario |
+| DFO         | Fall   | 210.0 | Ontario |
 
 Lake Ontario
 
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 5 rows containing missing values (geom_point).
+
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-2.png)<!-- -->
 
-| Group       | Season      | 1997-2005 | 2006-2016 | 2017-2019 | Lake  |
-| :---------- | :---------- | --------: | --------: | --------: | :---- |
-| GLNPO\_Mys  | Spring      |        \- |      12.1 |       6.4 | Huron |
-| GLNPO\_Zoop | Spring      |      49.3 |       9.5 |       8.7 | Huron |
-| GLNPO\_Mys  | Summer      |        \- |      43.1 |      27.5 | Huron |
-| GLNPO\_Zoop | Summer      |     127.5 |      31.5 |      13.1 | Huron |
-| USGS        | Late Summer |      45.1 |      57.6 |      41.3 | Huron |
+| Group       | Season      |   NA | Lake  |
+| :---------- | :---------- | ---: | :---- |
+| GLNPO\_Mys  | Spring      | 10.8 | Huron |
+| GLNPO\_Zoop | Spring      | 22.6 | Huron |
+| GLNPO\_Mys  | Summer      | 40.0 | Huron |
+| GLNPO\_Zoop | Summer      | 74.3 | Huron |
+| USGS        | Late Summer | 52.1 | Huron |
 
 Lake Huron
 
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 5 rows containing missing values (geom_point).
+
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-3.png)<!-- -->
 
-| Group       | Season | 1997-2005 | 2006-2016 | 2017-2019 | Lake     |
-| :---------- | :----- | --------: | --------: | --------: | :------- |
-| GLNPO\_Mys  | Spring |        \- |     115.7 |     119.0 | Superior |
-| GLNPO\_Zoop | Spring |     108.2 |      81.7 |      54.8 | Superior |
-| GLNPO\_Mys  | Summer |        \- |     218.9 |     213.3 | Superior |
-| GLNPO\_Zoop | Summer |     112.6 |     162.6 |     136.5 | Superior |
+| Group       | Season |    NA | Lake     |
+| :---------- | :----- | ----: | :------- |
+| GLNPO\_Mys  | Spring | 116.5 | Superior |
+| GLNPO\_Zoop | Spring |  91.1 | Superior |
+| GLNPO\_Mys  | Summer | 217.4 | Superior |
+| GLNPO\_Zoop | Summer | 140.6 | Superior |
 
 Lake Superior
+
+    ## Warning: Removed 4 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-4.png)<!-- -->
 
@@ -877,7 +902,31 @@ Lake Superior
 
 ### Plot trends with smoother gams for each season, group and lake.
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-4.png)<!-- -->
+    ## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-1.png)<!-- -->
+
+    ## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-2.png)<!-- -->
+
+    ## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-3.png)<!-- -->
+
+    ## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-4.png)<!-- -->
+
+    ## [1] "All Lakes and Seasons on One Plot:"
+
+    ## `geom_smooth()` using formula 'y ~ s(x, bs = "cs")'
+
+    ## Warning: Removed 17 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 17 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Trends%20over%20time-5.png)<!-- -->
 
 ### Fit GAM models for each Lake
 
@@ -902,7 +951,7 @@ Perhasp for Lake Superior, we should fit a model with a slightly
 different statistical structure.
 
 ``` r
-Michigan_Dens_GAM
+summary(Michigan_Dens_GAM)
 ```
 
     ## 
@@ -912,13 +961,28 @@ Michigan_Dens_GAM
     ## Formula:
     ## LogDens ~ s(Year, bs = "tp") + Season + Group
     ## 
-    ## Estimated degrees of freedom:
-    ## 7.75  total = 13.75 
+    ## Parametric coefficients:
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)      4.37804    0.10573  41.409  < 2e-16 ***
+    ## SeasonSummer     0.76050    0.08927   8.519  < 2e-16 ***
+    ## SeasonFall       0.40394    0.16271   2.482   0.0133 *  
+    ## GroupGLNPO_Zoop -0.30732    0.12100  -2.540   0.0113 *  
+    ## GroupNOAA       -0.57031    0.13144  -4.339 1.68e-05 ***
+    ## GroupUSGS       -0.13892    0.13267  -1.047   0.2955    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## REML score: 775.4408
+    ## Approximate significance of smooth terms:
+    ##           edf Ref.df     F p-value    
+    ## s(Year) 7.904  8.665 31.43  <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.382   Deviance explained = 39.5%
+    ## -REML = 848.25  Scale est. = 0.84151   n = 621
 
 ``` r
-Ontario_Dens_GAM
+summary(Ontario_Dens_GAM)
 ```
 
     ## 
@@ -928,13 +992,26 @@ Ontario_Dens_GAM
     ## Formula:
     ## LogDens ~ s(Year, bs = "tp") + Season + Group
     ## 
-    ## Estimated degrees of freedom:
-    ## 2.02  total = 6.02 
+    ## Parametric coefficients:
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)       5.1593     0.1825  28.266  < 2e-16 ***
+    ## SeasonSummer      0.7598     0.1625   4.676 4.87e-06 ***
+    ## SeasonFall        0.0000     0.0000      NA       NA    
+    ## GroupGLNPO_Mys   -0.5503     0.2485  -2.214 0.027765 *  
+    ## GroupGLNPO_Zoop  -0.8025     0.2204  -3.641 0.000333 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## REML score: 389.2474     rank: 13/14
+    ## Approximate significance of smooth terms:
+    ##           edf Ref.df     F p-value
+    ## s(Year) 2.016  2.537 0.684    0.44
+    ## 
+    ## Rank: 13/14
+    ## R-sq.(adj) =  0.104   Deviance explained = 12.2%
+    ## -REML = 389.25  Scale est. = 1.3369    n = 247
 
 ``` r
-Huron_Dens_GAM
+summary(Huron_Dens_GAM)
 ```
 
     ## 
@@ -944,13 +1021,28 @@ Huron_Dens_GAM
     ## Formula:
     ## LogDens ~ s(Year, bs = "tp") + Season + Group
     ## 
-    ## Estimated degrees of freedom:
-    ## 5.02  total = 9.02 
+    ## Parametric coefficients:
+    ##                   Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)         2.2590     0.1672  13.508  < 2e-16 ***
+    ## SeasonSummer        1.5466     0.1701   9.094  < 2e-16 ***
+    ## SeasonLate Summer   1.6785     0.2122   7.910 3.94e-14 ***
+    ## GroupGLNPO_Zoop    -0.7953     0.1909  -4.167 3.95e-05 ***
+    ## GroupUSGS           0.0000     0.0000      NA       NA    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## REML score: 576.4369     rank: 13/14
+    ## Approximate significance of smooth terms:
+    ##           edf Ref.df     F  p-value    
+    ## s(Year) 5.022  6.115 10.45 7.76e-11 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Rank: 13/14
+    ## R-sq.(adj) =  0.379   Deviance explained = 39.4%
+    ## -REML = 576.44  Scale est. = 1.6973    n = 338
 
 ``` r
-Superior_Dens_GAM
+summary(Superior_Dens_GAM)
 ```
 
     ## 
@@ -960,24 +1052,99 @@ Superior_Dens_GAM
     ## Formula:
     ## LogDens ~ s(Year, bs = "tp") + Season + Group
     ## 
-    ## Estimated degrees of freedom:
-    ## 2.19  total = 5.19 
+    ## Parametric coefficients:
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)      4.65083    0.09172  50.709  < 2e-16 ***
+    ## SeasonSummer     0.51042    0.08622   5.920 6.17e-09 ***
+    ## GroupGLNPO_Zoop -0.50162    0.10006  -5.013 7.55e-07 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## REML score: 658.2985
+    ## Approximate significance of smooth terms:
+    ##           edf Ref.df     F p-value
+    ## s(Year) 2.193  2.733 1.277   0.333
+    ## 
+    ## R-sq.(adj) =  0.133   Deviance explained =   14%
+    ## -REML =  658.3  Scale est. = 0.87577   n = 482
 
-<br>
+<br> <br>
 
 #### Plot fitted GAM models for each lake by season
 
-Plots below are mean value predicted +/- 2 SE.
+**Need to visualize mysid densities:**
+
+  - In 4 deep lakes
+
+  - Over \~ 20 years (1995/1997 - 2019)
+
+  - In 2 - 3 seasons
+
+  - Collected by 2 - 4 methods/groups
+
+<br>
+
+**Plotting Decisions:**
+
+1.  Axes:
+    
+      - Y axis will be density
+      - X axis will be year
+
+2.  Series
+    
+      - One for each lake and season
+          - Use GAM fit +/- 1 or 2 SE.
+      - Do not display a sepearat GAM fit for each method/agency (aka
+        `Group`)
+          - Have to pick one for `predict()` method
+          - Pick GLNPO Mysid Net (`GLNPO_Mys`)
+              - Present in each lake
+              - Targets Mysids (unlike `GLNPO_Zoop`)
+              - 2nd most years present (except for `GLNPO_Zoop` which
+                has more years)
+          - This means method/agency effect will not be shown in the
+            figure
+              - It will need to reported / shown elsewhere in the ms
+
+3.  Panels
+    
+      - Could do one per series, and include points, OR
+      - Could do one per Lake or per Season, and exclude points
+      - Do One per Season
+          - Allows simultaneous visualization of:
+              - Each lake’s trends over time series
+              - Cross-lake comparisons at any point in time series
+              - Comparison between lakes of trends over time series
+          - Seasonal differences are less interesting
+              - Well studied - consistant differences (likely
+                multiplicative)
+              - Predictable from 2-yr life cycle
+          - Showing individual visits coded to Lake by color would be
+            too busy on these plots.
+          - Save GAM-corrected individual visits with GAM fits to
+            multi-faceted plot for supplemental materials
+
+<br>
+
+Plots below are mean value predicted GAM value +/- 1 SE.
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-4.png)<!-- -->
 
-…And versions with data plotted for supplementary figure:
+#### …And versions with data plotted for supplementary figure:
 
-    ## Warning: Removed 17 rows containing missing values (geom_point).
+The plot below shows the same above GAM fits superimposed on
+model-adjusted data points. The model adjustment in the data points is
+that of re-predicting the values assuming the GLNPO Mysid net was used
+to collect the sample. Thus, each point is the predicted GAM value for
+the lake, season, and year shown and gvien the `GLNPO_Mys` `Group`
+effect, plus the residual associated with that point’s fit to the GAM.
 
-![](GLNPO_Long_term_2019_files/figure-gfm/time%20trends%20with%20data%20by%20lake%20and%20season-1.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/time%20trends%20with%20data%20by%20lake%20and%20season%20-%20GAM%20adjusted%20for%20GLNPO_Mys-1.png)<!-- -->
+
+The below plots show the raw data, color coded by collection group. The
+GAM model fits are not plotted with these data.
+
+![](GLNPO_Long_term_2019_files/figure-gfm/time%20trends%20with%20data%20by%20lake%20and%20season%20with%20raw%20data-1.png)<!-- -->
 
 <br> <br>
 
