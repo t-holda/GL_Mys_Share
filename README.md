@@ -2,4 +2,4 @@
 Repo for sharing Mysid data with non-git-hub folks
 
 Analyses of GL mysid populations with relatively in-depth steps included may be found here:
-[In-Depth Analyses](GLNPO_Long_Term_2019.md)
+[In-Depth Analyses](GLNPO_Long_term_2019.md)
