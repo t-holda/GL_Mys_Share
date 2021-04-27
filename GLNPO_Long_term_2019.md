@@ -18,8 +18,9 @@ plotted](#plots-below-are-mean-value-predicted-gam-value---1-se)
 Data](#5-examine-averages-and-trends-in-life-history-rates-in-the-lakes)  
 […5… Fecundity and Brooding Female
 Lengths](#key-plots-and-analyses-of-brooding-females-data)  
-[…5… Size and Growth](#size-structure-plots) […5… Age Structure and
-Survival](#survival-estimates)
+[…5… Size and Growth](#size-structure-plots)  
+[…5… Age Structure and Survival](#survival-estimates)  
+[Section 6: Food resources](#6-compare-to-food-resources)
 
 <br>
 
@@ -36,11 +37,15 @@ library(knitr) # for kable() function
 
 library(geosphere) # for maps()
 
+library(lme4)
+
 library(mclust) # for Mclust() function
 
 library(mgcv) # for gam() functions
 
 library(MuMIn) # for AICc() function
+
+library(zoo)
 ```
 
 <br>
@@ -53,22 +58,23 @@ library(MuMIn) # for AICc() function
 
 #### Examine `GLNPO` tibble
 
-    ## # A tibble: 3,965 x 17
-    ##    Visit Lake   Year Season Date       Station StationDepth DepthZone ZoopDens
-    ##    <chr> <fct> <int> <fct>  <date>     <chr>          <dbl> <fct>        <dbl>
-    ##  1 M047~ Mich~  2000 Summer 2000-08-26 MI47             195 Offshore    236.  
-    ##  2 M41M~ Mich~  2000 Summer 2000-08-26 MI41M            263 Offshore      4.96
-    ##  3 M040~ Mich~  2000 Summer 2000-08-26 MI40             169 Offshore      0   
-    ##  4 M032~ Mich~  2000 Summer 2000-08-27 MI32             164 Offshore    111.  
-    ##  5 M034~ Mich~  2000 Summer 2000-08-26 MI34             158 Offshore      0   
-    ##  6 M27M~ Mich~  2000 Summer 2000-08-27 MI27M            105 Offshore      4.99
-    ##  7 M023~ Mich~  2000 Summer 2000-08-27 MI23              91 Offshore      0   
-    ##  8 M019~ Mich~  2000 Summer 2000-08-27 MI19              91 Offshore      7   
-    ##  9 M18M~ Mich~  2000 Summer 2000-08-27 MI18M            160 Offshore    326.  
-    ## 10 M017~ Mich~  2000 Summer 2000-08-28 MI17             100 Offshore     65.4 
-    ## # ... with 3,955 more rows, and 8 more variables: MysDens <dbl>,
-    ## #   ZoopBiom <dbl>, MysBiom <dbl>, ZoopDN <fct>, MysDN <fct>,
-    ## #   ZoopTimeEDT <dttm>, MysTimeEDT <dttm>, Regress <lgl>
+    ## # A tibble: 1,045 x 17
+    ## # Groups:   Visit, Lake, Year, Season [1,045]
+    ##    Visit Lake   Year Season Station Date       StationDepth DepthZone ZoopDens
+    ##    <chr> <fct> <int> <fct>  <chr>   <date>            <dbl> <fct>        <dbl>
+    ##  1 E009~ Erie   2000 Spring ER09    2000-04-16           49 Mid-depth   NaN   
+    ##  2 E009~ Erie   2000 Summer ER09    2000-08-04           30 Mid-depth     0   
+    ##  3 E009~ Erie   2001 Summer ER09    2001-08-05           51 Mid-depth    15.2 
+    ##  4 E009~ Erie   2002 Summer ER09    2002-08-08           48 Mid-depth     0   
+    ##  5 E009~ Erie   2008 Summer ER09    2008-08-11           49 Mid-depth     6.79
+    ##  6 E009~ Erie   2009 Summer ER09    2009-08-19           49 Mid-depth     0   
+    ##  7 E009~ Erie   2010 Summer ER09    2010-08-11           49 Mid-depth     0   
+    ##  8 E009~ Erie   2014 Summer ER09    2014-08-15           49 Mid-depth     0   
+    ##  9 E009~ Erie   2015 Summer ER09    2015-08-13           49 Mid-depth    10.1 
+    ## 10 E009~ Erie   2018 Summer ER09    2018-08-13           49 Mid-depth    19.0 
+    ## # ... with 1,035 more rows, and 8 more variables: ZoopBiom <dbl>,
+    ## #   ZoopTimeEDT <time>, ZoopDN <fct>, Regress <lgl>, MysDens <dbl>,
+    ## #   MysBiom <dbl>, MysDN <fct>, MysTimeEDT <time>
 
 <br>
 
@@ -84,14 +90,40 @@ The zooplankton net opening is 0.196, and is towed just once.
 
 This is borne out by comparing their CV’s in this dataset:
 
-  - Mysid Net Density CV: 1.13
-  - Zoop Net Density CV: 2.59
-  - Mysid Net Biomass CV: 1.11
-  - Zoop Net Biomass CV: 3.68
+  - Mysid Net Density CV: 1.15
+  - Zoop Net Density CV: 1.51
+  - Mysid Net Biomass CV: 1.08
+  - Zoop Net Biomass CV: 2.09
 
 OK: plot `Zoop...` data on ‘Y’ axis and `Mys...` data on ‘X’ axis.
 
-![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-2.png)<!-- -->
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-1.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-3.png)<!-- -->
+
+    ## Warning: Removed 8 rows containing non-finite values (stat_bin).
+
+    ## Warning: Removed 4 rows containing missing values (geom_bar).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/linear%20plots-4.png)<!-- -->
+
+    ## # A tibble: 1 x 2
+    ##   Density_Proportion Biomass_Proportion
+    ##                <dbl>              <dbl>
+    ## 1              0.854              0.424
+
+    ## # A tibble: 1 x 2
+    ##   Density_Proportion_geomean Biomass_Proportion_geomean
+    ##                        <dbl>                      <dbl>
+    ## 1                      0.754                      0.289
 
 *(Adjusted r^2 values for the linear fits plotted above):*
 
@@ -126,7 +158,31 @@ Make plots of density regression diagnostics using:
 In addition, make a plot for each of these with data displayed in
 transformed units, with 1:1 reference line, and with linear lm fit line.
 
-![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-5.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-1.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-2.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-3.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-4.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20density%20data-5.png)<!-- -->
 
 Repeat the same thing for biomass data. Make plots of density regression
 diagnostics using:
@@ -142,7 +198,31 @@ diagnostics using:
 In addition, make a plot for each of these with data displayed in
 transformed units, with 1:1 reference line, and with linear lm fit line.
 
-![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-5.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-1.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-2.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-3.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-4.png)<!-- -->
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/check%20for%20data%20transformation%20in%20biomass%20data-5.png)<!-- -->
 
 ### Transformation conclusion:
 
@@ -174,25 +254,33 @@ transformed units, with 1:1 reference line, and with linear lm fit line.
 
     ## [1] "Density 4th-Root Fit Statistics:"
 
-    ##               Estimate Std. Error   t value      Pr(>|t|)
-    ## (Intercept) -0.3131127 0.09445379 -3.314983  9.864665e-04
-    ## MysDens      0.9817618 0.03018113 32.528999 4.764670e-123
+    ##               Estimate Std. Error t value     Pr(>|t|)
+    ## (Intercept) -0.2903798 0.10329757 -2.8111 5.189637e-03
+    ## MysDens      0.9640695 0.03329797 28.9528 1.106590e-98
 
     ## [1] "Adjusted r^2:"
 
-    ## [1] 0.6890758
+    ## [1] 0.684451
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/4th-Root%20Fit%20Stats%20and%20Plots-1.png)<!-- -->
 
     ## [1] "Biomass 4th-Root Fit Statistics:"
 
-    ##               Estimate Std. Error   t value      Pr(>|t|)
-    ## (Intercept) -0.5160127 0.11393639 -4.528954  7.501934e-06
-    ## MysBiom      0.8539635 0.02995537 28.507858 5.211604e-105
+    ##               Estimate Std. Error   t value     Pr(>|t|)
+    ## (Intercept) -0.4361253 0.12047018 -3.620193 3.337152e-04
+    ## MysBiom      0.8229876 0.03207529 25.657992 2.307141e-85
 
     ## [1] "Adjusted r^2:"
 
-    ## [1] 0.629859
+    ## [1] 0.6300317
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 9 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/4th-Root%20Fit%20Stats%20and%20Plots-2.png)<!-- -->
 
@@ -206,7 +294,7 @@ transformed units, with 1:1 reference line, and with linear lm fit line.
     different from the higher Mysid net values by a constant negative
     offset when 4th-root transformed.
 
-n = 478
+n = 396
 
 <br>
 
@@ -557,7 +645,7 @@ USGS_MI_HU2 <-
 USGS_MI_HU3 <-
   USGS_MI_HU2 %>%
   select(-Visit, -SubsequentRepATvisit, -OPifFIRSTorONLYrepATvisit) %>% 
-  mutate(Season = ifelse(Lake == "Huron", "Late Summer", "Summer"),
+  mutate(Season = "Summer",
          DepthZone = cut(depth, c(0, 30, 70, 400), labels = c(
              "Nearshore", "Mid-depth", "Offshore"
            )))
@@ -569,7 +657,7 @@ USGS_MI_HU3 <-
             Lat = mean(Latitude), Lon = mean(Longitude), StationDepth = mean(depth), Dens = mean(density), 
             Av_Mass = mean(Av_Mass, na.rm = T), N_Col = sum(N), N_Meas = sum(LF_N)) %>% 
     ungroup() %>% 
-    mutate(Season = ifelse(Lake == "Huron", "Late Summer", "Summer"), DN = "Night", Station = NA, Biom = Dens * Av_Mass, 
+    mutate(Season = "Summer", DN = "Night", Station = NA, Biom = Dens * Av_Mass, 
            DepthZone = cut(StationDepth, c(0, 30, 70, 400), labels = c(
              "Nearshore", "Mid-depth", "Offshore"
            ))))
@@ -582,7 +670,7 @@ str(USGS)
 
 #### Examine `USGS` tibble
 
-    ## # A tibble: 415 x 19
+    ## # A tibble: 414 x 19
     ##    Visit_OP  YEAR Lake  VESSEL Date       Time                Month   Lat   Lon
     ##       <dbl> <int> <chr>  <int> <date>     <dttm>              <int> <dbl> <dbl>
     ##  1    58034  2005 Mich~     88 2005-08-18 2005-08-18 22:00:00     8  46.0 -85.3
@@ -595,7 +683,7 @@ str(USGS)
     ##  8   464370  2005 Mich~     88 2005-08-25 2005-08-25 04:33:00     8  44.2 -87.4
     ##  9   522435  2005 Mich~     88 2005-08-25 2005-08-25 21:35:00     8  44.0 -87.1
     ## 10   580503  2005 Mich~     88 2005-08-26 2005-08-26 02:18:00     8  44.0 -86.7
-    ## # ... with 405 more rows, and 10 more variables: StationDepth <dbl>,
+    ## # ... with 404 more rows, and 10 more variables: StationDepth <dbl>,
     ## #   Dens <dbl>, Av_Mass <dbl>, N_Col <int>, N_Meas <int>, Season <chr>,
     ## #   DN <chr>, Station <lgl>, Biom <dbl>, DepthZone <fct>
 
@@ -655,17 +743,13 @@ DFO <-
 DFO
 ```
 
-# Remember to add new data to NOAA table, and then can skip DFO\_NOAA table.
-
-<br>
-
 #### Compile data sources into single tibble
 
 ``` r
 GLNPO_Zoop_Nets <-
   GLNPO %>%
-  select(Visit:DepthZone, Dens = ZoopDens, Biom = ZoopBiom, DN = ZoopDN, TimeEDT = ZoopTimeEDT) %>%
-  filter(DN == "Night")
+  select(Visit:DepthZone, Dens = ZoopDens, Biom = ZoopBiom, DN = ZoopDN, TimeEDT = ZoopTimeEDT) %>% 
+  mutate(TimeEDT = as.POSIXlt(paste(Date, TimeEDT, sep = " ")))
 
 GLNPO_Zoop_Nets %>%
 filter(is.na(Season) == FALSE,
@@ -701,35 +785,28 @@ Mysids <-
          DepthZone == "Offshore" | Lake == "Erie",
          DepthZone != "Nearshore",
          Season != "Winter") %>% 
-  mutate(Period = as.character(cut(Year, c(1989, 1995, 2005, 2015, 2020), labels = c("1990-1995", "1997-2005", "2006-2015", "2016-2019"), right = TRUE))) %>% 
+  mutate(Period = as.character(cut(Year, c(1989, 1995, 2004, 2012, 2020), labels = c("1990-1995", "1997-2004", "2005-2012", "2013-2019"), right = TRUE))) %>% 
   # mutate(Period = ifelse(Lake == "Michigan" & Year < 2006, "1995-2005", Period)) %>%
   # filter(Year >= 1997) %>% 
   modify_at("Group", as.factor) %>% 
   mutate(Lake = factor(Lake, levels = c("Michigan", "Ontario", "Huron", "Superior", "Erie")))
 
-Mysids$Season = factor(as.character(Mysids$Season), levels = c("Spring", "Summer", "Late Summer", "Fall"))
+Mysids$Season = factor(as.character(Mysids$Season), levels = c("Spring", "Summer", "Fall"))
 
 Mysids <- 
   Mysids %>% 
-  mutate(Period = ifelse(Group == "USGS", recode(
-    Period,
-    `1997-2005` = "2005-2015",
-    `2006-2015` = "2005-2015"),
-    Period)
-  ) %>% 
-
   mutate(Period = ifelse(Group == "NOAA", recode(
     Period,
     `1990-1995` = "1995-2002",
-    `1997-2005` = "1995-2002",
-    `2006-2015` = "2007-2015"),
+    `1997-2004` = "1995-2002",
+    `2005-2012` = "2007-2012"),
     Period)
   ) %>% 
 
   mutate(Period = ifelse(Group == "DFO", recode(
     Period,
-    `1997-2005` = "2002-2005",
-    `2016-2019` = "2016-2017"),
+    `1997-2004` = "2002-2004",
+    `2013-2019` = "2013-2017"),
     Period)
     ) %>% 
   
@@ -737,19 +814,18 @@ Mysids <-
     Period,
     `1990-1995` = "Early1990s",
     `1995-2002` = "Early2000s",
-    `1997-2005` = "Early2000s",
-    `2002-2005` = "Early2000s",
-    `2005-2015` = "Early2010s",
-    `2006-2015` = "Early2010s",
-    `2007-2015` = "Early2010s",
-    `2016-2017` = "Late2010s",
-    `2016-2019` = "Late2010s",
+    `1997-2004` = "Early2000s",
+    `2002-2004` = "Early2000s",
+    `2005-2012` = "Late2000s",
+    `2007-2012` = "Late2000s",
+    `2013-2017` = "The2010s",
+    `2013-2019` = "The2010s",
   )) %>% 
   
   mutate(
     
     Period_Name = factor(Period_Name, levels = c(
-      "Early1990s", "Early2000s", "Early2010s", "Late2010s"
+      "Early1990s", "Early2000s", "Late2000s", "The2010s"
       )),
          
          Period_Numeric = as.numeric(Period_Name))
@@ -757,446 +833,204 @@ Mysids <-
 
 #### Examine `Mysids` tibble
 
-    ## # A tibble: 2,201 x 16
-    ##    Visit Lake   Year Season Date       Station StationDepth DepthZone  Dens
-    ##    <chr> <fct> <dbl> <fct>  <date>     <chr>          <dbl> <fct>     <dbl>
-    ##  1 M047~ Mich~  2000 Summer 2000-08-26 MI47             195 Offshore  236. 
-    ##  2 M032~ Mich~  2000 Summer 2000-08-27 MI32             164 Offshore  111. 
-    ##  3 M18M~ Mich~  2000 Summer 2000-08-27 MI18M            160 Offshore  326. 
-    ##  4 M017~ Mich~  2000 Summer 2000-08-28 MI17             100 Offshore   65.4
-    ##  5 H45M~ Huron  2000 Summer 2000-08-14 HU45M             95 Offshore  147. 
-    ##  6 H038~ Huron  2000 Summer 2000-08-13 HU38             137 Offshore  101. 
-    ##  7 H037~ Huron  2000 Summer 2000-08-13 HU37              74 Offshore   60.1
-    ##  8 H45M~ Huron  2000 Summer 2000-08-14 HU45M             95 Offshore  153. 
-    ##  9 H45M~ Huron  2000 Summer 2000-08-14 HU45M             95 Offshore  169. 
-    ## 10 H053~ Huron  2000 Summer 2000-08-15 HU53              91 Offshore   10.9
-    ## # ... with 2,191 more rows, and 7 more variables: Biom <dbl>, DN <chr>,
+    ## # A tibble: 2,010 x 16
+    ## # Groups:   Visit, Lake, Year, Season [1,653]
+    ##    Visit Lake   Year Season Station Date       StationDepth DepthZone   Dens
+    ##    <chr> <fct> <dbl> <fct>  <chr>   <date>            <dbl> <fct>      <dbl>
+    ##  1 E009~ Erie   2000 Spring ER09    2000-04-16           49 Mid-depth NaN   
+    ##  2 E009~ Erie   2000 Summer ER09    2000-08-04           30 Mid-depth   0   
+    ##  3 E009~ Erie   2001 Summer ER09    2001-08-05           51 Mid-depth  15.2 
+    ##  4 E009~ Erie   2002 Summer ER09    2002-08-08           48 Mid-depth   0   
+    ##  5 E009~ Erie   2008 Summer ER09    2008-08-11           49 Mid-depth   6.79
+    ##  6 E009~ Erie   2009 Summer ER09    2009-08-19           49 Mid-depth   0   
+    ##  7 E009~ Erie   2010 Summer ER09    2010-08-11           49 Mid-depth   0   
+    ##  8 E009~ Erie   2014 Summer ER09    2014-08-15           49 Mid-depth   0   
+    ##  9 E009~ Erie   2015 Summer ER09    2015-08-13           49 Mid-depth  10.1 
+    ## 10 E009~ Erie   2018 Summer ER09    2018-08-13           49 Mid-depth  19.0 
+    ## # ... with 2,000 more rows, and 7 more variables: Biom <dbl>, DN <chr>,
     ## #   TimeEDT <dttm>, Group <fct>, Period <chr>, Period_Name <fct>,
     ## #   Period_Numeric <dbl>
+
+![](GLNPO_Long_term_2019_files/figure-gfm/plot%20timeline%20of%20sampling%20by%20different%20groups%20in%20each%20lake-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20timeline%20of%20sampling%20by%20different%20groups%20in%20each%20lake-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20timeline%20of%20sampling%20by%20different%20groups%20in%20each%20lake-3.png)<!-- -->
 
 <br>
 
 # 3\. Compare Values Among Lakes
 
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 1: Lake = "Michigan", Period_Name = "Early2000s", Period = "1995-2002", Period_Numeric = 2, Group = "NOAA".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 2: Lake = "Michigan", Period_Name = "Early2000s", Period = "1997-2005", Period_Numeric = 2, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 3: Lake = "Michigan", Period_Name = "Early2010s", Period = "2005-2015", Period_Numeric = 3, Group = "USGS".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 4: Lake = "Michigan", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 5: Lake = "Michigan", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 6: Lake = "Michigan", Period_Name = "Early2010s", Period = "2007-2015", Period_Numeric = 3, Group = "NOAA".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 7: Lake = "Michigan", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 8: Lake = "Michigan", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 9: Lake = "Michigan", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "NOAA".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 10: Lake = "Michigan", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "USGS".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 11: Lake = "Ontario", Period_Name = "Early1990s", Period = "1990-1995", Period_Numeric = 1, Group = "DFO".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 12: Lake = "Ontario", Period_Name = "Early2000s", Period = "1997-2005", Period_Numeric = 2, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 13: Lake = "Ontario", Period_Name = "Early2000s", Period = "2002-2005", Period_Numeric = 2, Group = "DFO".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 14: Lake = "Ontario", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "DFO".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 15: Lake = "Ontario", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 16: Lake = "Ontario", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 17: Lake = "Ontario", Period_Name = "Late2010s", Period = "2016-2017", Period_Numeric = 4, Group = "DFO".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 18: Lake = "Ontario", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 19: Lake = "Ontario", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 20: Lake = "Huron", Period_Name = "Early2000s", Period = "1997-2005", Period_Numeric = 2, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 21: Lake = "Huron", Period_Name = "Early2010s", Period = "2005-2015", Period_Numeric = 3, Group = "USGS".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 22: Lake = "Huron", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 23: Lake = "Huron", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 24: Lake = "Huron", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 25: Lake = "Huron", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 26: Lake = "Huron", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "USGS".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 27: Lake = "Superior", Period_Name = "Early2000s", Period = "1997-2005", Period_Numeric = 2, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 28: Lake = "Superior", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 29: Lake = "Superior", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 30: Lake = "Superior", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 31: Lake = "Superior", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 32: Lake = "Erie", Period_Name = "Early2000s", Period = "1997-2005", Period_Numeric = 2, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 33: Lake = "Erie", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 34: Lake = "Erie", Period_Name = "Early2010s", Period = "2006-2015", Period_Numeric = 3, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 35: Lake = "Erie", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Mys".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-    ## Warning: Problem with `mutate()` input `Period_numeric`.
-    ## i NAs introduced by coercion
-    ## i Input `Period_numeric` is `as.integer(Period)`.
-    ## i The error occurred in group 36: Lake = "Erie", Period_Name = "Late2010s", Period = "2016-2019", Period_Numeric = 4, Group = "GLNPO_Zoop".
-
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
-
-| Lake     | Period\_Numeric | Group       | Season | Period\_Name | 1997-2005 | 1995-2002 | 2006-2015 | 2007-2015 | 2005-2015 | 2016-2019 |
-| :------- | --------------: | :---------- | :----- | :----------- | --------: | --------: | --------: | --------: | --------: | --------: |
-| Michigan |               2 | GLNPO\_Zoop | Spring | Early2000s   |     181.6 |        \- |        \- |        \- |        \- |        \- |
-| Michigan |               2 | NOAA        | Spring | Early2000s   |        \- |     155.6 |        \- |        \- |        \- |        \- |
-| Michigan |               2 | GLNPO\_Zoop | Summer | Early2000s   |     389.2 |        \- |        \- |        \- |        \- |        \- |
-| Michigan |               2 | NOAA        | Summer | Early2000s   |        \- |     247.5 |        \- |        \- |        \- |        \- |
-| Michigan |               2 | NOAA        | Fall   | Early2000s   |        \- |     132.8 |        \- |        \- |        \- |        \- |
-| Michigan |               3 | GLNPO\_Mys  | Spring | Early2010s   |        \- |        \- |     120.6 |        \- |        \- |        \- |
-| Michigan |               3 | GLNPO\_Zoop | Spring | Early2010s   |        \- |        \- |      84.3 |        \- |        \- |        \- |
-| Michigan |               3 | NOAA        | Spring | Early2010s   |        \- |        \- |        \- |      48.0 |        \- |        \- |
-| Michigan |               3 | GLNPO\_Mys  | Summer | Early2010s   |        \- |        \- |     170.1 |        \- |        \- |        \- |
-| Michigan |               3 | GLNPO\_Zoop | Summer | Early2010s   |        \- |        \- |     171.2 |        \- |        \- |        \- |
-| Michigan |               3 | NOAA        | Summer | Early2010s   |        \- |        \- |        \- |      98.2 |        \- |        \- |
-| Michigan |               3 | USGS        | Summer | Early2010s   |        \- |        \- |        \- |        \- |     205.1 |        \- |
-| Michigan |               3 | NOAA        | Fall   | Early2010s   |        \- |        \- |        \- |      79.4 |        \- |        \- |
-| Michigan |               4 | GLNPO\_Mys  | Spring | Late2010s    |        \- |        \- |        \- |        \- |        \- |      51.8 |
-| Michigan |               4 | GLNPO\_Zoop | Spring | Late2010s    |        \- |        \- |        \- |        \- |        \- |      53.5 |
-| Michigan |               4 | NOAA        | Spring | Late2010s    |        \- |        \- |        \- |        \- |        \- |      33.6 |
-| Michigan |               4 | GLNPO\_Mys  | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- |     119.4 |
-| Michigan |               4 | GLNPO\_Zoop | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- |      93.9 |
-| Michigan |               4 | NOAA        | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- |      43.0 |
-| Michigan |               4 | USGS        | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- |      91.9 |
-| Michigan |               4 | NOAA        | Fall   | Late2010s    |        \- |        \- |        \- |        \- |        \- |      44.3 |
+    ## # A tibble: 0 x 12
+    ## # Groups:   Lake, Period_Name, Period, Period_Numeric, Year, Group [0]
+    ## # ... with 12 variables: Lake <fct>, Period_Name <fct>, Period <chr>,
+    ## #   Period_Numeric <dbl>, Year <dbl>, Group <fct>, Season <fct>,
+    ## #   N_Stations <int>, dens_mean <dbl>, se2_dens <dbl>, biom_mean <dbl>,
+    ## #   se2_biom <dbl>
+
+| Lake     | Period    | Period\_Numeric | Group       | Season | Early2000s | Late2000s | The2010s |
+| :------- | :-------- | --------------: | :---------- | :----- | ---------: | --------: | -------: |
+| Michigan | 1997-2004 |               2 | GLNPO\_Zoop | Spring |      158.7 |        \- |       \- |
+| Michigan | 1995-2002 |               2 | NOAA        | Spring |      155.6 |        \- |       \- |
+| Michigan | 1997-2004 |               2 | GLNPO\_Zoop | Summer |      333.8 |        \- |       \- |
+| Michigan | 1995-2002 |               2 | NOAA        | Summer |      247.5 |        \- |       \- |
+| Michigan | 1995-2002 |               2 | NOAA        | Fall   |      132.8 |        \- |       \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |     122.6 |       \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |      96.6 |       \- |
+| Michigan | 2007-2012 |               3 | NOAA        | Spring |         \- |      56.6 |       \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- |     158.3 |       \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |     188.6 |       \- |
+| Michigan | 2007-2012 |               3 | NOAA        | Summer |         \- |      99.7 |       \- |
+| Michigan | 2005-2012 |               3 | USGS        | Summer |         \- |     200.1 |       \- |
+| Michigan | 2007-2012 |               3 | NOAA        | Fall   |         \- |      78.6 |       \- |
+| Michigan | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |        \- |     79.3 |
+| Michigan | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |        \- |     48.3 |
+| Michigan | 2013-2019 |               4 | NOAA        | Spring |         \- |        \- |     32.3 |
+| Michigan | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |        \- |    152.9 |
+| Michigan | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |        \- |    126.8 |
+| Michigan | 2013-2019 |               4 | NOAA        | Summer |         \- |        \- |     65.4 |
+| Michigan | 2013-2019 |               4 | USGS        | Summer |         \- |        \- |    146.2 |
+| Michigan | 2013-2019 |               4 | NOAA        | Fall   |         \- |        \- |     60.1 |
 
 Lake Michigan
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-1.png)<!-- -->
 
-| Lake    | Period\_Numeric | Group       | Season | Period\_Name | 1990-1995 | 1997-2005 | 2002-2005 | 2006-2015 | 2016-2019 | 2016-2017 |
-| :------ | --------------: | :---------- | :----- | :----------- | --------: | --------: | --------: | --------: | --------: | --------: |
-| Ontario |               1 | DFO         | Fall   | Early1990s   |     438.9 |        \- |        \- |        \- |        \- |        \- |
-| Ontario |               2 | GLNPO\_Zoop | Spring | Early2000s   |        \- |      85.0 |        \- |        \- |        \- |        \- |
-| Ontario |               2 | GLNPO\_Zoop | Summer | Early2000s   |        \- |     171.9 |        \- |        \- |        \- |        \- |
-| Ontario |               2 | DFO         | Fall   | Early2000s   |        \- |        \- |     254.3 |        \- |        \- |        \- |
-| Ontario |               3 | GLNPO\_Mys  | Spring | Early2010s   |        \- |        \- |        \- |     130.7 |        \- |        \- |
-| Ontario |               3 | GLNPO\_Zoop | Spring | Early2010s   |        \- |        \- |        \- |     169.3 |        \- |        \- |
-| Ontario |               3 | DFO         | Summer | Early2010s   |        \- |        \- |        \- |     332.6 |        \- |        \- |
-| Ontario |               3 | GLNPO\_Mys  | Summer | Early2010s   |        \- |        \- |        \- |     361.0 |        \- |        \- |
-| Ontario |               3 | GLNPO\_Zoop | Summer | Early2010s   |        \- |        \- |        \- |     254.3 |        \- |        \- |
-| Ontario |               3 | DFO         | Fall   | Early2010s   |        \- |        \- |        \- |     198.1 |        \- |        \- |
-| Ontario |               4 | GLNPO\_Mys  | Spring | Late2010s    |        \- |        \- |        \- |        \- |     200.7 |        \- |
-| Ontario |               4 | GLNPO\_Zoop | Spring | Late2010s    |        \- |        \- |        \- |        \- |     125.0 |        \- |
-| Ontario |               4 | GLNPO\_Mys  | Summer | Late2010s    |        \- |        \- |        \- |        \- |     240.7 |        \- |
-| Ontario |               4 | GLNPO\_Zoop | Summer | Late2010s    |        \- |        \- |        \- |        \- |     175.2 |        \- |
-| Ontario |               4 | DFO         | Fall   | Late2010s    |        \- |        \- |        \- |        \- |        \- |     151.4 |
+| Lake    | Period    | Period\_Numeric | Group       | Season | Early1990s | Early2000s | Late2000s | The2010s |
+| :------ | :-------- | --------------: | :---------- | :----- | ---------: | ---------: | --------: | -------: |
+| Ontario | 1990-1995 |               1 | DFO         | Fall   |      438.9 |         \- |        \- |       \- |
+| Ontario | 1997-2004 |               2 | GLNPO\_Zoop | Spring |         \- |       82.3 |        \- |       \- |
+| Ontario | 1997-2004 |               2 | GLNPO\_Zoop | Summer |         \- |      136.0 |        \- |       \- |
+| Ontario | 2002-2004 |               2 | DFO         | Fall   |         \- |      258.5 |        \- |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |         \- |     101.8 |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |         \- |     168.6 |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- |         \- |     377.4 |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |         \- |     277.8 |       \- |
+| Ontario | 2005-2012 |               3 | DFO         | Fall   |         \- |         \- |     208.5 |       \- |
+| Ontario | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |         \- |        \- |    199.6 |
+| Ontario | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |         \- |        \- |    114.4 |
+| Ontario | 2013-2017 |               4 | DFO         | Summer |         \- |         \- |        \- |    332.6 |
+| Ontario | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |         \- |        \- |    278.2 |
+| Ontario | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |         \- |        \- |    182.3 |
+| Ontario | 2013-2017 |               4 | DFO         | Fall   |         \- |         \- |        \- |    164.8 |
 
 Lake Ontario
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-2.png)<!-- -->
 
-| Lake  | Period\_Numeric | Group       | Season      | Period\_Name | 1997-2005 | 2006-2015 | 2005-2015 | 2016-2019 |
-| :---- | --------------: | :---------- | :---------- | :----------- | --------: | --------: | --------: | --------: |
-| Huron |               2 | GLNPO\_Zoop | Spring      | Early2000s   |      53.3 |        \- |        \- |        \- |
-| Huron |               2 | GLNPO\_Zoop | Summer      | Early2000s   |     137.2 |        \- |        \- |        \- |
-| Huron |               3 | GLNPO\_Mys  | Spring      | Early2010s   |        \- |      14.7 |        \- |        \- |
-| Huron |               3 | GLNPO\_Zoop | Spring      | Early2010s   |        \- |       9.6 |        \- |        \- |
-| Huron |               3 | GLNPO\_Mys  | Summer      | Early2010s   |        \- |      46.7 |        \- |        \- |
-| Huron |               3 | GLNPO\_Zoop | Summer      | Early2010s   |        \- |      32.6 |        \- |        \- |
-| Huron |               3 | USGS        | Late Summer | Early2010s   |        \- |        \- |      57.2 |        \- |
-| Huron |               4 | GLNPO\_Mys  | Spring      | Late2010s    |        \- |        \- |        \- |       6.6 |
-| Huron |               4 | GLNPO\_Zoop | Spring      | Late2010s    |        \- |        \- |        \- |       7.3 |
-| Huron |               4 | GLNPO\_Mys  | Summer      | Late2010s    |        \- |        \- |        \- |      24.9 |
-| Huron |               4 | GLNPO\_Zoop | Summer      | Late2010s    |        \- |        \- |        \- |      13.7 |
-| Huron |               4 | USGS        | Late Summer | Late2010s    |        \- |        \- |        \- |      49.1 |
+| Lake  | Period    | Period\_Numeric | Group       | Season | Early2000s | Late2000s | The2010s |
+| :---- | :-------- | --------------: | :---------- | :----- | ---------: | --------: | -------: |
+| Huron | 1997-2004 |               2 | GLNPO\_Zoop | Spring |       53.3 |        \- |       \- |
+| Huron | 1997-2004 |               2 | GLNPO\_Zoop | Summer |      135.2 |        \- |       \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |      16.5 |       \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |      16.2 |       \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- |      51.0 |       \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |      43.1 |       \- |
+| Huron | 2005-2012 |               3 | USGS        | Summer |         \- |      64.2 |       \- |
+| Huron | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |        \- |      8.2 |
+| Huron | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |        \- |      7.6 |
+| Huron | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |        \- |     30.0 |
+| Huron | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |        \- |     22.9 |
+| Huron | 2013-2019 |               4 | USGS        | Summer |         \- |        \- |     44.7 |
 
 Lake Huron
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-3.png)<!-- -->
 
-| Lake     | Period\_Numeric | Group       | Season | Period\_Name | 1997-2005 | 2006-2015 | 2016-2019 |
-| :------- | --------------: | :---------- | :----- | :----------- | --------: | --------: | --------: |
-| Superior |               2 | GLNPO\_Zoop | Spring | Early2000s   |     107.6 |        \- |        \- |
-| Superior |               2 | GLNPO\_Zoop | Summer | Early2000s   |     112.3 |        \- |        \- |
-| Superior |               3 | GLNPO\_Mys  | Spring | Early2010s   |        \- |     112.6 |        \- |
-| Superior |               3 | GLNPO\_Zoop | Spring | Early2010s   |        \- |      85.7 |        \- |
-| Superior |               3 | GLNPO\_Mys  | Summer | Early2010s   |        \- |     218.2 |        \- |
-| Superior |               3 | GLNPO\_Zoop | Summer | Early2010s   |        \- |     161.4 |        \- |
-| Superior |               4 | GLNPO\_Mys  | Spring | Late2010s    |        \- |        \- |     119.1 |
-| Superior |               4 | GLNPO\_Zoop | Spring | Late2010s    |        \- |        \- |      58.4 |
-| Superior |               4 | GLNPO\_Mys  | Summer | Late2010s    |        \- |        \- |     206.1 |
-| Superior |               4 | GLNPO\_Zoop | Summer | Late2010s    |        \- |        \- |     144.7 |
+| Lake     | Period    | Period\_Numeric | Group       | Season | Early2000s | Late2000s | The2010s |
+| :------- | :-------- | --------------: | :---------- | :----- | ---------: | --------: | -------: |
+| Superior | 1997-2004 |               2 | GLNPO\_Zoop | Spring |      104.6 |        \- |       \- |
+| Superior | 1997-2004 |               2 | GLNPO\_Zoop | Summer |      125.1 |        \- |       \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |      78.4 |       \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |      70.1 |       \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- |     212.7 |       \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |     146.3 |       \- |
+| Superior | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |        \- |    145.6 |
+| Superior | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |        \- |     91.3 |
+| Superior | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |        \- |    216.0 |
+| Superior | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |        \- |    146.0 |
 
 Lake Superior
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-4.png)<!-- -->
 
-| Lake     | Period\_Numeric | Group       | Season | Period\_Name | 1997-2005 | 1995-2002 | 2006-2015 | 2007-2015 | 2005-2015 | 2016-2019 |
-| :------- | --------------: | :---------- | :----- | :----------- | --------: | --------: | --------: | --------: | --------: | --------: |
-| Michigan |               2 | GLNPO\_Zoop | Spring | Early2000s   |  418.2062 |        \- |        \- |        \- |        \- |        \- |
-| Michigan |               2 | NOAA        | Spring | Early2000s   |        \- |  315.5142 |        \- |        \- |        \- |        \- |
-| Michigan |               2 | GLNPO\_Zoop | Summer | Early2000s   |  843.8804 |        \- |        \- |        \- |        \- |        \- |
-| Michigan |               2 | NOAA        | Summer | Early2000s   |        \- |  629.6175 |        \- |        \- |        \- |        \- |
-| Michigan |               2 | NOAA        | Fall   | Early2000s   |        \- |  444.1379 |        \- |        \- |        \- |        \- |
-| Michigan |               3 | GLNPO\_Mys  | Spring | Early2010s   |        \- |        \- | 257.14473 |        \- |        \- |        \- |
-| Michigan |               3 | GLNPO\_Zoop | Spring | Early2010s   |        \- |        \- |  99.43603 |        \- |        \- |        \- |
-| Michigan |               3 | NOAA        | Spring | Early2010s   |        \- |        \- |        \- |  127.8157 |        \- |        \- |
-| Michigan |               3 | GLNPO\_Mys  | Summer | Early2010s   |        \- |        \- | 393.58202 |        \- |        \- |        \- |
-| Michigan |               3 | GLNPO\_Zoop | Summer | Early2010s   |        \- |        \- | 178.76100 |        \- |        \- |        \- |
-| Michigan |               3 | NOAA        | Summer | Early2010s   |        \- |        \- |        \- |  283.1267 |        \- |        \- |
-| Michigan |               3 | USGS        | Summer | Early2010s   |        \- |        \- |        \- |        \- |  532.4298 |        \- |
-| Michigan |               3 | NOAA        | Fall   | Early2010s   |        \- |        \- |        \- |  282.7255 |        \- |        \- |
-| Michigan |               4 | GLNPO\_Mys  | Spring | Late2010s    |        \- |        \- |        \- |        \- |        \- | 131.64528 |
-| Michigan |               4 | GLNPO\_Zoop | Spring | Late2010s    |        \- |        \- |        \- |        \- |        \- |  37.81067 |
-| Michigan |               4 | NOAA        | Spring | Late2010s    |        \- |        \- |        \- |        \- |        \- | 106.57694 |
-| Michigan |               4 | GLNPO\_Mys  | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- | 240.73227 |
-| Michigan |               4 | GLNPO\_Zoop | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- |  71.30444 |
-| Michigan |               4 | NOAA        | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- | 114.55214 |
-| Michigan |               4 | USGS        | Summer | Late2010s    |        \- |        \- |        \- |        \- |        \- | 219.95359 |
-| Michigan |               4 | NOAA        | Fall   | Late2010s    |        \- |        \- |        \- |        \- |        \- | 151.71991 |
+| Lake     | Period    | Period\_Numeric | Group       | Season | Early2000s | Late2000s |  The2010s |
+| :------- | :-------- | --------------: | :---------- | :----- | ---------: | --------: | --------: |
+| Michigan | 1997-2004 |               2 | GLNPO\_Zoop | Spring |   306.8022 |        \- |        \- |
+| Michigan | 1995-2002 |               2 | NOAA        | Spring |   315.5142 |        \- |        \- |
+| Michigan | 1997-2004 |               2 | GLNPO\_Zoop | Summer |   528.1741 |        \- |        \- |
+| Michigan | 1995-2002 |               2 | NOAA        | Summer |   629.6175 |        \- |        \- |
+| Michigan | 1995-2002 |               2 | NOAA        | Fall   |   444.1379 |        \- |        \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |  282.4554 |        \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |  126.6841 |        \- |
+| Michigan | 2007-2012 |               3 | NOAA        | Spring |         \- |  143.2405 |        \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- |  407.5532 |        \- |
+| Michigan | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |  218.2483 |        \- |
+| Michigan | 2007-2012 |               3 | NOAA        | Summer |         \- |  301.0591 |        \- |
+| Michigan | 2005-2012 |               3 | USGS        | Summer |         \- |  406.2924 |        \- |
+| Michigan | 2007-2012 |               3 | NOAA        | Fall   |         \- |  291.2230 |        \- |
+| Michigan | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |        \- | 160.12008 |
+| Michigan | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |        \- |  33.79689 |
+| Michigan | 2013-2019 |               4 | NOAA        | Spring |         \- |        \- | 102.45803 |
+| Michigan | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |        \- | 292.26811 |
+| Michigan | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |        \- |  96.73558 |
+| Michigan | 2013-2019 |               4 | NOAA        | Summer |         \- |        \- | 171.42784 |
+| Michigan | 2013-2019 |               4 | USGS        | Summer |         \- |        \- | 425.71137 |
+| Michigan | 2013-2019 |               4 | NOAA        | Fall   |         \- |        \- | 200.58159 |
 
 Lake Michigan
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-5.png)<!-- -->
 
-| Lake    | Period\_Numeric | Group       | Season | Period\_Name | 1990-1995 | 1997-2005 | 2002-2005 | 2006-2015 | 2016-2019 | 2016-2017 |
-| :------ | --------------: | :---------- | :----- | :----------- | --------: | --------: | --------: | --------: | --------: | --------: |
-| Ontario |               1 | DFO         | Fall   | Early1990s   |  2022.262 |        \- |        \- |        \- |        \- |        \- |
-| Ontario |               2 | GLNPO\_Zoop | Spring | Early2000s   |        \- |  126.9664 |        \- |        \- |        \- |        \- |
-| Ontario |               2 | GLNPO\_Zoop | Summer | Early2000s   |        \- |  462.1577 |        \- |        \- |        \- |        \- |
-| Ontario |               2 | DFO         | Fall   | Early2000s   |        \- |        \- |  918.3259 |        \- |        \- |        \- |
-| Ontario |               3 | GLNPO\_Mys  | Spring | Early2010s   |        \- |        \- |        \- |  283.5927 |        \- |        \- |
-| Ontario |               3 | GLNPO\_Zoop | Spring | Early2010s   |        \- |        \- |        \- |  269.1748 |        \- |        \- |
-| Ontario |               3 | DFO         | Summer | Early2010s   |        \- |        \- |        \- |  815.2259 |        \- |        \- |
-| Ontario |               3 | GLNPO\_Mys  | Summer | Early2010s   |        \- |        \- |        \- |  746.9020 |        \- |        \- |
-| Ontario |               3 | GLNPO\_Zoop | Summer | Early2010s   |        \- |        \- |        \- |  527.8137 |        \- |        \- |
-| Ontario |               3 | DFO         | Fall   | Early2010s   |        \- |        \- |        \- |  723.0504 |        \- |        \- |
-| Ontario |               4 | GLNPO\_Mys  | Spring | Late2010s    |        \- |        \- |        \- |        \- |  390.2066 |        \- |
-| Ontario |               4 | GLNPO\_Zoop | Spring | Late2010s    |        \- |        \- |        \- |        \- |  126.0133 |        \- |
-| Ontario |               4 | GLNPO\_Mys  | Summer | Late2010s    |        \- |        \- |        \- |        \- |  579.5253 |        \- |
-| Ontario |               4 | GLNPO\_Zoop | Summer | Late2010s    |        \- |        \- |        \- |        \- |  246.0588 |        \- |
-| Ontario |               4 | DFO         | Fall   | Late2010s    |        \- |        \- |        \- |        \- |        \- |  667.2884 |
+| Lake    | Period    | Period\_Numeric | Group       | Season | Early1990s | Early2000s | Late2000s | The2010s |
+| :------ | :-------- | --------------: | :---------- | :----- | ---------: | ---------: | --------: | -------: |
+| Ontario | 1990-1995 |               1 | DFO         | Fall   |   2022.262 |         \- |        \- |       \- |
+| Ontario | 1997-2004 |               2 | GLNPO\_Zoop | Spring |         \- |   120.2587 |        \- |       \- |
+| Ontario | 1997-2004 |               2 | GLNPO\_Zoop | Summer |         \- |   267.8324 |        \- |       \- |
+| Ontario | 2002-2004 |               2 | DFO         | Fall   |         \- |   894.6626 |        \- |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |         \- |  286.7644 |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |         \- |  322.7647 |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- |         \- |  817.2097 |       \- |
+| Ontario | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |         \- |  640.7953 |       \- |
+| Ontario | 2005-2012 |               3 | DFO         | Fall   |         \- |         \- |  741.8831 |       \- |
+| Ontario | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |         \- |        \- | 341.3433 |
+| Ontario | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |         \- |        \- | 101.9425 |
+| Ontario | 2013-2017 |               4 | DFO         | Summer |         \- |         \- |        \- | 815.2259 |
+| Ontario | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |         \- |        \- | 590.9945 |
+| Ontario | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |         \- |        \- | 213.8916 |
+| Ontario | 2013-2017 |               4 | DFO         | Fall   |         \- |         \- |        \- | 724.0704 |
 
 Lake Ontario
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-6.png)<!-- -->
 
-| Lake  | Period\_Numeric | Group       | Season      | Period\_Name | 1997-2005 | 2006-2015 | 2005-2015 |  2016-2019 |
-| :---- | --------------: | :---------- | :---------- | :----------- | --------: | --------: | --------: | ---------: |
-| Huron |               2 | GLNPO\_Zoop | Spring      | Early2000s   |  102.1974 |        \- |        \- |         \- |
-| Huron |               2 | GLNPO\_Zoop | Summer      | Early2000s   |  138.5930 |        \- |        \- |         \- |
-| Huron |               3 | GLNPO\_Mys  | Spring      | Early2010s   |        \- |  37.98273 |        \- |         \- |
-| Huron |               3 | GLNPO\_Zoop | Spring      | Early2010s   |        \- |  16.80587 |        \- |         \- |
-| Huron |               3 | GLNPO\_Mys  | Summer      | Early2010s   |        \- |  92.12437 |        \- |         \- |
-| Huron |               3 | GLNPO\_Zoop | Summer      | Early2010s   |        \- |  35.83608 |        \- |         \- |
-| Huron |               3 | USGS        | Late Summer | Early2010s   |        \- |        \- |  157.5899 |         \- |
-| Huron |               4 | GLNPO\_Mys  | Spring      | Late2010s    |        \- |        \- |        \- |  15.375909 |
-| Huron |               4 | GLNPO\_Zoop | Spring      | Late2010s    |        \- |        \- |        \- |   4.607222 |
-| Huron |               4 | GLNPO\_Mys  | Summer      | Late2010s    |        \- |        \- |        \- |  51.073056 |
-| Huron |               4 | GLNPO\_Zoop | Summer      | Late2010s    |        \- |        \- |        \- |   9.250357 |
-| Huron |               4 | USGS        | Late Summer | Late2010s    |        \- |        \- |        \- | 146.607807 |
+| Lake  | Period    | Period\_Numeric | Group       | Season | Early2000s | Late2000s |   The2010s |
+| :---- | :-------- | --------------: | :---------- | :----- | ---------: | --------: | ---------: |
+| Huron | 1997-2004 |               2 | GLNPO\_Zoop | Spring |   72.45905 |        \- |         \- |
+| Huron | 1997-2004 |               2 | GLNPO\_Zoop | Summer |  134.36174 |        \- |         \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- |  42.42568 |         \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |  40.04098 |         \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- | 102.78869 |         \- |
+| Huron | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- |  40.76219 |         \- |
+| Huron | 2005-2012 |               3 | USGS        | Summer |         \- | 182.54682 |         \- |
+| Huron | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |        \- |  20.621588 |
+| Huron | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |        \- |   6.811528 |
+| Huron | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |        \- |  58.002158 |
+| Huron | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |        \- |  23.834262 |
+| Huron | 2013-2019 |               4 | USGS        | Summer |         \- |        \- | 129.922753 |
 
 Lake Huron
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Compare%20values%20among%20lakes%20during%20periods%20by%20group-7.png)<!-- -->
 
-| Lake     | Period\_Numeric | Group       | Season | Period\_Name | 1997-2005 | 2006-2015 | 2016-2019 |
-| :------- | --------------: | :---------- | :----- | :----------- | --------: | --------: | --------: |
-| Superior |               2 | GLNPO\_Zoop | Spring | Early2000s   |  145.9254 |        \- |        \- |
-| Superior |               2 | GLNPO\_Zoop | Summer | Early2000s   |  153.3683 |        \- |        \- |
-| Superior |               3 | GLNPO\_Mys  | Spring | Early2010s   |        \- | 274.40107 |        \- |
-| Superior |               3 | GLNPO\_Zoop | Spring | Early2010s   |        \- |  90.90661 |        \- |
-| Superior |               3 | GLNPO\_Mys  | Summer | Early2010s   |        \- | 441.83203 |        \- |
-| Superior |               3 | GLNPO\_Zoop | Summer | Early2010s   |        \- | 184.22680 |        \- |
-| Superior |               4 | GLNPO\_Mys  | Spring | Late2010s    |        \- |        \- | 251.70821 |
-| Superior |               4 | GLNPO\_Zoop | Spring | Late2010s    |        \- |        \- |  65.15856 |
-| Superior |               4 | GLNPO\_Mys  | Summer | Late2010s    |        \- |        \- | 402.64368 |
-| Superior |               4 | GLNPO\_Zoop | Summer | Late2010s    |        \- |        \- | 145.04308 |
+| Lake     | Period    | Period\_Numeric | Group       | Season | Early2000s | Late2000s |  The2010s |
+| :------- | :-------- | --------------: | :---------- | :----- | ---------: | --------: | --------: |
+| Superior | 1997-2004 |               2 | GLNPO\_Zoop | Spring |   98.45359 |        \- |        \- |
+| Superior | 1997-2004 |               2 | GLNPO\_Zoop | Summer |  154.06955 |        \- |        \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Mys  | Spring |         \- | 208.58226 |        \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Zoop | Spring |         \- |  77.06876 |        \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Mys  | Summer |         \- | 456.40534 |        \- |
+| Superior | 2005-2012 |               3 | GLNPO\_Zoop | Summer |         \- | 174.54974 |        \- |
+| Superior | 2013-2019 |               4 | GLNPO\_Mys  | Spring |         \- |        \- | 317.84984 |
+| Superior | 2013-2019 |               4 | GLNPO\_Zoop | Spring |         \- |        \- |  87.36271 |
+| Superior | 2013-2019 |               4 | GLNPO\_Mys  | Summer |         \- |        \- | 406.94728 |
+| Superior | 2013-2019 |               4 | GLNPO\_Zoop | Summer |         \- |        \- | 145.07593 |
 
 Lake Superior
 
@@ -1213,58 +1047,266 @@ Lake Superior
 | Period\_Numeric | Period\_Name | Period    | Lake     | Group       | N\_Years | dens\_Spring | se2\_dens\_Spring | biom\_Spring | se2\_biom\_Spring | dens\_Summer | se2\_dens\_Summer | biom\_Summer | se2\_biom\_Summer | dens\_Fall | se2\_dens\_Fall | biom\_Fall | se2\_biom\_Fall |
 | --------------: | :----------- | :-------- | :------- | :---------- | -------: | -----------: | ----------------: | -----------: | ----------------: | -----------: | ----------------: | -----------: | ----------------: | ---------: | --------------: | ---------: | --------------: |
 |               1 | Early1990s   | 1990-1995 | Ontario  | DFO         |        3 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      438.9 |       101.48762 |  2022.2617 |       915.12314 |
-|               2 | Early2000s   | 1997-2005 | Superior | GLNPO\_Zoop |        7 |        107.6 |        37.8978003 |   145.925430 |         69.082645 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Superior | GLNPO\_Zoop |        9 |           \- |                \- |           \- |                \- |        112.3 |         25.786474 |  153.3682840 |        49.8479995 |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Michigan | GLNPO\_Zoop |        7 |        181.6 |        51.6103243 |   418.206222 |        223.800080 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Michigan | GLNPO\_Zoop |        9 |           \- |                \- |           \- |                \- |        389.2 |        122.029616 |  843.8804233 |       320.0537500 |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1995-2002 | Michigan | NOAA        |        6 |        155.6 |        43.3567834 |   315.514202 |        106.137311 |        247.5 |         81.514089 |  629.6174626 |       210.9832904 |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Superior | GLNPO\_Zoop |        7 |        104.6 |        31.1313915 |    98.453586 |         58.231530 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Superior | GLNPO\_Zoop |        8 |           \- |                \- |           \- |                \- |        125.1 |         27.738535 |  154.0695466 |         68.030778 |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Michigan | GLNPO\_Zoop |        7 |        158.7 |        57.0132888 |   306.802206 |        224.054347 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Michigan | GLNPO\_Zoop |        8 |           \- |                \- |           \- |                \- |        333.8 |        126.860047 |  528.1740625 |        311.409479 |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1995-2002 | Michigan | NOAA        |        6 |        155.6 |        43.3567834 |   315.514202 |        106.137311 |        247.5 |         81.514089 |  629.6174626 |        210.983290 |         \- |              \- |         \- |              \- |
 |               2 | Early2000s   | 1995-2002 | Michigan | NOAA        |        4 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      132.8 |        65.48068 |   444.1379 |       193.57174 |
-|               2 | Early2000s   | 1997-2005 | Huron    | GLNPO\_Zoop |        7 |         53.3 |        33.2729548 |   102.197444 |         88.659525 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Huron    | GLNPO\_Zoop |        9 |           \- |                \- |           \- |                \- |        137.2 |         50.282135 |  138.5930208 |        22.4732772 |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Erie     | GLNPO\_Zoop |        1 |          0.0 |                \- |     0.000000 |                \- |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Erie     | GLNPO\_Zoop |        7 |           \- |                \- |           \- |                \- |          2.5 |          2.209072 |    1.8289286 |         2.8806815 |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Ontario  | GLNPO\_Zoop |        7 |         85.0 |        20.5584615 |   126.966407 |         56.749319 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 1997-2005 | Ontario  | GLNPO\_Zoop |        8 |           \- |                \- |           \- |                \- |        171.9 |         89.259705 |  462.1577222 |       264.4707284 |         \- |              \- |         \- |              \- |
-|               2 | Early2000s   | 2002-2005 | Ontario  | DFO         |        4 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      254.3 |        57.34358 |   918.3259 |       211.55235 |
-|               3 | Early2010s   | 2006-2015 | Superior | GLNPO\_Mys  |        9 |        112.6 |        36.4160526 |   274.401071 |         71.430281 |        218.2 |         46.659386 |  441.8320312 |       100.7866786 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Superior | GLNPO\_Zoop |       10 |         85.7 |        21.1001169 |    90.906610 |         19.457494 |        161.4 |         38.987547 |  184.2267965 |        71.3009875 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Michigan | GLNPO\_Mys  |       10 |        120.6 |        21.9002953 |   257.144730 |         61.731262 |        170.1 |         47.066067 |  393.5820230 |       176.5047008 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Michigan | GLNPO\_Zoop |       10 |         84.3 |        28.7685167 |    99.436025 |         62.042505 |        171.2 |         41.448410 |  178.7610000 |        96.6828763 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2005-2015 | Michigan | USGS        |       11 |           \- |                \- |           \- |                \- |        205.1 |         52.630555 |  532.4298477 |       193.5537403 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2007-2015 | Michigan | NOAA        |        9 |         48.0 |        20.6909744 |   127.815740 |         53.548782 |         98.2 |         30.070838 |  283.1267414 |        96.2165867 |       79.4 |        20.87544 |   282.7255 |        72.91184 |
-|               3 | Early2010s   | 2006-2015 | Huron    | GLNPO\_Mys  |       10 |         14.7 |         5.1251060 |    37.982726 |         12.946224 |         46.7 |          8.983988 |   92.1243738 |        21.5738390 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Huron    | GLNPO\_Zoop |       10 |          9.6 |         4.2576154 |    16.805869 |         15.116121 |         32.6 |         10.784260 |   35.8360833 |        21.9120507 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2005-2015 | Huron    | USGS        |       11 |           \- |                \- |           \- |                \- |         57.2 |         12.596229 |  157.5898875 |        50.3152367 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Erie     | GLNPO\_Mys  |        5 |          0.2 |         0.2529822 |     1.683310 |          2.087222 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Erie     | GLNPO\_Mys  |        7 |           \- |                \- |           \- |                \- |          2.3 |          2.925236 |    1.0038069 |         1.0969912 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Erie     | GLNPO\_Zoop |        6 |          0.0 |         0.0000000 |     0.000000 |          0.000000 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Erie     | GLNPO\_Zoop |        8 |           \- |                \- |           \- |                \- |          1.4 |          1.161857 |    0.5397083 |         0.8014194 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Ontario  | GLNPO\_Mys  |       10 |        130.7 |        57.1322458 |   283.592715 |        122.812966 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Ontario  | GLNPO\_Mys  |        9 |           \- |                \- |           \- |                \- |        361.0 |        200.923266 |  746.9020016 |       266.1135518 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Ontario  | GLNPO\_Zoop |       10 |        169.3 |        76.8242522 |   269.174850 |        267.058160 |        254.3 |        112.119226 |  527.8136905 |       436.2629221 |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Ontario  | DFO         |        1 |           \- |                \- |           \- |                \- |        332.6 |                \- |  815.2259259 |                \- |         \- |              \- |         \- |              \- |
-|               3 | Early2010s   | 2006-2015 | Ontario  | DFO         |        9 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      198.1 |        44.51159 |   723.0504 |       129.15255 |
-|               4 | Late2010s    | 2016-2019 | Superior | GLNPO\_Mys  |        4 |        119.1 |        21.9821898 |   251.708208 |         28.448805 |        206.1 |         21.914227 |  402.6436834 |        62.0698381 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Superior | GLNPO\_Zoop |        3 |         58.4 |         9.8332768 |    65.158556 |         20.097887 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Superior | GLNPO\_Zoop |        4 |           \- |                \- |           \- |                \- |        144.7 |         28.482334 |  145.0430849 |        38.9780809 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Michigan | GLNPO\_Mys  |        4 |         51.8 |        31.7802218 |   131.645276 |         76.465785 |        119.4 |         70.032992 |  240.7322718 |       135.0204489 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Michigan | GLNPO\_Zoop |        3 |         53.5 |        54.1078347 |    37.810667 |         35.783057 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Michigan | GLNPO\_Zoop |        4 |           \- |                \- |           \- |                \- |         93.9 |         41.593139 |   71.3044444 |        31.9492210 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Michigan | USGS        |        4 |           \- |                \- |           \- |                \- |         91.9 |         58.982286 |  219.9535920 |       148.9214617 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Michigan | NOAA        |        4 |         33.6 |        30.3236294 |   106.576937 |         81.379788 |         43.0 |         36.435914 |  114.5521445 |        80.6980816 |       44.3 |        36.18300 |   151.7199 |       126.07551 |
-|               4 | Late2010s    | 2016-2019 | Huron    | GLNPO\_Mys  |        4 |          6.6 |         2.7110883 |    15.375909 |          3.386767 |         24.9 |          6.863126 |   51.0730561 |        19.5808273 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Huron    | GLNPO\_Zoop |        3 |          7.3 |         5.3304159 |     4.607222 |          4.410829 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Huron    | GLNPO\_Zoop |        4 |           \- |                \- |           \- |                \- |         13.7 |          6.883313 |    9.2503571 |         7.6265670 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Huron    | USGS        |        4 |           \- |                \- |           \- |                \- |         49.1 |         15.054899 |  146.6078070 |        68.9114827 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Erie     | GLNPO\_Mys  |        3 |          0.9 |         1.5762121 |     6.018971 |         10.617432 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Erie     | GLNPO\_Mys  |        2 |           \- |                \- |           \- |                \- |          7.6 |         11.300000 |    1.6010773 |         2.5417753 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Erie     | GLNPO\_Zoop |        2 |          0.0 |         0.0000000 |     0.000000 |          0.000000 |          6.5 |          5.400000 |    2.9516667 |         4.0233333 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Ontario  | GLNPO\_Mys  |        4 |        200.7 |        25.7982396 |   390.206618 |         75.816349 |        240.7 |         79.100037 |  579.5253353 |        47.8604462 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Ontario  | GLNPO\_Zoop |        3 |        125.0 |         7.0354657 |   126.013333 |         96.335045 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2019 | Ontario  | GLNPO\_Zoop |        4 |           \- |                \- |           \- |                \- |        175.2 |         71.691422 |  246.0587500 |        90.6275645 |         \- |              \- |         \- |              \- |
-|               4 | Late2010s    | 2016-2017 | Ontario  | DFO         |        2 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      151.4 |        21.00000 |   667.2884 |        61.07681 |
+|               2 | Early2000s   | 1997-2004 | Huron    | GLNPO\_Zoop |        7 |         53.3 |        34.7403351 |    72.459048 |         67.904622 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Huron    | GLNPO\_Zoop |        8 |           \- |                \- |           \- |                \- |        135.2 |         59.722118 |  134.3617361 |         45.352431 |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Erie     | GLNPO\_Zoop |        2 |          0.0 |         0.0000000 |     0.000000 |          0.000000 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Erie     | GLNPO\_Zoop |        6 |           \- |                \- |           \- |                \- |          3.2 |          3.555934 |    3.7466667 |          6.834779 |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 1997-2004 | Ontario  | GLNPO\_Zoop |        7 |         82.3 |        22.9770900 |   120.258675 |         44.514564 |        136.0 |         46.334918 |  267.8323810 |        147.271768 |         \- |              \- |         \- |              \- |
+|               2 | Early2000s   | 2002-2004 | Ontario  | DFO         |        3 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      258.5 |        80.22128 |   894.6626 |       291.59765 |
+|               3 | Late2000s    | 2005-2012 | Superior | GLNPO\_Mys  |        6 |         78.4 |        15.4607460 |   208.582261 |         41.729525 |        212.7 |         68.788268 |  456.4053394 |        149.201311 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Superior | GLNPO\_Zoop |        8 |         70.1 |        13.9258111 |    77.068763 |         18.129508 |        146.3 |         43.004642 |  174.5497391 |         60.005557 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Michigan | GLNPO\_Mys  |        7 |        122.6 |        29.8803783 |   282.455408 |         81.323783 |        158.3 |         65.705662 |  407.5532208 |        257.483632 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Michigan | GLNPO\_Zoop |        8 |         96.6 |        22.8863262 |   126.684097 |         55.406862 |        188.6 |         63.561385 |  218.2483125 |        120.222592 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Michigan | USGS        |        8 |           \- |                \- |           \- |                \- |        200.1 |         73.329340 |  406.2924396 |        274.420574 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2007-2012 | Michigan | NOAA        |        6 |         56.6 |        27.1195747 |   143.240538 |         69.939047 |         99.7 |         35.499772 |  301.0590633 |        122.258292 |       78.6 |        23.63709 |   291.2230 |        77.13195 |
+|               3 | Late2000s    | 2005-2012 | Huron    | GLNPO\_Mys  |        7 |         16.5 |         6.5842525 |    42.425682 |         16.053898 |         51.0 |         11.318734 |  102.7886941 |         27.131868 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Huron    | GLNPO\_Zoop |        8 |         16.2 |        12.7149764 |    40.040979 |         44.786835 |         43.1 |         27.928582 |   40.7621875 |         30.442615 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Huron    | USGS        |        8 |           \- |                \- |           \- |                \- |         64.2 |         13.855582 |  182.5468246 |         66.910794 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Erie     | GLNPO\_Mys  |        3 |          0.2 |         0.4000000 |     1.574510 |          3.149019 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Erie     | GLNPO\_Mys  |        5 |           \- |                \- |           \- |                \- |          1.0 |          1.070701 |    0.6803465 |          1.054176 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Erie     | GLNPO\_Zoop |        4 |          0.0 |         0.0000000 |     0.000000 |          0.000000 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Erie     | GLNPO\_Zoop |        6 |           \- |                \- |           \- |                \- |          1.4 |          1.197405 |    0.7328704 |          1.046704 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Ontario  | GLNPO\_Mys  |        7 |        101.8 |        42.1117108 |   286.764401 |        166.923125 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Ontario  | GLNPO\_Mys  |        6 |           \- |                \- |           \- |                \- |        377.4 |        281.881079 |  817.2096724 |        337.113836 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Ontario  | GLNPO\_Zoop |        8 |        168.6 |        84.8490756 |   322.764722 |        323.803647 |        277.8 |        125.595942 |  640.7952778 |        397.487250 |         \- |              \- |         \- |              \- |
+|               3 | Late2000s    | 2005-2012 | Ontario  | DFO         |        8 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      208.5 |        47.98850 |   741.8831 |       157.29927 |
+|               4 | The2010s     | 2013-2019 | Superior | GLNPO\_Mys  |        7 |        145.6 |        29.3604667 |   317.849844 |         64.779173 |        216.0 |         22.905888 |  406.9472826 |         47.602963 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Superior | GLNPO\_Zoop |        6 |         91.3 |        32.8117730 |    87.362706 |         25.052449 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Superior | GLNPO\_Zoop |        7 |           \- |                \- |           \- |                \- |        146.0 |         36.582528 |  145.0759348 |         42.237851 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Michigan | GLNPO\_Mys  |        7 |         79.3 |        32.9757610 |   160.120079 |         50.199692 |        152.9 |         50.207854 |  292.2681102 |         87.157039 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Michigan | GLNPO\_Zoop |        6 |         48.3 |        28.3899826 |    33.796889 |         18.057061 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Michigan | GLNPO\_Zoop |        7 |           \- |                \- |           \- |                \- |        126.8 |         42.570534 |   96.7355782 |         41.134571 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Michigan | USGS        |        7 |           \- |                \- |           \- |                \- |        146.2 |         60.208660 |  425.7113715 |        214.418410 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Michigan | NOAA        |        7 |         32.3 |        18.5414043 |   102.458025 |         54.047760 |         65.4 |         38.383464 |  171.4278387 |         96.842725 |       60.1 |        30.68028 |   200.5816 |       106.78808 |
+|               4 | The2010s     | 2013-2019 | Huron    | GLNPO\_Mys  |        7 |          8.2 |         3.1640842 |    20.621588 |          9.235574 |         30.0 |          6.314566 |   58.0021577 |         12.677054 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Huron    | GLNPO\_Zoop |        6 |          7.6 |         2.6059760 |     6.811528 |          4.172382 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Huron    | GLNPO\_Zoop |        7 |           \- |                \- |           \- |                \- |         22.9 |         12.309921 |   23.8342619 |         19.725323 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Huron    | USGS        |        7 |           \- |                \- |           \- |                \- |         44.7 |         10.346540 |  129.9227526 |         40.970052 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Erie     | GLNPO\_Mys  |        5 |          0.6 |         0.9436101 |     4.349987 |          6.273840 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Erie     | GLNPO\_Mys  |        4 |           \- |                \- |           \- |                \- |          6.6 |          6.305751 |    1.7067676 |          1.685544 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Erie     | GLNPO\_Zoop |        4 |          0.0 |         0.0000000 |     0.000000 |          0.000000 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Erie     | GLNPO\_Zoop |        5 |           \- |                \- |           \- |                \- |          3.1 |          3.363332 |    1.0018333 |          1.403028 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Ontario  | GLNPO\_Mys  |        7 |        199.6 |        59.6789004 |   341.343259 |         90.552405 |        278.2 |        122.582378 |  590.9944744 |        180.337017 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Ontario  | GLNPO\_Zoop |        6 |        114.4 |        30.3016685 |   101.942500 |         53.686654 |           \- |                \- |           \- |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2019 | Ontario  | GLNPO\_Zoop |        7 |           \- |                \- |           \- |                \- |        182.3 |         56.591425 |  213.8916190 |         64.652506 |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2017 | Ontario  | DFO         |        1 |           \- |                \- |           \- |                \- |        332.6 |                \- |  815.2259259 |                \- |         \- |              \- |         \- |              \- |
+|               4 | The2010s     | 2013-2017 | Ontario  | DFO         |        4 |           \- |                \- |           \- |                \- |           \- |                \- |           \- |                \- |      164.8 |        39.21593 |   724.0704 |        99.97280 |
 
 Whole Table
+
+#### Models of Lake Differences
+
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 10 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/visualize%20fits-1.png)<!-- -->
+
+    ## Warning: Removed 10 rows containing missing values (geom_col).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/visualize%20fits-2.png)<!-- -->
+
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 10 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/visualize%20fits-3.png)<!-- -->
+
+    ## Warning: Removed 10 rows containing missing values (geom_col).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/visualize%20fits-4.png)<!-- -->
+
+    ## # A tibble: 5 x 3
+    ## # Groups:   Lake [5]
+    ##   Lake     Period    Dens_mean
+    ##   <fct>    <chr>         <dbl>
+    ## 1 Michigan 1997-2004     246. 
+    ## 2 Superior 1997-2004     115. 
+    ## 3 Ontario  1997-2004     109. 
+    ## 4 Huron    1997-2004      94.2
+    ## 5 Erie     1997-2004       1.6
+
+    ##       Lake1    Lake2   diff    lwr    upr p adj
+    ## 1      Erie Michigan -5.857 -6.941 -4.773 0.000
+    ## 2      Erie Superior -5.226 -6.310 -4.142 0.000
+    ## 3      Erie  Ontario -5.108 -6.205 -4.011 0.000
+    ## 4      Erie    Huron -4.698 -5.782 -3.614 0.000
+    ## 5     Huron Michigan -1.159 -2.063 -0.255 0.006
+    ## 6  Michigan  Ontario  0.749 -0.171  1.669 0.163
+    ## 7  Michigan Superior  0.631 -0.273  1.535 0.297
+    ## 8     Huron Superior -0.528 -1.432  0.376 0.477
+    ## 9     Huron  Ontario -0.410 -1.330  0.510 0.720
+    ## 10 Superior  Ontario  0.118 -0.802  1.038 0.996
+
+    ## # A tibble: 5 x 3
+    ## # Groups:   Lake [5]
+    ##   Lake     Period    Dens_mean
+    ##   <fct>    <chr>         <dbl>
+    ## 1 Ontario  2005-2012   231.   
+    ## 2 Michigan 2005-2012   142.   
+    ## 3 Superior 2005-2012   127.   
+    ## 4 Huron    2005-2012    31.7  
+    ## 5 Erie     2005-2012     0.650
+
+    ##       Lake1    Lake2   diff    lwr    upr p adj
+    ## 1      Erie  Ontario -5.944 -6.521 -5.367 0.000
+    ## 2      Erie Michigan -5.706 -6.280 -5.132 0.000
+    ## 3      Erie Superior -5.533 -6.115 -4.952 0.000
+    ## 4      Erie    Huron -3.951 -4.524 -3.377 0.000
+    ## 5     Huron  Ontario -1.993 -2.494 -1.492 0.000
+    ## 6     Huron Michigan -1.755 -2.252 -1.259 0.000
+    ## 7     Huron Superior -1.583 -2.088 -1.077 0.000
+    ## 8  Superior  Ontario -0.411 -0.920  0.099 0.175
+    ## 9  Michigan  Ontario -0.238 -0.739  0.263 0.683
+    ## 10 Michigan Superior  0.173 -0.333  0.678 0.879
+
+    ## # A tibble: 5 x 3
+    ## # Groups:   Lake [5]
+    ##   Lake     Period    Dens_mean
+    ##   <fct>    <chr>         <dbl>
+    ## 1 Ontario  2013-2019    194.  
+    ## 2 Superior 2013-2019    150.  
+    ## 3 Michigan 2013-2019    102.  
+    ## 4 Huron    2013-2019     17.2 
+    ## 5 Erie     2013-2019      2.58
+
+    ##       Lake1    Lake2   diff    lwr    upr p adj
+    ## 1      Erie  Ontario -5.417 -6.052 -4.781 0.000
+    ## 2      Erie Superior -5.251 -5.886 -4.616 0.000
+    ## 3      Erie Michigan -4.697 -5.333 -4.062 0.000
+    ## 4      Erie    Huron -2.904 -3.539 -2.269 0.000
+    ## 5     Huron  Ontario -2.512 -3.081 -1.944 0.000
+    ## 6     Huron Superior -2.347 -2.915 -1.779 0.000
+    ## 7     Huron Michigan -1.793 -2.362 -1.225 0.000
+    ## 8  Michigan  Ontario -0.719 -1.287 -0.151 0.006
+    ## 9  Michigan Superior -0.554 -1.122  0.015 0.060
+    ## 10 Superior  Ontario -0.165 -0.734  0.403 0.928
+
+    ## # A tibble: 15 x 4
+    ##    Lake     Period    Dens_mean DensTukey
+    ##    <fct>    <chr>         <dbl> <chr>    
+    ##  1 Michigan 1997-2004   246.    A        
+    ##  2 Superior 1997-2004   115.    AB       
+    ##  3 Ontario  1997-2004   109.    AB       
+    ##  4 Huron    1997-2004    94.2   B        
+    ##  5 Erie     1997-2004     1.6   C        
+    ##  6 Ontario  2005-2012   231.    A        
+    ##  7 Michigan 2005-2012   142.    A        
+    ##  8 Superior 2005-2012   127.    A        
+    ##  9 Huron    2005-2012    31.7   B        
+    ## 10 Erie     2005-2012     0.650 C        
+    ## 11 Ontario  2013-2019   194.    A        
+    ## 12 Superior 2013-2019   150.    AB       
+    ## 13 Michigan 2013-2019   102.    B        
+    ## 14 Huron    2013-2019    17.2   C        
+    ## 15 Erie     2013-2019     2.58  D
+
+    ## Warning: Removed 10 rows containing missing values (position_stack).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-1.png)<!-- -->
+
+    ## Warning: Removed 10 rows containing missing values (geom_col).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-2.png)<!-- -->
+
+    ## # A tibble: 5 x 3
+    ## # Groups:   Lake [5]
+    ##   Lake     Period    Biom_mean
+    ##   <fct>    <chr>         <dbl>
+    ## 1 Michigan 1997-2004    417.  
+    ## 2 Ontario  1997-2004    194.  
+    ## 3 Superior 1997-2004    126.  
+    ## 4 Huron    1997-2004    103.  
+    ## 5 Erie     1997-2004      1.87
+
+    ##       Lake1    Lake2   diff    lwr    upr p adj
+    ## 1      Erie Michigan -7.167 -8.675 -5.658 0.000
+    ## 2      Erie  Ontario -6.608 -8.135 -5.082 0.000
+    ## 3      Erie Superior -6.182 -7.690 -4.673 0.000
+    ## 4      Erie    Huron -5.871 -7.379 -4.362 0.000
+    ## 5     Huron Michigan -1.296 -2.554 -0.038 0.040
+    ## 6  Michigan Superior  0.985 -0.273  2.243 0.193
+    ## 7     Huron  Ontario -0.738 -2.018  0.543 0.491
+    ## 8  Michigan  Ontario  0.558 -0.722  1.838 0.737
+    ## 9  Superior  Ontario -0.427 -1.707  0.853 0.881
+    ## 10    Huron Superior -0.311 -1.569  0.947 0.957
+
+    ## # A tibble: 5 x 3
+    ## # Groups:   Lake [5]
+    ##   Lake     Period    Biom_mean
+    ##   <fct>    <chr>         <dbl>
+    ## 1 Ontario  2005-2012   517.   
+    ## 2 Michigan 2005-2012   259.   
+    ## 3 Superior 2005-2012   229.   
+    ## 4 Huron    2005-2012    56.5  
+    ## 5 Erie     2005-2012     0.747
+
+    ##       Lake1    Lake2   diff    lwr    upr p adj
+    ## 1      Erie  Ontario -7.631 -8.478 -6.783 0.000
+    ## 2      Erie Michigan -7.131 -7.973 -6.289 0.000
+    ## 3      Erie Superior -6.972 -7.826 -6.119 0.000
+    ## 4      Erie    Huron -5.172 -6.014 -4.330 0.000
+    ## 5     Huron  Ontario -2.459 -3.194 -1.723 0.000
+    ## 6     Huron Michigan -1.959 -2.689 -1.230 0.000
+    ## 7     Huron Superior -1.801 -2.543 -1.058 0.000
+    ## 8  Superior  Ontario -0.658 -1.407  0.090 0.113
+    ## 9  Michigan  Ontario -0.500 -1.235  0.236 0.334
+    ## 10 Michigan Superior  0.159 -0.583  0.901 0.976
+
+    ## # A tibble: 5 x 3
+    ## # Groups:   Lake [5]
+    ##   Lake     Period    Biom_mean
+    ##   <fct>    <chr>         <dbl>
+    ## 1 Ontario  2013-2019    312.  
+    ## 2 Superior 2013-2019    239.  
+    ## 3 Michigan 2013-2019    146.  
+    ## 4 Huron    2013-2019     27.3 
+    ## 5 Erie     2013-2019      1.76
+
+    ##       Lake1    Lake2   diff    lwr    upr p adj
+    ## 1      Erie  Ontario -6.598 -7.371 -5.826 0.000
+    ## 2      Erie Superior -6.426 -7.198 -5.653 0.000
+    ## 3      Erie Michigan -5.745 -6.518 -4.973 0.000
+    ## 4      Erie    Huron -3.902 -4.674 -3.130 0.000
+    ## 5     Huron  Ontario -2.696 -3.387 -2.006 0.000
+    ## 6     Huron Superior -2.524 -3.214 -1.833 0.000
+    ## 7     Huron Michigan -1.843 -2.534 -1.153 0.000
+    ## 8  Michigan  Ontario -0.853 -1.544 -0.162 0.008
+    ## 9  Michigan Superior -0.680 -1.371  0.010 0.056
+    ## 10 Superior  Ontario -0.173 -0.864  0.518 0.958
+
+    ## # A tibble: 15 x 4
+    ##    Lake     Period    Biom_mean BiomTukey
+    ##    <fct>    <chr>         <dbl> <chr>    
+    ##  1 Michigan 1997-2004   417.    A        
+    ##  2 Ontario  1997-2004   194.    AB       
+    ##  3 Superior 1997-2004   126.    AB       
+    ##  4 Huron    1997-2004   103.    B        
+    ##  5 Erie     1997-2004     1.87  C        
+    ##  6 Ontario  2005-2012   517.    A        
+    ##  7 Michigan 2005-2012   259.    A        
+    ##  8 Superior 2005-2012   229.    A        
+    ##  9 Huron    2005-2012    56.5   B        
+    ## 10 Erie     2005-2012     0.747 C        
+    ## 11 Ontario  2013-2019   312.    A        
+    ## 12 Superior 2013-2019   239.    AB       
+    ## 13 Michigan 2013-2019   146.    B        
+    ## 14 Huron    2013-2019    27.3   C        
+    ## 15 Erie     2013-2019     1.76  D
+
+    ## Warning: Removed 10 rows containing missing values (position_stack).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-3.png)<!-- -->
+
+    ## Warning: Removed 10 rows containing missing values (geom_col).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-5.png)<!-- -->
 
 <br>
 
@@ -1321,23 +1363,23 @@ summary(Michigan_Dens_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)      3.05756    0.07894  38.731  < 2e-16 ***
-    ## SeasonSummer     0.60984    0.06817   8.946  < 2e-16 ***
-    ## SeasonFall       0.33082    0.13456   2.459   0.0142 *  
-    ## GroupGLNPO_Zoop -0.19451    0.09101  -2.137   0.0330 *  
-    ## GroupNOAA       -0.44639    0.09983  -4.472 9.34e-06 ***
-    ## GroupUSGS       -0.10184    0.09890  -1.030   0.3036    
+    ## (Intercept)      3.01958    0.07517  40.168  < 2e-16 ***
+    ## SeasonSummer     0.59616    0.06882   8.662  < 2e-16 ***
+    ## SeasonFall       0.31976    0.12833   2.492   0.0130 *  
+    ## GroupGLNPO_Zoop -0.26831    0.08966  -2.993   0.0029 ** 
+    ## GroupNOAA       -0.43836    0.09511  -4.609 5.08e-06 ***
+    ## GroupUSGS       -0.08130    0.09510  -0.855   0.3930    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
     ##           edf Ref.df     F p-value    
-    ## s(Year) 7.898   8.65 31.73  <2e-16 ***
+    ## s(Year) 8.199  8.802 28.85  <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =  0.413   Deviance explained = 42.6%
-    ## -REML = 637.67  Scale est. = 0.46622   n = 593
+    ## R-sq.(adj) =  0.416   Deviance explained =   43%
+    ## -REML = 558.18  Scale est. = 0.4199    n = 542
 
 ``` r
 summary(Ontario_Dens_GAM)
@@ -1352,22 +1394,22 @@ summary(Ontario_Dens_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)      3.66704    0.23508  15.599  < 2e-16 ***
-    ## SeasonSummer     0.65274    0.11785   5.539 4.41e-08 ***
-    ## SeasonFall       0.03201    0.23985   0.133   0.8939    
-    ## GroupGLNPO_Mys  -0.20601    0.23426  -0.879   0.3795    
-    ## GroupGLNPO_Zoop -0.53779    0.22564  -2.383   0.0174 *  
+    ## (Intercept)      3.67411    0.24002  15.307  < 2e-16 ***
+    ## SeasonSummer     0.64388    0.12862   5.006 7.23e-07 ***
+    ## SeasonFall       0.02991    0.24478   0.122   0.9028    
+    ## GroupGLNPO_Mys  -0.20975    0.23575  -0.890   0.3739    
+    ## GroupGLNPO_Zoop -0.64576    0.22975  -2.811   0.0051 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df     F p-value    
-    ## s(Year) 2.963  3.674 17.57 1.7e-12 ***
+    ##           edf Ref.df    F  p-value    
+    ## s(Year) 2.949  3.655 18.5 5.05e-13 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =  0.155   Deviance explained = 16.4%
-    ## -REML =  837.3  Scale est. = 0.70501   n = 666
+    ## R-sq.(adj) =  0.167   Deviance explained = 17.6%
+    ## -REML = 795.09  Scale est. = 0.70301   n = 633
 
 ``` r
 summary(Huron_Dens_GAM)
@@ -1381,24 +1423,22 @@ summary(Huron_Dens_GAM)
     ## TransDens ~ s(Year, bs = "tp") + Season + Group
     ## 
     ## Parametric coefficients:
-    ##                   Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)        1.79766    0.09366  19.194  < 2e-16 ***
-    ## SeasonSummer       0.84199    0.09523   8.842  < 2e-16 ***
-    ## SeasonLate Summer  0.90373    0.11883   7.605 3.01e-13 ***
-    ## GroupGLNPO_Zoop   -0.42854    0.10684  -4.011 7.49e-05 ***
-    ## GroupUSGS          0.00000    0.00000      NA       NA    
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)      1.77011    0.09463  18.706  < 2e-16 ***
+    ## SeasonSummer     0.78448    0.10188   7.700 2.02e-13 ***
+    ## GroupGLNPO_Zoop -0.38509    0.11087  -3.473  0.00059 ***
+    ## GroupUSGS        0.09463    0.12355   0.766  0.44434    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df     F  p-value    
-    ## s(Year) 4.777  5.842 12.32 2.78e-12 ***
+    ##           edf Ref.df    F  p-value    
+    ## s(Year) 2.626  3.276 14.8 2.32e-09 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Rank: 13/14
-    ## R-sq.(adj) =  0.378   Deviance explained = 39.2%
-    ## -REML = 383.59  Scale est. = 0.53258   n = 338
+    ## R-sq.(adj) =  0.339   Deviance explained = 35.1%
+    ## -REML = 346.62  Scale est. = 0.54092   n = 305
 
 ``` r
 summary(Superior_Dens_GAM)
@@ -1413,18 +1453,20 @@ summary(Superior_Dens_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)      3.24325    0.06311  51.387  < 2e-16 ***
-    ## SeasonSummer     0.41541    0.05923   7.013 8.04e-12 ***
-    ## GroupGLNPO_Zoop -0.36876    0.06905  -5.341 1.44e-07 ***
+    ## (Intercept)      3.23174    0.06321  51.127  < 2e-16 ***
+    ## SeasonSummer     0.44473    0.06174   7.203 2.74e-12 ***
+    ## GroupGLNPO_Zoop -0.39190    0.07068  -5.545 5.21e-08 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df     F p-value
-    ## s(Year) 3.127  3.884 1.752   0.194
+    ##           edf Ref.df     F p-value  
+    ## s(Year) 4.233  5.214 2.343  0.0384 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =  0.166   Deviance explained = 17.5%
-    ## -REML = 479.39  Scale est. = 0.41223   n = 482
+    ## R-sq.(adj) =  0.201   Deviance explained = 21.2%
+    ## -REML = 421.42  Scale est. = 0.3993    n = 428
 
 ``` r
 summary(Erie_Dens_GAM)
@@ -1439,20 +1481,20 @@ summary(Erie_Dens_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)       0.3470     0.1498   2.316 0.022734 *  
-    ## SeasonSummer      0.5302     0.1307   4.057 0.000102 ***
-    ## GroupGLNPO_Zoop  -0.3437     0.1466  -2.344 0.021143 *  
+    ## (Intercept)       0.3541     0.1513   2.341 0.021767 *  
+    ## SeasonSummer      0.5694     0.1405   4.054 0.000118 ***
+    ## GroupGLNPO_Zoop  -0.3424     0.1512  -2.265 0.026283 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
     ##           edf Ref.df     F p-value  
-    ## s(Year) 2.245  2.796 3.838  0.0231 *
+    ## s(Year) 2.358  2.916 2.653  0.0772 .
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =  0.241   Deviance explained = 27.3%
-    ## -REML = 98.107  Scale est. = 0.37787   n = 100
+    ## R-sq.(adj) =  0.246   Deviance explained = 28.6%
+    ## -REML = 82.931  Scale est. = 0.3766    n = 84
 
 ``` r
 #
@@ -1469,23 +1511,23 @@ summary(Michigan_Biom_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)      3.72956    0.10083  36.987  < 2e-16 ***
-    ## SeasonSummer     0.75242    0.08918   8.437 3.44e-16 ***
-    ## SeasonFall       0.67718    0.17304   3.913 0.000103 ***
-    ## GroupGLNPO_Zoop -0.89800    0.11821  -7.596 1.49e-13 ***
-    ## GroupNOAA       -0.37427    0.12750  -2.935 0.003482 ** 
-    ## GroupUSGS        0.11661    0.14002   0.833 0.405331    
+    ## (Intercept)      3.63909    0.09298  39.138  < 2e-16 ***
+    ## SeasonSummer     0.67944    0.08527   7.968 1.23e-14 ***
+    ## SeasonFall       0.61626    0.16016   3.848 0.000136 ***
+    ## GroupGLNPO_Zoop -1.06322    0.11257  -9.445  < 2e-16 ***
+    ## GroupNOAA       -0.26180    0.11770  -2.224 0.026612 *  
+    ## GroupUSGS        0.15128    0.13047   1.159 0.246855    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##         edf Ref.df    F p-value    
-    ## s(Year) 8.4  8.885 37.1  <2e-16 ***
+    ##           edf Ref.df     F p-value    
+    ## s(Year) 8.477  8.912 32.77  <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =   0.45   Deviance explained = 46.5%
-    ## -REML = 688.02  Scale est. = 0.75483   n = 520
+    ## R-sq.(adj) =  0.466   Deviance explained = 48.1%
+    ## -REML = 602.79  Scale est. = 0.64227   n = 483
 
 ``` r
 summary(Ontario_Biom_GAM)
@@ -1500,22 +1542,22 @@ summary(Ontario_Biom_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)       4.4599     0.3134  14.231  < 2e-16 ***
-    ## SeasonSummer      1.1008     0.1602   6.871  1.5e-11 ***
-    ## SeasonFall        0.6877     0.3197   2.151 0.031848 *  
-    ## GroupGLNPO_Mys   -0.2594     0.3112  -0.834 0.404798    
-    ## GroupGLNPO_Zoop  -1.0055     0.3008  -3.343 0.000876 ***
+    ## (Intercept)       4.5801     0.3192  14.351  < 2e-16 ***
+    ## SeasonSummer      0.9226     0.1699   5.430 8.07e-08 ***
+    ## SeasonFall        0.5894     0.3254   1.811   0.0706 .  
+    ## GroupGLNPO_Mys   -0.3406     0.3139  -1.085   0.2783    
+    ## GroupGLNPO_Zoop  -1.3354     0.3058  -4.366 1.48e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df     F p-value    
-    ## s(Year) 3.309  4.093 34.33  <2e-16 ***
+    ##           edf Ref.df    F p-value    
+    ## s(Year) 3.684  4.547 29.7  <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =  0.369   Deviance explained = 37.6%
-    ## -REML = 1004.2  Scale est. = 1.2281    n = 655
+    ## R-sq.(adj) =  0.385   Deviance explained = 39.2%
+    ## -REML = 970.23  Scale est. = 1.2249    n = 633
 
 ``` r
 summary(Huron_Biom_GAM)
@@ -1529,24 +1571,22 @@ summary(Huron_Biom_GAM)
     ## TransBiom ~ s(Year, bs = "tp") + Season + Group
     ## 
     ## Parametric coefficients:
-    ##                   Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)         2.2507     0.1062  21.187  < 2e-16 ***
-    ## SeasonSummer        0.8411     0.1100   7.647 2.89e-13 ***
-    ## SeasonLate Summer   0.0000     0.0000      NA       NA    
-    ## GroupGLNPO_Zoop    -1.0340     0.1225  -8.442 1.40e-15 ***
-    ## GroupUSGS           1.3376     0.1446   9.250  < 2e-16 ***
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)       2.2269     0.1063  20.943  < 2e-16 ***
+    ## SeasonSummer      0.7755     0.1146   6.764 8.16e-11 ***
+    ## GroupGLNPO_Zoop  -0.9986     0.1259  -7.931 5.62e-14 ***
+    ## GroupUSGS         0.5338     0.1461   3.653  0.00031 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df    F p-value    
-    ## s(Year) 7.163  8.134 14.9  <2e-16 ***
+    ##           edf Ref.df     F  p-value    
+    ## s(Year) 7.278  8.249 11.54 1.33e-14 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Rank: 13/14
-    ## R-sq.(adj) =    0.5   Deviance explained = 51.7%
-    ## -REML = 393.75  Scale est. = 0.68519   n = 308
+    ## R-sq.(adj) =  0.487   Deviance explained = 50.5%
+    ## -REML = 362.15  Scale est. = 0.67072   n = 284
 
 ``` r
 summary(Superior_Biom_GAM)
@@ -1561,20 +1601,20 @@ summary(Superior_Biom_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)      4.03217    0.07133  56.526  < 2e-16 ***
-    ## SeasonSummer     0.46249    0.06776   6.825 2.75e-11 ***
-    ## GroupGLNPO_Zoop -1.10971    0.07866 -14.108  < 2e-16 ***
+    ## (Intercept)      3.94675    0.06816   57.91  < 2e-16 ***
+    ## SeasonSummer     0.51353    0.06652    7.72 8.65e-14 ***
+    ## GroupGLNPO_Zoop -1.15087    0.07665  -15.02  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df     F p-value  
-    ## s(Year) 4.807  5.862 2.885  0.0106 *
+    ##           edf Ref.df     F  p-value    
+    ## s(Year) 6.976  8.042 9.752 1.77e-12 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## R-sq.(adj) =  0.368   Deviance explained = 37.7%
-    ## -REML = 531.48  Scale est. = 0.52841   n = 473
+    ## R-sq.(adj) =    0.5   Deviance explained = 51.1%
+    ## -REML = 457.98  Scale est. = 0.46186   n = 428
 
 ``` r
 summary(Erie_Biom_GAM)
@@ -1589,20 +1629,18 @@ summary(Erie_Biom_GAM)
     ## 
     ## Parametric coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)       0.5003     0.1330   3.762 0.000291 ***
-    ## SeasonSummer      0.2756     0.1159   2.378 0.019405 *  
-    ## GroupGLNPO_Zoop  -0.4323     0.1301  -3.322 0.001270 ** 
+    ## (Intercept)       0.5077     0.1393   3.645 0.000477 ***
+    ## SeasonSummer      0.2957     0.1292   2.288 0.024799 *  
+    ## GroupGLNPO_Zoop  -0.4240     0.1390  -3.051 0.003109 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##           edf Ref.df     F p-value  
-    ## s(Year) 2.054   2.56 2.576  0.0878 .
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##          edf Ref.df     F p-value
+    ## s(Year) 2.01  2.492 1.786    0.21
     ## 
-    ## R-sq.(adj) =  0.192   Deviance explained = 22.5%
-    ## -REML = 86.513  Scale est. = 0.29807   n = 100
+    ## R-sq.(adj) =  0.175   Deviance explained = 21.5%
+    ## -REML = 76.006  Scale est. = 0.31988   n = 84
 
 <br> <br>
 
@@ -1667,6 +1705,78 @@ summary(Erie_Biom_GAM)
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-5.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-6.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-7.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20cross-lake%20seasonal%20panels-8.png)<!-- -->
 
+    ## # A tibble: 7 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1995,2001) 221.  415.  318. 
+    ## 2 [2001,2003) 280.  442.  370. 
+    ## 3 [2003,2008) 192.  444.  294. 
+    ## 4 [2008,2012) 132.  191.  162. 
+    ## 5 [2012,2015) 133.  182.  159. 
+    ## 6 [2015,2019)  41.8 182.  115. 
+    ## 7 [2019,2020)  39.3  39.3  39.3
+
+    ## # A tibble: 7 x 4
+    ##   Trend         min    max   mean
+    ##   <fct>       <dbl>  <dbl>  <dbl>
+    ## 1 [1995,2001) 341.   734.   520. 
+    ## 2 [2001,2003) 761.  1676.  1263. 
+    ## 3 [2003,2008) 413.  1695.   935. 
+    ## 4 [2008,2012) 257.   410.   327. 
+    ## 5 [2012,2015) 259.   384.   326. 
+    ## 6 [2015,2019)  87.2  382.   235. 
+    ## 7 [2019,2020)  82.4   82.4   82.4
+
+    ## # A tibble: 3 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1997,2002)  97.7 149.  123. 
+    ## 2 [2002,2008)  46.7  96.8  69.6
+    ## 3 [2008,2020)  25.6  46.2  32.7
+
+    ## # A tibble: 3 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1997,2002) 157.  316.  193. 
+    ## 2 [2002,2008)  64.8 448.  273. 
+    ## 3 [2008,2020)  38.7  67.5  58.2
+
+    ## # A tibble: 4 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1997,1998)  131.  141.  136.
+    ## 2 [1998,2005)  142.  185.  172.
+    ## 3 [2005,2014)  166.  214.  184.
+    ## 4 [2014,2020)  163.  214.  193.
+
+    ## # A tibble: 4 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1997,1998)  125.  148.  136.
+    ## 2 [1998,2003)  152.  609.  373.
+    ## 3 [2003,2005)  480.  608.  555.
+    ## 4 [2005,2020)  323.  472.  407.
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##  0.2685  0.4007  0.4874  0.7149  0.6384  2.9340
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##  0.2428  0.2814  0.3266  0.4108  0.3901  1.2471
+
+    ## # A tibble: 3 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1990,1991)  566.  595.  581.
+    ## 2 [1991,2001)  306.  563.  422.
+    ## 3 [2001,2020)  243.  304.  254.
+
+    ## # A tibble: 3 x 4
+    ##   Trend         min   max  mean
+    ##   <fct>       <dbl> <dbl> <dbl>
+    ## 1 [1990,1991) 1966. 2194. 2079.
+    ## 2 [1991,2001)  737. 1942. 1161.
+    ## 3 [2001,2020)  527.  734.  598.
+
 #### …And versions with data plotted for supplementary figure(s):
 
 The plot below shows the same above GAM fits superimposed on
@@ -1691,35 +1801,37 @@ GAM model fits are not plotted with these data.
 
 #### Zooplankton net Mysid Lengths Data
 
-    ## # A tibble: 15,934 x 2
-    ##    Visit   Length_mm
-    ##    <chr>       <dbl>
-    ##  1 M032G00       7.9
-    ##  2 M032G00      10.2
-    ##  3 M032G00       7.9
-    ##  4 M032G00      10.3
-    ##  5 M032G00       5.7
-    ##  6 M032G00       5.3
-    ##  7 M032G00       9.6
-    ##  8 M032G00       9.2
-    ##  9 M032G00      13.1
-    ## 10 M032G00      18.8
-    ## # ... with 15,924 more rows
+    ## # A tibble: 9,351 x 5
+    ## # Groups:   Visit, Lake, Year, Season [597]
+    ##    Lake   Year Season Visit   Length_mm
+    ##    <fct> <dbl> <chr>  <chr>       <dbl>
+    ##  1 Erie   2001 Summer E009G01      3.67
+    ##  2 Erie   2001 Summer E009G01      4.01
+    ##  3 Erie   2001 Summer E009G01      4.84
+    ##  4 Erie   2008 Summer E009G08      3.50
+    ##  5 Erie   2015 Summer E009G15      3.43
+    ##  6 Erie   2015 Summer E009G15      3.47
+    ##  7 Erie   2018 Summer E009G18      3.44
+    ##  8 Erie   2018 Summer E009G18      3.56
+    ##  9 Erie   2018 Summer E009G18      3.46
+    ## 10 Erie   2003 Summer E063G03      5.15
+    ## # ... with 9,341 more rows
 
-    ## # A tibble: 35,750 x 5
-    ##    Visit   Length_mm Lake      Year Season
-    ##    <chr>       <dbl> <fct>    <int> <fct> 
-    ##  1 M032G00       7.9 Michigan  2000 Summer
-    ##  2 M032G00      10.2 Michigan  2000 Summer
-    ##  3 M032G00       7.9 Michigan  2000 Summer
-    ##  4 M032G00      10.3 Michigan  2000 Summer
-    ##  5 M032G00       5.7 Michigan  2000 Summer
-    ##  6 M032G00       5.3 Michigan  2000 Summer
-    ##  7 M032G00       9.6 Michigan  2000 Summer
-    ##  8 M032G00       9.2 Michigan  2000 Summer
-    ##  9 M032G00      13.1 Michigan  2000 Summer
-    ## 10 M032G00      18.8 Michigan  2000 Summer
-    ## # ... with 35,740 more rows
+    ## # A tibble: 9,351 x 8
+    ## # Groups:   Visit [597]
+    ##    Lake.x Year.x Season.x Visit   Length_mm Lake.y Year.y Season.y
+    ##    <fct>   <dbl> <chr>    <chr>       <dbl> <fct>   <int> <fct>   
+    ##  1 Erie     2001 Summer   E009G01      3.67 Erie     2001 Summer  
+    ##  2 Erie     2001 Summer   E009G01      4.01 Erie     2001 Summer  
+    ##  3 Erie     2001 Summer   E009G01      4.84 Erie     2001 Summer  
+    ##  4 Erie     2008 Summer   E009G08      3.50 Erie     2008 Summer  
+    ##  5 Erie     2015 Summer   E009G15      3.43 Erie     2015 Summer  
+    ##  6 Erie     2015 Summer   E009G15      3.47 Erie     2015 Summer  
+    ##  7 Erie     2018 Summer   E009G18      3.44 Erie     2018 Summer  
+    ##  8 Erie     2018 Summer   E009G18      3.56 Erie     2018 Summer  
+    ##  9 Erie     2018 Summer   E009G18      3.46 Erie     2018 Summer  
+    ## 10 Erie     2003 Summer   E063G03      5.15 Erie     2003 Summer  
+    ## # ... with 9,341 more rows
 
 #### GLNPO Mysid Net Length Data
 
@@ -1751,31 +1863,31 @@ GAM model fits are not plotted with these data.
     ## # A tibble: 220,631 x 2
     ##    Visit    Length
     ##    <chr>     <dbl>
-    ##  1 06GB50M5    2.7
-    ##  2 06GB50M5    2.1
-    ##  3 06GB50M5    2.9
-    ##  4 06GB50M5    2.1
-    ##  5 06GB50M5    2.4
-    ##  6 06GB50M5    2.6
-    ##  7 06GB50M5    2.5
+    ##  1 06GB50M5    2.4
+    ##  2 06GB50M5    2.4
+    ##  3 06GB50M5    2.4
+    ##  4 06GB50M5    2.4
+    ##  5 06GB50M5    2.1
+    ##  6 06GB50M5    2.3
+    ##  7 06GB50M5    2.6
     ##  8 06GB50M5    2.4
-    ##  9 06GB50M5    2.6
-    ## 10 06GB50M5    2.7
+    ##  9 06GB50M5    2.2
+    ## 10 06GB50M5    2.1
     ## # ... with 220,621 more rows
 
     ## # A tibble: 215,785 x 5
     ##    Visit    Length Lake   Year Season
     ##    <chr>     <dbl> <fct> <int> <fct> 
-    ##  1 06GB50M5    2.7 Huron  2006 Summer
-    ##  2 06GB50M5    2.1 Huron  2006 Summer
-    ##  3 06GB50M5    2.9 Huron  2006 Summer
-    ##  4 06GB50M5    2.1 Huron  2006 Summer
-    ##  5 06GB50M5    2.4 Huron  2006 Summer
-    ##  6 06GB50M5    2.6 Huron  2006 Summer
-    ##  7 06GB50M5    2.5 Huron  2006 Summer
+    ##  1 06GB50M5    2.4 Huron  2006 Summer
+    ##  2 06GB50M5    2.4 Huron  2006 Summer
+    ##  3 06GB50M5    2.4 Huron  2006 Summer
+    ##  4 06GB50M5    2.4 Huron  2006 Summer
+    ##  5 06GB50M5    2.1 Huron  2006 Summer
+    ##  6 06GB50M5    2.3 Huron  2006 Summer
+    ##  7 06GB50M5    2.6 Huron  2006 Summer
     ##  8 06GB50M5    2.4 Huron  2006 Summer
-    ##  9 06GB50M5    2.6 Huron  2006 Summer
-    ## 10 06GB50M5    2.7 Huron  2006 Summer
+    ##  9 06GB50M5    2.2 Huron  2006 Summer
+    ## 10 06GB50M5    2.1 Huron  2006 Summer
     ## # ... with 215,775 more rows
 
 #### Wrangle USGS and NOAA Individual Data
@@ -1786,112 +1898,186 @@ GAM model fits are not plotted with these data.
 
 ### Brooding Females Data Plotting and Analysis
 
+    ## # A tibble: 5 x 7
+    ## # Groups:   Lake, Season [5]
+    ##   Lake         Season  N_BF BF_Length BF_Length_2SE Brood_Count Brood_Count_2SE
+    ##   <fct>        <fct>  <int>     <dbl>         <dbl>       <dbl>           <dbl>
+    ## 1 Eastern_Erie Spring     5      15.5         0.506        25.4            5.12
+    ## 2 Ontario      Spring    NA      14.3        NA            16.9           NA   
+    ## 3 Michigan     Spring    NA      14.5        NA            16.5           NA   
+    ## 4 Huron        Spring    NA      14.2        NA            14.3           NA   
+    ## 5 Superior     Spring    NA      15.0        NA            13.3           NA
+
 #### Brooding Females - all groups and seasons
+
+    ## Warning: Removed 21 rows containing missing values (geom_point).
+
+    ## Warning: Removed 2 row(s) containing missing values (geom_path).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20across%20all%20lakes,%20seasons,%20and%20groups-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20across%20all%20lakes,%20seasons,%20and%20groups-2.png)<!-- -->
 
-    ## # A tibble: 13 x 8
+    ## # A tibble: 15 x 8
     ## # Groups:   Lake, Season [11]
     ##    Lake     Season Group     Brood_Count_Mean Brood_Count_SE BF_Length_Mean
-    ##    <chr>    <fct>  <chr>                <dbl>          <dbl>          <dbl>
+    ##    <fct>    <fct>  <chr>                <dbl>          <dbl>          <dbl>
     ##  1 Erie     Spring GLNPO_Mys             26.2          1.93            15.4
     ##  2 Michigan Fall   NOAA                  21.7          0.261           17.1
-    ##  3 Ontario  Spring GLNPO_Mys             15.9          0.331           14.0
-    ##  4 Michigan Spring GLNPO_Mys             15.9          0.234           14.7
-    ##  5 Michigan Summer NOAA                  18.1          0.382           16.7
-    ##  6 Huron    Summer GLNPO_Mys             15.3          0.763           14.9
-    ##  7 Michigan Winter NOAA                  15.0          0.299           14.9
-    ##  8 Michigan Summer GLNPO_Mys             15.5          0.358           15.7
+    ##  3 Ontario  Spring GLNPO_Mys             15.9          0.331           14.2
+    ##  4 Michigan Summer NOAA                  18.1          0.382           16.5
+    ##  5 Michigan Spring GLNPO_Mys             15.9          0.234           14.6
+    ##  6 Huron    Summer GLNPO_Mys             15.3          0.763           14.4
+    ##  7 Michigan Winter NOAA                  15.0          0.299           15.0
+    ##  8 Michigan Summer GLNPO_Mys             15.5          0.358           15.5
     ##  9 Michigan Spring NOAA                  14.6          0.214           15.0
-    ## 10 Huron    Spring GLNPO_Mys             13.9          0.290           14.7
-    ## 11 Ontario  Summer GLNPO_Mys             14.8          1.30            15.8
-    ## 12 Superior Summer GLNPO_Mys             13.0          0.409           15.6
+    ## 10 Huron    Spring GLNPO_Mys             13.9          0.290           14.6
+    ## 11 Ontario  Summer GLNPO_Mys             14.8          1.30            16.2
+    ## 12 Superior Summer GLNPO_Mys             13.0          0.409           15.2
     ## 13 Superior Spring GLNPO_Mys             12.4          0.165           14.9
+    ## 14 Michigan Summer USGS                 NaN           NA               15.4
+    ## 15 Huron    Summer USGS                 NaN           NA               12.7
     ##    BF_Length_SE Brood_per_mm
     ##           <dbl>        <dbl>
     ##  1       0.148         1.69 
-    ##  2       0.0417        1.27 
-    ##  3       0.0580        1.14 
-    ##  4       0.0671        1.08 
-    ##  5       0.0734        1.08 
-    ##  6       0.240         1.03 
-    ##  7       0.0828        1.00 
-    ##  8       0.111         0.987
-    ##  9       0.0388        0.978
-    ## 10       0.0673        0.947
-    ## 11       0.669         0.936
-    ## 12       0.211         0.833
-    ## 13       0.0552        0.833
+    ##  2       0.0387        1.27 
+    ##  3       0.0520        1.12 
+    ##  4       0.0765        1.10 
+    ##  5       0.0660        1.09 
+    ##  6       0.227         1.07 
+    ##  7       0.0781        1.00 
+    ##  8       0.0904        1.00 
+    ##  9       0.0424        0.976
+    ## 10       0.0533        0.953
+    ## 11       0.151         0.911
+    ## 12       0.103         0.855
+    ## 13       0.0437        0.830
+    ## 14      NA           NaN    
+    ## 15      NA           NaN
 
     ## Warning: Ignoring unknown aesthetics: linestyle
 
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 982 rows containing non-finite values (stat_smooth).
 
-    ## Warning: Removed 2 rows containing missing values (geom_point).
+    ## Warning: Removed 982 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20across%20all%20lakes,%20seasons,%20and%20groups-3.png)<!-- -->
 
 #### Brooding females - GLNPO Spring across lakes
 
-![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-2.png)<!-- -->
+    ## Warning: Removed 578 rows containing non-finite values (stat_smooth).
 
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 578 rows containing missing values (geom_point).
 
-    ## Warning: Removed 2 rows containing missing values (geom_point).
+![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-1.png)<!-- -->
+
+    ## Warning: Removed 578 rows containing non-finite values (stat_smooth).
+
+    ## Warning in qt((1 - level)/2, df): NaNs produced
+    
+    ## Warning in qt((1 - level)/2, df): NaNs produced
+
+    ## Warning: Removed 578 rows containing missing values (geom_point).
+
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+    
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
+![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-2.png)<!-- -->
+
+    ## Warning: Removed 31 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 31 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-3.png)<!-- -->
-
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
-
-    ## Warning in qt((1 - level)/2, df): NaNs produced
-    
-    ## Warning in qt((1 - level)/2, df): NaNs produced
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
-    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
-    ## Inf
-    
-    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
-    ## Inf
-
-![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-4.png)<!-- -->
 
     ## # A tibble: 5 x 8
     ## # Groups:   Lake, Season [5]
     ##   Lake     Season Group     Brood_Count_Mean Brood_Count_SE BF_Length_Mean
-    ##   <chr>    <fct>  <chr>                <dbl>          <dbl>          <dbl>
+    ##   <fct>    <fct>  <chr>                <dbl>          <dbl>          <dbl>
     ## 1 Erie     Spring GLNPO_Mys             26.2          1.93            15.4
-    ## 2 Ontario  Spring GLNPO_Mys             15.9          0.331           14.0
-    ## 3 Michigan Spring GLNPO_Mys             15.9          0.234           14.7
-    ## 4 Huron    Spring GLNPO_Mys             13.9          0.290           14.7
+    ## 2 Ontario  Spring GLNPO_Mys             15.9          0.331           14.2
+    ## 3 Michigan Spring GLNPO_Mys             15.9          0.234           14.6
+    ## 4 Huron    Spring GLNPO_Mys             13.9          0.290           14.6
     ## 5 Superior Spring GLNPO_Mys             12.4          0.165           14.9
     ##   BF_Length_SE Brood_per_mm
     ##          <dbl>        <dbl>
     ## 1       0.148         1.69 
-    ## 2       0.0580        1.14 
-    ## 3       0.0671        1.08 
-    ## 4       0.0673        0.947
-    ## 5       0.0552        0.833
+    ## 2       0.0520        1.12 
+    ## 3       0.0660        1.09 
+    ## 4       0.0533        0.953
+    ## 5       0.0437        0.830
 
     ## # A tibble: 5 x 8
     ## # Groups:   Lake, Season [5]
     ##   Lake  Season Group Brood_Count_Mean Brood_Count_SE BF_Length_Mean BF_Length_SE
-    ##   <chr> <fct>  <chr>            <dbl>          <dbl>          <dbl>        <dbl>
+    ##   <fct> <fct>  <chr>            <dbl>          <dbl>          <dbl>        <dbl>
     ## 1 Erie  Spring GLNP~             26.2          1.93            15.4       0.148 
-    ## 2 Onta~ Spring GLNP~             15.9          0.331           14.0       0.0580
-    ## 3 Mich~ Spring GLNP~             15.9          0.234           14.7       0.0671
-    ## 4 Huron Spring GLNP~             13.9          0.290           14.7       0.0673
-    ## 5 Supe~ Spring GLNP~             12.4          0.165           14.9       0.0552
+    ## 2 Onta~ Spring GLNP~             15.9          0.331           14.2       0.0520
+    ## 3 Mich~ Spring GLNP~             15.9          0.234           14.6       0.0660
+    ## 4 Huron Spring GLNP~             13.9          0.290           14.6       0.0533
+    ## 5 Supe~ Spring GLNP~             12.4          0.165           14.9       0.0437
     ## # ... with 1 more variable: Brood_per_mm <dbl>
+
+    ## # A tibble: 5 x 8
+    ## # Groups:   Lake, Season [5]
+    ##   Lake     Season Group     Brood_Count_Mean Brood_Count_SE BF_Length_Mean
+    ##   <fct>    <fct>  <chr>                <dbl>          <dbl>          <dbl>
+    ## 1 Erie     Spring GLNPO_Mys             24.2          3.36            15.7
+    ## 2 Ontario  Spring GLNPO_Mys             17.5          0.249           14.3
+    ## 3 Michigan Spring GLNPO_Mys             16.4          0.389           14.9
+    ## 4 Huron    Spring GLNPO_Mys             13.7          0.702           14.8
+    ## 5 Superior Spring GLNPO_Mys             13.2          0.251           15.0
+    ##   BF_Length_SE Brood_per_mm
+    ##          <dbl>        <dbl>
+    ## 1       0.151         1.55 
+    ## 2       0.0820        1.22 
+    ## 3       0.0982        1.10 
+    ## 4       0.0933        0.929
+    ## 5       0.0579        0.880
+
+    ## # A tibble: 5 x 8
+    ## # Groups:   Lake, Season [5]
+    ##   Lake  Season Group Brood_Count_Mean Brood_Count_SE BF_Length_Mean BF_Length_SE
+    ##   <fct> <fct>  <chr>            <dbl>          <dbl>          <dbl>        <dbl>
+    ## 1 Erie  Spring GLNP~             24.2          3.36            15.7       0.151 
+    ## 2 Onta~ Spring GLNP~             17.5          0.249           14.3       0.0820
+    ## 3 Mich~ Spring GLNP~             16.4          0.389           14.9       0.0982
+    ## 4 Huron Spring GLNP~             13.7          0.702           14.8       0.0933
+    ## 5 Supe~ Spring GLNP~             13.2          0.251           15.0       0.0579
+    ## # ... with 1 more variable: Brood_per_mm <dbl>
+
+    ## # A tibble: 2 x 6
+    ##   Season Brood_Count_Mean Brood_Count_SE BF_Length_Mean BF_Length_SE
+    ##   <fct>             <dbl>          <dbl>          <dbl>        <dbl>
+    ## 1 Fall               21.7          0.261           17.1       0.0387
+    ## 2 Spring             14.6          0.214           15.0       0.0424
+    ##   Brood_per_mm
+    ##          <dbl>
+    ## 1        1.27 
+    ## 2        0.976
+
+    ## Warning: Removed 6 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 6 rows containing missing values (geom_point).
+
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-5.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-6.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20brooding%20females%20all%20lakes,%20in%20spring%20by%20GLNPO-7.png)<!-- -->
 
 #### Brooding females - NOAA Spring-Fall in Michigan
 
+    ## Warning: Removed 19 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 19 rows containing missing values (geom_point).
+
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20NOAA%20brooding%20females%20Michigan%20in%20all%20seasons-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20NOAA%20brooding%20females%20Michigan%20in%20all%20seasons-2.png)<!-- -->
 
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 979 rows containing non-finite values (stat_smooth).
 
-    ## Warning: Removed 2 rows containing missing values (geom_point).
+    ## Warning: Removed 979 rows containing missing values (geom_point).
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/plot%20tibble%20of%20NOAA%20brooding%20females%20Michigan%20in%20all%20seasons-3.png)<!-- -->
 
@@ -1899,20 +2085,20 @@ GAM model fits are not plotted with these data.
     ## # Groups:   Group [2]
     ##   Group     Season Brood_Count_Mean Brood_Count_SE BF_Length_Mean BF_Length_SE
     ##   <chr>     <fct>             <dbl>          <dbl>          <dbl>        <dbl>
-    ## 1 GLNPO_Mys Spring             15.1         0.0903           14.6       0.0160
-    ## 2 GLNPO_Mys Summer             14.5         0.137            15.5       0.0574
-    ## 3 NOAA      Fall               21.7         0.261            17.1       0.0417
-    ## 4 NOAA      Summer             18.1         0.382            16.7       0.0734
-    ## 5 NOAA      Winter             15.0         0.299            14.9       0.0828
-    ## 6 NOAA      Spring             14.6         0.214            15.0       0.0388
+    ## 1 GLNPO_Mys Spring             15.1         0.0903           14.6       0.0136
+    ## 2 GLNPO_Mys Summer             14.5         0.137            15.3       0.0344
+    ## 3 NOAA      Fall               21.7         0.261            17.1       0.0387
+    ## 4 NOAA      Summer             18.1         0.382            16.5       0.0765
+    ## 5 NOAA      Winter             15.0         0.299            15.0       0.0781
+    ## 6 NOAA      Spring             14.6         0.214            15.0       0.0424
     ##   Brood_per_mm
     ##          <dbl>
     ## 1        1.04 
-    ## 2        0.937
+    ## 2        0.947
     ## 3        1.27 
-    ## 4        1.08 
+    ## 4        1.10 
     ## 5        1.00 
-    ## 6        0.978
+    ## 6        0.976
 
 #### Brooding Female Analyses
 
@@ -1927,7 +2113,7 @@ GAM model fits are not plotted with these data.
     ## 
     ## Residual standard error: 4.646241
     ## Estimated effects may be unbalanced
-    ## 2 observations deleted due to missingness
+    ## 578 observations deleted due to missingness
 
     ##               Df Sum Sq Mean Sq F value Pr(>F)    
     ## Lake           4   3632     908  42.061 <2e-16 ***
@@ -1936,7 +2122,7 @@ GAM model fits are not plotted with these data.
     ## Residuals   1085  23422      22                   
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 2 observations deleted due to missingness
+    ## 578 observations deleted due to missingness
 
     ## 
     ## Call:
@@ -1950,18 +2136,18 @@ GAM model fits are not plotted with these data.
     ## Coefficients:
     ##                     Estimate Std. Error t value Pr(>|t|)
     ## (Intercept)           9.2866    63.8517   0.145    0.884
-    ## LakeHuron           -20.5549    64.1306  -0.321    0.749
-    ## LakeMichigan        -18.0450    63.9048  -0.282    0.778
     ## LakeOntario         -14.4146    63.9111  -0.226    0.822
+    ## LakeMichigan        -18.0450    63.9048  -0.282    0.778
+    ## LakeHuron           -20.5549    64.1306  -0.321    0.749
     ## LakeSuperior        -20.1932    63.8865  -0.316    0.752
     ## Length                1.0370     4.1070   0.252    0.801
-    ## LakeHuron:Length      0.7621     4.1282   0.185    0.854
-    ## LakeMichigan:Length   0.6739     4.1107   0.164    0.870
     ## LakeOntario:Length    0.5085     4.1115   0.124    0.902
+    ## LakeMichigan:Length   0.6739     4.1107   0.164    0.870
+    ## LakeHuron:Length      0.7621     4.1282   0.185    0.854
     ## LakeSuperior:Length   0.5693     4.1094   0.139    0.890
     ## 
     ## Residual standard error: 4.646 on 1085 degrees of freedom
-    ##   (2 observations deleted due to missingness)
+    ##   (578 observations deleted due to missingness)
     ## Multiple R-squared:  0.3064, Adjusted R-squared:  0.3007 
     ## F-statistic: 53.27 on 9 and 1085 DF,  p-value: < 2.2e-16
 
@@ -1991,7 +2177,7 @@ GAM model fits are not plotted with these data.
     ## 
     ## Residual standard error: 4.639024
     ## Estimated effects may be unbalanced
-    ## 2 observations deleted due to missingness
+    ## 578 observations deleted due to missingness
 
     ## Call:
     ##    aov(formula = Embryos ~ Lake + Length, data = Mysids_BroodingFemales %>% 
@@ -2004,7 +2190,7 @@ GAM model fits are not plotted with these data.
     ## 
     ## Residual standard error: 4.639024
     ## Estimated effects may be unbalanced
-    ## 2 observations deleted due to missingness
+    ## 578 observations deleted due to missingness
 
     ##               Df Sum Sq Mean Sq F value Pr(>F)    
     ## Lake           4   3632     908   42.19 <2e-16 ***
@@ -2012,7 +2198,7 @@ GAM model fits are not plotted with these data.
     ## Residuals   1089  23436      22                   
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 2 observations deleted due to missingness
+    ## 578 observations deleted due to missingness
 
     ## 
     ## Call:
@@ -2026,20 +2212,20 @@ GAM model fits are not plotted with these data.
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
     ## (Intercept)    0.06308    2.52288   0.025 0.980058    
-    ## LakeHuron     -8.93372    2.14886  -4.157 3.47e-05 ***
-    ## LakeMichigan  -7.63451    2.09768  -3.640 0.000286 ***
     ## LakeOntario   -6.40320    2.09711  -3.053 0.002318 ** 
+    ## LakeMichigan  -7.63451    2.09768  -3.640 0.000286 ***
+    ## LakeHuron     -8.93372    2.14886  -4.157 3.47e-05 ***
     ## LakeSuperior -11.33516    2.08526  -5.436 6.73e-08 ***
     ## Length         1.63056    0.09238  17.650  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Residual standard error: 4.639 on 1089 degrees of freedom
-    ##   (2 observations deleted due to missingness)
+    ##   (578 observations deleted due to missingness)
     ## Multiple R-squared:  0.3061, Adjusted R-squared:  0.3029 
     ## F-statistic: 96.06 on 5 and 1089 DF,  p-value: < 2.2e-16
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Analyses-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Analyses-2.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Cross-Lake%20Analyses-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Cross-Lake%20Analyses-2.png)<!-- -->
 
     ## Warning in replications(paste("~", xx), data = mf): non-factors ignored: Length
 
@@ -2049,25 +2235,25 @@ GAM model fits are not plotted with these data.
     ## Fit: aov(formula = Embryos ~ Lake + Length, data = Mysids_BroodingFemales %>% filter(Season == "Spring", Group == "GLNPO_Mys"))
     ## 
     ## $Lake
-    ##                          diff         lwr        upr     p adj
-    ## Huron-Erie        -11.0666667 -16.9288241 -5.2045092 0.0000029
-    ## Michigan-Erie      -8.8788136 -14.6071812 -3.1504459 0.0002397
-    ## Ontario-Erie       -8.5180812 -14.2387691 -2.7973932 0.0004863
-    ## Superior-Erie     -12.1436399 -17.8399387 -6.4473411 0.0000001
-    ## Michigan-Huron      2.1878531   0.4813131  3.8943931 0.0043573
-    ## Ontario-Huron       2.5485855   0.8680042  4.2291668 0.0003547
-    ## Superior-Huron     -1.0769733  -2.6725619  0.5186154 0.3486140
-    ## Ontario-Michigan    0.3607324  -0.7678329  1.4892977 0.9066716
-    ## Superior-Michigan  -3.2648264  -4.2624281 -2.2672246 0.0000000
-    ## Superior-Ontario   -3.6255587  -4.5780734 -2.6730441 0.0000000
+    ##                          diff        lwr        upr     p adj
+    ## Ontario-Erie       -8.5180812 -14.238769 -2.7973932 0.0004863
+    ## Michigan-Erie      -8.8788136 -14.607181 -3.1504459 0.0002397
+    ## Huron-Erie        -11.0666667 -16.928824 -5.2045092 0.0000029
+    ## Superior-Erie     -12.1436399 -17.839939 -6.4473411 0.0000001
+    ## Michigan-Ontario   -0.3607324  -1.489298  0.7678329 0.9066716
+    ## Huron-Ontario      -2.5485855  -4.229167 -0.8680042 0.0003547
+    ## Superior-Ontario   -3.6255587  -4.578073 -2.6730441 0.0000000
+    ## Huron-Michigan     -2.1878531  -3.894393 -0.4813131 0.0043573
+    ## Superior-Michigan  -3.2648264  -4.262428 -2.2672246 0.0000000
+    ## Superior-Huron     -1.0769733  -2.672562  0.5186154 0.3486140
 
     ## Warning in replications(paste("~", xx), data = mf): non-factors ignored: Length
 
-    ##                        diff         lwr        upr        p adj
-    ## Ontario-Erie     -8.5180812 -14.2387691 -2.7973932 0.0004862566
-    ## Ontario-Michigan  0.3607324  -0.7678329  1.4892977 0.9066716483
-    ## Michigan-Huron    2.1878531   0.4813131  3.8943931 0.0043573198
-    ## Superior-Huron   -1.0769733  -2.6725619  0.5186154 0.3486140038
+    ##                         diff        lwr        upr        p adj
+    ## Huron-Erie       -11.0666667 -16.928824 -5.2045092 2.939666e-06
+    ## Huron-Michigan    -2.1878531  -3.894393 -0.4813131 4.357320e-03
+    ## Michigan-Ontario  -0.3607324  -1.489298  0.7678329 9.066716e-01
+    ## Superior-Ontario  -3.6255587  -4.578073 -2.6730441 0.000000e+00
 
     ## Warning: `as.tibble()` is deprecated as of tibble 2.0.0.
     ## Please use `as_tibble()` instead.
@@ -2075,17 +2261,465 @@ GAM model fits are not plotted with these data.
     ## This warning is displayed once every 8 hours.
     ## Call `lifecycle::last_warnings()` to see where this warning was generated.
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Analyses-3.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Cross-Lake%20Analyses-3.png)<!-- -->
+
+    ## Warning: Removed 6 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 6 rows containing missing values (geom_point).
+
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Trends%20Analyses-1.png)<!-- -->
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)
+    ## Year          1     38   38.35   1.508   0.22
+    ## Residuals   510  12969   25.43               
+    ## 133 observations deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)  
+    ## Year          1     96   96.31   3.053 0.0819 .
+    ## Residuals   235   7413   31.54                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 236 observations deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)  
+    ## Year          1  117.3  117.30   5.679 0.0184 *
+    ## Residuals   148 3056.8   20.65                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 13 observations deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value  Pr(>F)   
+    ## Year          1    305  304.98   10.47 0.00141 **
+    ## Residuals   211   6148   29.14                   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 18 observations deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)
+    ## Year          1      2    2.31   0.046  0.831
+    ## Residuals   129   6491   50.32               
+    ## 12 observations deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)  
+    ## Year          1    179  179.40   3.496 0.0632 .
+    ## Residuals   171   8775   51.32                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 13 observations deleted due to missingness
+
+    ##             Df Sum Sq Mean Sq F value Pr(>F)
+    ## Year         1    0.3   0.268   0.015  0.904
+    ## Residuals   70 1281.7  18.310               
+    ## 41 observations deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value   Pr(>F)    
+    ## Year          1    650   650.4   22.69 3.11e-06 ***
+    ## Residuals   269   7710    28.7                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 166 observations deleted due to missingness
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Superior"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -8.7135 -3.7135 -0.4467  3.4643 17.5533 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -165.84586  145.85584  -1.137    0.256
+    ## Year           0.08893    0.07242   1.228    0.220
+    ## 
+    ## Residual standard error: 5.043 on 510 degrees of freedom
+    ##   (133 observations deleted due to missingness)
+    ## Multiple R-squared:  0.002949,   Adjusted R-squared:  0.0009936 
+    ## F-statistic: 1.508 on 1 and 510 DF,  p-value: 0.22
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Michigan"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -11.1587  -4.0686  -0.6136   3.5238  19.5238 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) -441.7508   262.2672  -1.684   0.0934 .
+    ## Year           0.2275     0.1302   1.747   0.0819 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.616 on 235 degrees of freedom
+    ##   (236 observations deleted due to missingness)
+    ## Multiple R-squared:  0.01283,    Adjusted R-squared:  0.008626 
+    ## F-statistic: 3.053 on 1 and 235 DF,  p-value: 0.08187
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -10.1809  -2.9954  -0.3182   3.2916  14.4180 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 489.36683  199.54825   2.452   0.0154 *
+    ## Year         -0.23627    0.09914  -2.383   0.0184 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 4.545 on 148 degrees of freedom
+    ##   (13 observations deleted due to missingness)
+    ## Multiple R-squared:  0.03696,    Adjusted R-squared:  0.03045 
+    ## F-statistic: 5.679 on 1 and 148 DF,  p-value: 0.01844
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -11.4580  -3.4580  -0.5941   3.4059  23.4739 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 326.49266   96.41592   3.386 0.000845 ***
+    ## Year         -0.15533    0.04801  -3.235 0.001410 ** 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.398 on 211 degrees of freedom
+    ##   (18 observations deleted due to missingness)
+    ## Multiple R-squared:  0.04726,    Adjusted R-squared:  0.04275 
+    ## F-statistic: 10.47 on 1 and 211 DF,  p-value: 0.00141
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -16.3831  -4.1562   0.7819   4.6376  15.4932 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -61.78143  387.32921  -0.160    0.874
+    ## Year          0.04125    0.19247   0.214    0.831
+    ## 
+    ## Residual standard error: 7.094 on 129 degrees of freedom
+    ##   (12 observations deleted due to missingness)
+    ## Multiple R-squared:  0.000356,   Adjusted R-squared:  -0.007393 
+    ## F-statistic: 0.04594 on 1 and 129 DF,  p-value: 0.8306
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -17.00  -3.96   1.04   5.04  16.64 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 320.57267  159.76269   2.007   0.0464 *
+    ## Year         -0.14869    0.07953  -1.870   0.0632 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 7.164 on 171 degrees of freedom
+    ##   (13 observations deleted due to missingness)
+    ## Multiple R-squared:  0.02003,    Adjusted R-squared:  0.0143 
+    ## F-statistic: 3.496 on 1 and 171 DF,  p-value: 0.06323
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Huron"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -9.3258 -3.2184 -0.3818  3.6182 10.7489 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  51.92814  310.89875   0.167    0.868
+    ## Year         -0.01868    0.15448  -0.121    0.904
+    ## 
+    ## Residual standard error: 4.279 on 70 degrees of freedom
+    ##   (41 observations deleted due to missingness)
+    ## Multiple R-squared:  0.0002088,  Adjusted R-squared:  -0.01407 
+    ## F-statistic: 0.01462 on 1 and 70 DF,  p-value: 0.9041
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Ontario"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -12.892  -3.790  -0.316   3.396  13.651 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -905.01357  193.52951  -4.676 4.63e-06 ***
+    ## Year           0.45756    0.09605   4.764 3.11e-06 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.354 on 269 degrees of freedom
+    ##   (166 observations deleted due to missingness)
+    ## Multiple R-squared:  0.07779,    Adjusted R-squared:  0.07437 
+    ## F-statistic: 22.69 on 1 and 269 DF,  p-value: 3.114e-06
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Brooding%20Female%20Trends%20Analyses-2.png)<!-- -->
+
+    ##              Df Sum Sq Mean Sq F value  Pr(>F)   
+    ## Year          1   17.4  17.444   7.736 0.00557 **
+    ## Residuals   642 1447.6   2.255                   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 1 observation deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value   Pr(>F)    
+    ## Year          1  114.5  114.46   38.75 1.07e-09 ***
+    ## Residuals   470 1388.3    2.95                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 1 observation deleted due to missingness
+
+    ##              Df Sum Sq Mean Sq F value   Pr(>F)    
+    ## Year          1   29.0  29.039   13.84 0.000275 ***
+    ## Residuals   161  337.9   2.098                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ##              Df Sum Sq Mean Sq F value  Pr(>F)    
+    ## Year          1   41.7   41.72    17.6 3.9e-05 ***
+    ## Residuals   229  542.8    2.37                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)  
+    ## Year          1   8.89   8.887   4.007 0.0472 *
+    ## Residuals   141 312.70   2.218                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ##              Df Sum Sq Mean Sq F value Pr(>F)
+    ## Year          1    1.7   1.699   0.717  0.398
+    ## Residuals   184  436.2   2.370
+
+    ##              Df Sum Sq Mean Sq F value  Pr(>F)   
+    ## Year          1  15.64  15.640   8.622 0.00404 **
+    ## Residuals   111 201.36   1.814                   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ##              Df Sum Sq Mean Sq F value  Pr(>F)   
+    ## Year          1   17.4  17.378   7.571 0.00618 **
+    ## Residuals   434  996.2   2.295                   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 1 observation deleted due to missingness
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Superior"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.7651 -1.1234  0.0512  1.0679  4.5479 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -81.89074   34.81724  -2.352  0.01897 * 
+    ## Year          0.04810    0.01729   2.781  0.00557 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.502 on 642 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01191,    Adjusted R-squared:  0.01037 
+    ## F-statistic: 7.736 on 1 and 642 DF,  p-value: 0.005571
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.5039 -1.0943 -0.0943  1.0460  6.5356 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -246.83243   41.97445  -5.881 7.77e-09 ***
+    ## Year           0.12988    0.02086   6.225 1.07e-09 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.719 on 470 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.07617,    Adjusted R-squared:  0.0742 
+    ## F-statistic: 38.75 on 1 and 470 DF,  p-value: 1.068e-09
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -3.071 -1.052 -0.341  0.757  4.435 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 241.22225   60.87345   3.963 0.000111 ***
+    ## Year         -0.11250    0.03024  -3.720 0.000275 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.449 on 161 degrees of freedom
+    ## Multiple R-squared:  0.07915,    Adjusted R-squared:  0.07343 
+    ## F-statistic: 13.84 on 1 and 161 DF,  p-value: 0.0002749
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2545 -1.0088 -0.2802  0.7980  5.1581 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 125.95299   26.45046   4.762  3.4e-06 ***
+    ## Year         -0.05525    0.01317  -4.195  3.9e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.54 on 229 degrees of freedom
+    ## Multiple R-squared:  0.07137,    Adjusted R-squared:  0.06732 
+    ## F-statistic:  17.6 on 1 and 229 DF,  p-value: 3.898e-05
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2817 -1.1458  0.0829  1.0176  4.8485 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 173.18846   77.85833   2.224   0.0277 *
+    ## Year         -0.07745    0.03869  -2.002   0.0472 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.489 on 141 degrees of freedom
+    ## Multiple R-squared:  0.02764,    Adjusted R-squared:  0.02074 
+    ## F-statistic: 4.007 on 1 and 141 DF,  p-value: 0.04722
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.3329 -1.0907 -0.0107  1.1138  5.1449 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -11.13875   33.49110  -0.333    0.740
+    ## Year          0.01411    0.01667   0.847    0.398
+    ## 
+    ## Residual standard error: 1.54 on 184 degrees of freedom
+    ## Multiple R-squared:  0.003879,   Adjusted R-squared:  -0.001534 
+    ## F-statistic: 0.7166 on 1 and 184 DF,  p-value: 0.3984
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Huron"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.9056 -1.0180 -0.0883  0.8695  3.2865 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -211.91722   77.00985  -2.752  0.00692 **
+    ## Year           0.11241    0.03828   2.936  0.00404 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.347 on 111 degrees of freedom
+    ## Multiple R-squared:  0.07207,    Adjusted R-squared:  0.06371 
+    ## F-statistic: 8.622 on 1 and 111 DF,  p-value: 0.004039
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Ontario"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.4404 -1.0768 -0.0288  0.9056  4.5360 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -87.28339   36.91025  -2.365  0.01848 * 
+    ## Year          0.05045    0.01834   2.752  0.00618 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.515 on 434 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01715,    Adjusted R-squared:  0.01488 
+    ## F-statistic: 7.571 on 1 and 434 DF,  p-value: 0.006179
 
 #### Key plots and analyses of Brooding Females data
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females-2.png)<!-- -->
+    ## Warning: Removed 578 rows containing non-finite values (stat_smooth).
 
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 578 rows containing missing values (geom_point).
 
-    ## Warning: Removed 2 rows containing missing values (geom_point).
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20cross-lakes-1.png)<!-- -->
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females-3.png)<!-- -->
+    ## Warning: Removed 578 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 578 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20cross-lakes-2.png)<!-- -->
 
     ##               Df Sum Sq Mean Sq F value Pr(>F)    
     ## Lake           4   3632     908   42.19 <2e-16 ***
@@ -2093,7 +2727,7 @@ GAM model fits are not plotted with these data.
     ## Residuals   1089  23436      22                   
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 2 observations deleted due to missingness
+    ## 578 observations deleted due to missingness
 
     ## 
     ## Call:
@@ -2107,31 +2741,413 @@ GAM model fits are not plotted with these data.
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
     ## (Intercept)    0.06308    2.52288   0.025 0.980058    
-    ## LakeHuron     -8.93372    2.14886  -4.157 3.47e-05 ***
-    ## LakeMichigan  -7.63451    2.09768  -3.640 0.000286 ***
     ## LakeOntario   -6.40320    2.09711  -3.053 0.002318 ** 
+    ## LakeMichigan  -7.63451    2.09768  -3.640 0.000286 ***
+    ## LakeHuron     -8.93372    2.14886  -4.157 3.47e-05 ***
     ## LakeSuperior -11.33516    2.08526  -5.436 6.73e-08 ***
     ## Length         1.63056    0.09238  17.650  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Residual standard error: 4.639 on 1089 degrees of freedom
-    ##   (2 observations deleted due to missingness)
+    ##   (578 observations deleted due to missingness)
     ## Multiple R-squared:  0.3061, Adjusted R-squared:  0.3029 
     ## F-statistic: 96.06 on 5 and 1089 DF,  p-value: < 2.2e-16
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females-4.png)<!-- -->
+    ## Warning in replications(paste("~", xx), data = mf): non-factors ignored: Length
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Embryos ~ Lake + Length, data = Mysids_BroodingFemales %>% filter(Season == "Spring", Group == "GLNPO_Mys"))
+    ## 
+    ## $Lake
+    ##                          diff        lwr        upr     p adj
+    ## Ontario-Erie       -8.5180812 -14.238769 -2.7973932 0.0004863
+    ## Michigan-Erie      -8.8788136 -14.607181 -3.1504459 0.0002397
+    ## Huron-Erie        -11.0666667 -16.928824 -5.2045092 0.0000029
+    ## Superior-Erie     -12.1436399 -17.839939 -6.4473411 0.0000001
+    ## Michigan-Ontario   -0.3607324  -1.489298  0.7678329 0.9066716
+    ## Huron-Ontario      -2.5485855  -4.229167 -0.8680042 0.0003547
+    ## Superior-Ontario   -3.6255587  -4.578073 -2.6730441 0.0000000
+    ## Huron-Michigan     -2.1878531  -3.894393 -0.4813131 0.0043573
+    ## Superior-Michigan  -3.2648264  -4.262428 -2.2672246 0.0000000
+    ## Superior-Huron     -1.0769733  -2.672562  0.5186154 0.3486140
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20cross-lakes-3.png)<!-- -->
 
     ## # A tibble: 5 x 8
     ## # Groups:   Lake, Season [5]
     ##   Lake  Season Group Brood_Count_Mean Brood_Count_SE BF_Length_Mean BF_Length_SE
-    ##   <chr> <fct>  <chr>            <dbl>          <dbl>          <dbl>        <dbl>
+    ##   <fct> <fct>  <chr>            <dbl>          <dbl>          <dbl>        <dbl>
     ## 1 Erie  Spring GLNP~             26.2          1.93            15.4       0.148 
-    ## 2 Onta~ Spring GLNP~             15.9          0.331           14.0       0.0580
-    ## 3 Mich~ Spring GLNP~             15.9          0.234           14.7       0.0671
-    ## 4 Huron Spring GLNP~             13.9          0.290           14.7       0.0673
-    ## 5 Supe~ Spring GLNP~             12.4          0.165           14.9       0.0552
+    ## 2 Onta~ Spring GLNP~             15.9          0.331           14.2       0.0520
+    ## 3 Mich~ Spring GLNP~             15.9          0.234           14.6       0.0660
+    ## 4 Huron Spring GLNP~             13.9          0.290           14.6       0.0533
+    ## 5 Supe~ Spring GLNP~             12.4          0.165           14.9       0.0437
     ## # ... with 1 more variable: Brood_per_mm <dbl>
+
+    ## Warning: Removed 31 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 31 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20cross-lakes-4.png)<!-- -->
+
+    ## # A tibble: 2 x 6
+    ##   Season Brood_Count_Mean Brood_Count_SE BF_Length_Mean BF_Length_SE
+    ##   <fct>             <dbl>          <dbl>          <dbl>        <dbl>
+    ## 1 Fall               21.7          0.261           17.1       0.0387
+    ## 2 Spring             14.6          0.214           15.0       0.0424
+    ## # ... with 1 more variable: Brood_per_mm <dbl>
+
+    ## Warning: Removed 6 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 6 rows containing missing values (geom_point).
+
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20trends-1.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Superior"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -8.7135 -3.7135 -0.4467  3.4643 17.5533 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -165.84586  145.85584  -1.137    0.256
+    ## Year           0.08893    0.07242   1.228    0.220
+    ## 
+    ## Residual standard error: 5.043 on 510 degrees of freedom
+    ##   (133 observations deleted due to missingness)
+    ## Multiple R-squared:  0.002949,   Adjusted R-squared:  0.0009936 
+    ## F-statistic: 1.508 on 1 and 510 DF,  p-value: 0.22
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Michigan"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -11.1587  -4.0686  -0.6136   3.5238  19.5238 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) -441.7508   262.2672  -1.684   0.0934 .
+    ## Year           0.2275     0.1302   1.747   0.0819 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.616 on 235 degrees of freedom
+    ##   (236 observations deleted due to missingness)
+    ## Multiple R-squared:  0.01283,    Adjusted R-squared:  0.008626 
+    ## F-statistic: 3.053 on 1 and 235 DF,  p-value: 0.08187
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Huron"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -9.3258 -3.2184 -0.3818  3.6182 10.7489 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  51.92814  310.89875   0.167    0.868
+    ## Year         -0.01868    0.15448  -0.121    0.904
+    ## 
+    ## Residual standard error: 4.279 on 70 degrees of freedom
+    ##   (41 observations deleted due to missingness)
+    ## Multiple R-squared:  0.0002088,  Adjusted R-squared:  -0.01407 
+    ## F-statistic: 0.01462 on 1 and 70 DF,  p-value: 0.9041
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Ontario"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -12.892  -3.790  -0.316   3.396  13.651 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -905.01357  193.52951  -4.676 4.63e-06 ***
+    ## Year           0.45756    0.09605   4.764 3.11e-06 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.354 on 269 degrees of freedom
+    ##   (166 observations deleted due to missingness)
+    ## Multiple R-squared:  0.07779,    Adjusted R-squared:  0.07437 
+    ## F-statistic: 22.69 on 1 and 269 DF,  p-value: 3.114e-06
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20trends-2.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Superior"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.7651 -1.1234  0.0512  1.0679  4.5479 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -81.89074   34.81724  -2.352  0.01897 * 
+    ## Year          0.04810    0.01729   2.781  0.00557 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.502 on 642 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01191,    Adjusted R-squared:  0.01037 
+    ## F-statistic: 7.736 on 1 and 642 DF,  p-value: 0.005571
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.5039 -1.0943 -0.0943  1.0460  6.5356 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -246.83243   41.97445  -5.881 7.77e-09 ***
+    ## Year           0.12988    0.02086   6.225 1.07e-09 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.719 on 470 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.07617,    Adjusted R-squared:  0.0742 
+    ## F-statistic: 38.75 on 1 and 470 DF,  p-value: 1.068e-09
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Huron"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.9056 -1.0180 -0.0883  0.8695  3.2865 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -211.91722   77.00985  -2.752  0.00692 **
+    ## Year           0.11241    0.03828   2.936  0.00404 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.347 on 111 degrees of freedom
+    ## Multiple R-squared:  0.07207,    Adjusted R-squared:  0.06371 
+    ## F-statistic: 8.622 on 1 and 111 DF,  p-value: 0.004039
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Ontario"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.4404 -1.0768 -0.0288  0.9056  4.5360 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -87.28339   36.91025  -2.365  0.01848 * 
+    ## Year          0.05045    0.01834   2.752  0.00618 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.515 on 434 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01715,    Adjusted R-squared:  0.01488 
+    ## F-statistic: 7.571 on 1 and 434 DF,  p-value: 0.006179
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20trends-3.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -10.1809  -2.9954  -0.3182   3.2916  14.4180 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 489.36683  199.54825   2.452   0.0154 *
+    ## Year         -0.23627    0.09914  -2.383   0.0184 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 4.545 on 148 degrees of freedom
+    ##   (13 observations deleted due to missingness)
+    ## Multiple R-squared:  0.03696,    Adjusted R-squared:  0.03045 
+    ## F-statistic: 5.679 on 1 and 148 DF,  p-value: 0.01844
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -11.4580  -3.4580  -0.5941   3.4059  23.4739 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 326.49266   96.41592   3.386 0.000845 ***
+    ## Year         -0.15533    0.04801  -3.235 0.001410 ** 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.398 on 211 degrees of freedom
+    ##   (18 observations deleted due to missingness)
+    ## Multiple R-squared:  0.04726,    Adjusted R-squared:  0.04275 
+    ## F-statistic: 10.47 on 1 and 211 DF,  p-value: 0.00141
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -16.3831  -4.1562   0.7819   4.6376  15.4932 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -61.78143  387.32921  -0.160    0.874
+    ## Year          0.04125    0.19247   0.214    0.831
+    ## 
+    ## Residual standard error: 7.094 on 129 degrees of freedom
+    ##   (12 observations deleted due to missingness)
+    ## Multiple R-squared:  0.000356,   Adjusted R-squared:  -0.007393 
+    ## F-statistic: 0.04594 on 1 and 129 DF,  p-value: 0.8306
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -17.00  -3.96   1.04   5.04  16.64 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 320.57267  159.76269   2.007   0.0464 *
+    ## Year         -0.14869    0.07953  -1.870   0.0632 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 7.164 on 171 degrees of freedom
+    ##   (13 observations deleted due to missingness)
+    ## Multiple R-squared:  0.02003,    Adjusted R-squared:  0.0143 
+    ## F-statistic: 3.496 on 1 and 171 DF,  p-value: 0.06323
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Key%20plots%20analyses%20brooding%20females%20-%20trends-4.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -3.071 -1.052 -0.341  0.757  4.435 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 241.22225   60.87345   3.963 0.000111 ***
+    ## Year         -0.11250    0.03024  -3.720 0.000275 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.449 on 161 degrees of freedom
+    ## Multiple R-squared:  0.07915,    Adjusted R-squared:  0.07343 
+    ## F-statistic: 13.84 on 1 and 161 DF,  p-value: 0.0002749
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2545 -1.0088 -0.2802  0.7980  5.1581 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 125.95299   26.45046   4.762  3.4e-06 ***
+    ## Year         -0.05525    0.01317  -4.195  3.9e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.54 on 229 degrees of freedom
+    ## Multiple R-squared:  0.07137,    Adjusted R-squared:  0.06732 
+    ## F-statistic:  17.6 on 1 and 229 DF,  p-value: 3.898e-05
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2817 -1.1458  0.0829  1.0176  4.8485 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 173.18846   77.85833   2.224   0.0277 *
+    ## Year         -0.07745    0.03869  -2.002   0.0472 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.489 on 141 degrees of freedom
+    ## Multiple R-squared:  0.02764,    Adjusted R-squared:  0.02074 
+    ## F-statistic: 4.007 on 1 and 141 DF,  p-value: 0.04722
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.3329 -1.0907 -0.0107  1.1138  5.1449 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -11.13875   33.49110  -0.333    0.740
+    ## Year          0.01411    0.01667   0.847    0.398
+    ## 
+    ## Residual standard error: 1.54 on 184 degrees of freedom
+    ## Multiple R-squared:  0.003879,   Adjusted R-squared:  -0.001534 
+    ## F-statistic: 0.7166 on 1 and 184 DF,  p-value: 0.3984
 
 ### Cohort Lengths Data Plotting and Analysis
 
@@ -2147,7 +3163,8 @@ Mysids_Lengths <-
       mutate(Group = "GLNPO_Mys"),
     USGS_MI_HU_Lengths %>% 
       modify_at("Visit", as.character) %>% 
-      mutate(Group = "USGS"),
+      mutate(Group = "USGS") %>% 
+      mutate(Visit = paste(Group, Visit, sep = "_")),
     NOAA_Lengths %>% 
       mutate(Group = "NOAA"),
   ) %>% 
@@ -2216,21 +3233,6 @@ Extract_Mclust_values <-
     
   }
 
-# Mysid_Mclust_Fits[[5]]
-# Mysid_Mclust_Fits[[50]]
-# Mysid_Mclust_Fits[[150]]
-# 
-# Extract_Mclust_values(
-#   Mysid_Mclust_Fits[[50]]
-# )
-# 
-# Extract_Mclust_values(
-#   Mysid_Mclust_Fits[[150]]
-# )
-# 
-# class(Mysid_Mclust_Fits[[5]])
-# class(Mysid_Mclust_Fits[[50]])
-# class(Mysid_Mclust_Fits[[150]])
 
 Mysid_Mclust_Fit_Summaries <- 
   
@@ -2309,13 +3311,18 @@ Mysid_SizeStruct <-
       
       group_by(VisPool) %>% 
       
-      summarize(MeanDens = mean(Dens))
+      summarize(MeanDens = mean(Dens, na.rm = T))
     
     ) %>% 
   
   mutate(Dens1 = Prop_1 * MeanDens,
-         
-         Dens2 = Prop_2 * MeanDens)
+         Dens2 = Prop_2 * MeanDens) %>% 
+  
+  left_join(Mysids_Lines_DensPred) %>% 
+  select(everything(), Dens_GAM = Dens_Pred) %>% 
+  
+  mutate(Dens1_GAM = Prop_1 * Dens_GAM,
+         Dens2_GAM = Prop_2 * Dens_GAM)
 
 
 Mysid_SizeStruct
@@ -2387,10 +3394,10 @@ Mysid_SizeStruct <-
           ) %>% 
   
   
-  filter(Season != "Late Summer" | 
-           Group != "USGS" |
-           Year != 2012
-           ) %>% 
+  # filter(Season != "Summer" | 
+  #          Group != "USGS" |
+  #          Year != 2012
+  #          ) %>% 
   
   
   filter(Season != "Fall" | 
@@ -2401,3095 +3408,2054 @@ Mysid_SizeStruct <-
 
 #### Size Structure plots
 
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 1: Lake = "Huron", Year = 1997, Season = "Summer", Group = "GLNPO_Zoop".
+![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-5.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-6.png)<!-- -->
 
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 2: Lake = "Huron", Year = 2000, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 3: Lake = "Huron", Year = 2001, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 4: Lake = "Huron", Year = 2003, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 5: Lake = "Huron", Year = 2003, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 6: Lake = "Huron", Year = 2004, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 7: Lake = "Huron", Year = 2004, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 8: Lake = "Huron", Year = 2005, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 9: Lake = "Huron", Year = 2005, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 11: Lake = "Huron", Year = 2006, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 12: Lake = "Huron", Year = 2006, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 13: Lake = "Huron", Year = 2007, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 14: Lake = "Huron", Year = 2007, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 15: Lake = "Huron", Year = 2007, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 17: Lake = "Huron", Year = 2008, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 18: Lake = "Huron", Year = 2008, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 19: Lake = "Huron", Year = 2008, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 20: Lake = "Huron", Year = 2008, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 22: Lake = "Huron", Year = 2009, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 23: Lake = "Huron", Year = 2009, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 25: Lake = "Huron", Year = 2010, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 26: Lake = "Huron", Year = 2010, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 27: Lake = "Huron", Year = 2010, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 29: Lake = "Huron", Year = 2011, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 30: Lake = "Huron", Year = 2011, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 31: Lake = "Huron", Year = 2011, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 32: Lake = "Huron", Year = 2012, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 33: Lake = "Huron", Year = 2012, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 34: Lake = "Huron", Year = 2012, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 36: Lake = "Huron", Year = 2013, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 37: Lake = "Huron", Year = 2013, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 39: Lake = "Huron", Year = 2014, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 40: Lake = "Huron", Year = 2014, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 42: Lake = "Huron", Year = 2015, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 43: Lake = "Huron", Year = 2015, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 44: Lake = "Huron", Year = 2015, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 46: Lake = "Huron", Year = 2016, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 47: Lake = "Huron", Year = 2016, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 48: Lake = "Huron", Year = 2016, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 50: Lake = "Huron", Year = 2017, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 51: Lake = "Huron", Year = 2017, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 52: Lake = "Huron", Year = 2017, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 54: Lake = "Huron", Year = 2018, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 55: Lake = "Huron", Year = 2018, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 57: Lake = "Huron", Year = 2019, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 58: Lake = "Huron", Year = 2019, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 59: Lake = "Michigan", Year = 1995, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 60: Lake = "Michigan", Year = 1995, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 61: Lake = "Michigan", Year = 1996, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 62: Lake = "Michigan", Year = 1996, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 63: Lake = "Michigan", Year = 1998, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 64: Lake = "Michigan", Year = 1998, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 65: Lake = "Michigan", Year = 1998, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 66: Lake = "Michigan", Year = 1998, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 67: Lake = "Michigan", Year = 1998, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 68: Lake = "Michigan", Year = 1999, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 69: Lake = "Michigan", Year = 1999, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 70: Lake = "Michigan", Year = 1999, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 71: Lake = "Michigan", Year = 1999, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 72: Lake = "Michigan", Year = 2000, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 73: Lake = "Michigan", Year = 2000, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 74: Lake = "Michigan", Year = 2000, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 75: Lake = "Michigan", Year = 2000, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 76: Lake = "Michigan", Year = 2001, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 77: Lake = "Michigan", Year = 2001, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 78: Lake = "Michigan", Year = 2002, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 79: Lake = "Michigan", Year = 2002, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 80: Lake = "Michigan", Year = 2003, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 81: Lake = "Michigan", Year = 2004, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 82: Lake = "Michigan", Year = 2005, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 83: Lake = "Michigan", Year = 2006, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 84: Lake = "Michigan", Year = 2006, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 85: Lake = "Michigan", Year = 2006, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 86: Lake = "Michigan", Year = 2007, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 87: Lake = "Michigan", Year = 2007, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 88: Lake = "Michigan", Year = 2007, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 89: Lake = "Michigan", Year = 2007, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 90: Lake = "Michigan", Year = 2007, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 91: Lake = "Michigan", Year = 2007, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 92: Lake = "Michigan", Year = 2007, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 93: Lake = "Michigan", Year = 2007, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 94: Lake = "Michigan", Year = 2008, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 95: Lake = "Michigan", Year = 2008, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 96: Lake = "Michigan", Year = 2008, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 97: Lake = "Michigan", Year = 2008, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 98: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 99: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 100: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 101: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 102: Lake = "Michigan", Year = 2009, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 103: Lake = "Michigan", Year = 2009, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 104: Lake = "Michigan", Year = 2009, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 105: Lake = "Michigan", Year = 2009, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 106: Lake = "Michigan", Year = 2009, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 107: Lake = "Michigan", Year = 2009, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 108: Lake = "Michigan", Year = 2009, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 109: Lake = "Michigan", Year = 2010, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 110: Lake = "Michigan", Year = 2010, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 111: Lake = "Michigan", Year = 2010, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 112: Lake = "Michigan", Year = 2010, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 113: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 114: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 115: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 116: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 117: Lake = "Michigan", Year = 2010, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 118: Lake = "Michigan", Year = 2011, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 119: Lake = "Michigan", Year = 2011, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 120: Lake = "Michigan", Year = 2011, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 121: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 122: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 123: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 124: Lake = "Michigan", Year = 2011, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 125: Lake = "Michigan", Year = 2012, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 126: Lake = "Michigan", Year = 2012, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 127: Lake = "Michigan", Year = 2012, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 128: Lake = "Michigan", Year = 2012, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 129: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 130: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 131: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 132: Lake = "Michigan", Year = 2012, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 133: Lake = "Michigan", Year = 2013, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 134: Lake = "Michigan", Year = 2013, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 135: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 136: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 137: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 138: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 139: Lake = "Michigan", Year = 2013, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 140: Lake = "Michigan", Year = 2014, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 141: Lake = "Michigan", Year = 2014, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 142: Lake = "Michigan", Year = 2014, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 143: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 144: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 145: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 146: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 147: Lake = "Michigan", Year = 2015, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 148: Lake = "Michigan", Year = 2015, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 149: Lake = "Michigan", Year = 2015, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 150: Lake = "Michigan", Year = 2015, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 151: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 152: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 153: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 154: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 155: Lake = "Michigan", Year = 2016, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 156: Lake = "Michigan", Year = 2016, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 157: Lake = "Michigan", Year = 2016, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 158: Lake = "Michigan", Year = 2016, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 159: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 160: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 161: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 162: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 163: Lake = "Michigan", Year = 2016, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 164: Lake = "Michigan", Year = 2017, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 165: Lake = "Michigan", Year = 2017, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 166: Lake = "Michigan", Year = 2017, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 167: Lake = "Michigan", Year = 2017, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 168: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 169: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 170: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 171: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 172: Lake = "Michigan", Year = 2017, Season = "Winter", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 173: Lake = "Michigan", Year = 2018, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 174: Lake = "Michigan", Year = 2018, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 175: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 176: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 177: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 178: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 179: Lake = "Michigan", Year = 2019, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 180: Lake = "Michigan", Year = 2019, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 181: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 182: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 183: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 184: Lake = "Ontario", Year = 2001, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 185: Lake = "Ontario", Year = 2001, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 186: Lake = "Ontario", Year = 2002, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 187: Lake = "Ontario", Year = 2003, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 188: Lake = "Ontario", Year = 2004, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 189: Lake = "Ontario", Year = 2004, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 190: Lake = "Ontario", Year = 2005, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 191: Lake = "Ontario", Year = 2005, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 192: Lake = "Ontario", Year = 2006, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 193: Lake = "Ontario", Year = 2006, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 194: Lake = "Ontario", Year = 2006, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 195: Lake = "Ontario", Year = 2007, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 196: Lake = "Ontario", Year = 2007, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 197: Lake = "Ontario", Year = 2007, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 198: Lake = "Ontario", Year = 2007, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 199: Lake = "Ontario", Year = 2008, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 200: Lake = "Ontario", Year = 2008, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 201: Lake = "Ontario", Year = 2008, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 202: Lake = "Ontario", Year = 2008, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 203: Lake = "Ontario", Year = 2009, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 204: Lake = "Ontario", Year = 2009, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 205: Lake = "Ontario", Year = 2009, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 206: Lake = "Ontario", Year = 2009, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 207: Lake = "Ontario", Year = 2010, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 208: Lake = "Ontario", Year = 2010, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 209: Lake = "Ontario", Year = 2010, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 210: Lake = "Ontario", Year = 2010, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 211: Lake = "Ontario", Year = 2011, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 212: Lake = "Ontario", Year = 2011, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 213: Lake = "Ontario", Year = 2011, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 214: Lake = "Ontario", Year = 2012, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 215: Lake = "Ontario", Year = 2012, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 216: Lake = "Ontario", Year = 2012, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 217: Lake = "Ontario", Year = 2013, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 218: Lake = "Ontario", Year = 2013, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 219: Lake = "Ontario", Year = 2013, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 220: Lake = "Ontario", Year = 2013, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 221: Lake = "Ontario", Year = 2014, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 222: Lake = "Ontario", Year = 2014, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 223: Lake = "Ontario", Year = 2014, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 224: Lake = "Ontario", Year = 2014, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 225: Lake = "Ontario", Year = 2015, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 226: Lake = "Ontario", Year = 2015, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 227: Lake = "Ontario", Year = 2015, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 228: Lake = "Ontario", Year = 2015, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 229: Lake = "Ontario", Year = 2016, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 230: Lake = "Ontario", Year = 2016, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 231: Lake = "Ontario", Year = 2016, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 232: Lake = "Ontario", Year = 2016, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 233: Lake = "Ontario", Year = 2017, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 234: Lake = "Ontario", Year = 2017, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 235: Lake = "Ontario", Year = 2017, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 236: Lake = "Ontario", Year = 2017, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 237: Lake = "Ontario", Year = 2018, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 238: Lake = "Ontario", Year = 2018, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 239: Lake = "Ontario", Year = 2018, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 240: Lake = "Ontario", Year = 2019, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 241: Lake = "Ontario", Year = 2019, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 242: Lake = "Superior", Year = 1997, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 243: Lake = "Superior", Year = 1998, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 244: Lake = "Superior", Year = 1998, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 245: Lake = "Superior", Year = 2000, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 246: Lake = "Superior", Year = 2001, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 247: Lake = "Superior", Year = 2002, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 248: Lake = "Superior", Year = 2002, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 249: Lake = "Superior", Year = 2003, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 250: Lake = "Superior", Year = 2003, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 251: Lake = "Superior", Year = 2004, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 252: Lake = "Superior", Year = 2004, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 253: Lake = "Superior", Year = 2005, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 254: Lake = "Superior", Year = 2005, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 255: Lake = "Superior", Year = 2006, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 256: Lake = "Superior", Year = 2006, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 257: Lake = "Superior", Year = 2007, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 258: Lake = "Superior", Year = 2007, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 259: Lake = "Superior", Year = 2007, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 260: Lake = "Superior", Year = 2007, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 261: Lake = "Superior", Year = 2008, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 262: Lake = "Superior", Year = 2008, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 263: Lake = "Superior", Year = 2008, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 264: Lake = "Superior", Year = 2008, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 265: Lake = "Superior", Year = 2009, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 266: Lake = "Superior", Year = 2009, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 267: Lake = "Superior", Year = 2009, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 268: Lake = "Superior", Year = 2009, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 269: Lake = "Superior", Year = 2010, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 270: Lake = "Superior", Year = 2010, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 271: Lake = "Superior", Year = 2010, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 272: Lake = "Superior", Year = 2010, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 273: Lake = "Superior", Year = 2011, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 274: Lake = "Superior", Year = 2011, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 275: Lake = "Superior", Year = 2011, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 276: Lake = "Superior", Year = 2011, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 277: Lake = "Superior", Year = 2012, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 278: Lake = "Superior", Year = 2012, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 279: Lake = "Superior", Year = 2012, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 280: Lake = "Superior", Year = 2012, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 281: Lake = "Superior", Year = 2013, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 282: Lake = "Superior", Year = 2013, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 283: Lake = "Superior", Year = 2013, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 284: Lake = "Superior", Year = 2013, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 285: Lake = "Superior", Year = 2014, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 286: Lake = "Superior", Year = 2014, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 287: Lake = "Superior", Year = 2014, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 288: Lake = "Superior", Year = 2014, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 289: Lake = "Superior", Year = 2015, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 290: Lake = "Superior", Year = 2015, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 291: Lake = "Superior", Year = 2015, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 292: Lake = "Superior", Year = 2015, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 293: Lake = "Superior", Year = 2016, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 294: Lake = "Superior", Year = 2016, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 295: Lake = "Superior", Year = 2016, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 296: Lake = "Superior", Year = 2016, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 297: Lake = "Superior", Year = 2017, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 298: Lake = "Superior", Year = 2017, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 299: Lake = "Superior", Year = 2017, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 300: Lake = "Superior", Year = 2018, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 301: Lake = "Superior", Year = 2018, Season = "Spring", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 302: Lake = "Superior", Year = 2018, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 303: Lake = "Superior", Year = 2018, Season = "Summer", Group = "GLNPO_Zoop".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 304: Lake = "Superior", Year = 2019, Season = "Spring", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Season`.
-    ## i Unknown levels in `f`: Late Summer
-    ## i Input `Season` is `factor(...)`.
-    ## i The error occurred in group 305: Lake = "Superior", Year = 2019, Season = "Summer", Group = "GLNPO_Mys".
-
-    ## Warning: Unknown levels in `f`: Late Summer
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 3: Lake = "Huron", Year = 2006, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 8: Lake = "Huron", Year = 2008, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 11: Lake = "Huron", Year = 2009, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 14: Lake = "Huron", Year = 2010, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 17: Lake = "Huron", Year = 2011, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 22: Lake = "Huron", Year = 2013, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 25: Lake = "Huron", Year = 2014, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 28: Lake = "Huron", Year = 2015, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 31: Lake = "Huron", Year = 2016, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 34: Lake = "Huron", Year = 2017, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 37: Lake = "Huron", Year = 2018, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 40: Lake = "Huron", Year = 2019, Season = "Fall", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 41: Lake = "Michigan", Year = 1995, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 42: Lake = "Michigan", Year = 1995, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 43: Lake = "Michigan", Year = 1996, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 44: Lake = "Michigan", Year = 1996, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 45: Lake = "Michigan", Year = 1998, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 46: Lake = "Michigan", Year = 1998, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 47: Lake = "Michigan", Year = 1998, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 48: Lake = "Michigan", Year = 1999, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 49: Lake = "Michigan", Year = 1999, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 50: Lake = "Michigan", Year = 1999, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 51: Lake = "Michigan", Year = 2000, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 52: Lake = "Michigan", Year = 2000, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 53: Lake = "Michigan", Year = 2000, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 54: Lake = "Michigan", Year = 2002, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 58: Lake = "Michigan", Year = 2007, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 60: Lake = "Michigan", Year = 2007, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 61: Lake = "Michigan", Year = 2007, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 63: Lake = "Michigan", Year = 2008, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 65: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 66: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 67: Lake = "Michigan", Year = 2008, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 69: Lake = "Michigan", Year = 2009, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 71: Lake = "Michigan", Year = 2009, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 72: Lake = "Michigan", Year = 2009, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 74: Lake = "Michigan", Year = 2010, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 76: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 77: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 78: Lake = "Michigan", Year = 2010, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 80: Lake = "Michigan", Year = 2011, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 82: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 83: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 84: Lake = "Michigan", Year = 2011, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 86: Lake = "Michigan", Year = 2012, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 88: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 89: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 90: Lake = "Michigan", Year = 2012, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 92: Lake = "Michigan", Year = 2013, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 94: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 95: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 97: Lake = "Michigan", Year = 2014, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 99: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 100: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 101: Lake = "Michigan", Year = 2014, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 103: Lake = "Michigan", Year = 2015, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 105: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 106: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 107: Lake = "Michigan", Year = 2015, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 109: Lake = "Michigan", Year = 2016, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 111: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 112: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 113: Lake = "Michigan", Year = 2016, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 115: Lake = "Michigan", Year = 2017, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 117: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 118: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 119: Lake = "Michigan", Year = 2017, Season = "Fall", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 121: Lake = "Michigan", Year = 2018, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 123: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 124: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 126: Lake = "Michigan", Year = 2019, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 128: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 129: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Removed 8 rows containing non-finite values (stat_smooth).
-    
-    ## Warning: Removed 8 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 8 rows containing missing values (geom_point).
-
-![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-1.png)<!-- -->
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 1: Lake = "Michigan", Year = 1995, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 2: Lake = "Michigan", Year = 1995, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 3: Lake = "Michigan", Year = 1996, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 4: Lake = "Michigan", Year = 1996, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 5: Lake = "Michigan", Year = 1998, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 6: Lake = "Michigan", Year = 1998, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 7: Lake = "Michigan", Year = 1999, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 8: Lake = "Michigan", Year = 1999, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 9: Lake = "Michigan", Year = 2000, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 10: Lake = "Michigan", Year = 2000, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 11: Lake = "Michigan", Year = 2002, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 15: Lake = "Michigan", Year = 2007, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 17: Lake = "Michigan", Year = 2007, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 19: Lake = "Michigan", Year = 2008, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 21: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 22: Lake = "Michigan", Year = 2008, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 24: Lake = "Michigan", Year = 2009, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 26: Lake = "Michigan", Year = 2009, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 28: Lake = "Michigan", Year = 2010, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 30: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 31: Lake = "Michigan", Year = 2010, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 33: Lake = "Michigan", Year = 2011, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 35: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 36: Lake = "Michigan", Year = 2011, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 38: Lake = "Michigan", Year = 2012, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 40: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 41: Lake = "Michigan", Year = 2012, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 43: Lake = "Michigan", Year = 2013, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 45: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 46: Lake = "Michigan", Year = 2013, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 48: Lake = "Michigan", Year = 2014, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 50: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 51: Lake = "Michigan", Year = 2014, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 53: Lake = "Michigan", Year = 2015, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 55: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 56: Lake = "Michigan", Year = 2015, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 58: Lake = "Michigan", Year = 2016, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 60: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 61: Lake = "Michigan", Year = 2016, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 63: Lake = "Michigan", Year = 2017, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 65: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 66: Lake = "Michigan", Year = 2017, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 68: Lake = "Michigan", Year = 2018, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 70: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 71: Lake = "Michigan", Year = 2018, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 73: Lake = "Michigan", Year = 2019, Season = "Spring", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 75: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "NOAA".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Problem with `mutate()` input `Group`.
-    ## i Unknown levels in `f`: GLNPO_Mys
-    ## i Input `Group` is `fct_recode(Group, GLNPO = "GLNPO_Mys")`.
-    ## i The error occurred in group 76: Lake = "Michigan", Year = 2019, Season = "Summer", Group = "USGS".
-
-    ## Warning: Unknown levels in `f`: GLNPO_Mys
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
-    
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 1 rows containing missing values (geom_point).
-
-![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-2.png)<!-- -->
-
-    ## Warning: Removed 8 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 8 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 8 rows containing missing values (geom_point).
-
-![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-3.png)<!-- -->
+#### Table of Growth Rates by Lake (excluding Lake Erie)
 
     ## # A tibble: 4 x 7
-    ##   Lake  N_Years Mean_Length_1 Mean_Length_2 Total_Growth Overall_Rate_pe~
-    ##   <chr>   <int>         <dbl>         <dbl>        <dbl>            <dbl>
-    ## 1 Huron      14          5.28          12.5         9.54            0.681
-    ## 2 Mich~      14          5.45          13.1        10.1             0.724
-    ## 3 Onta~      13          6.46          14.4        11.4             0.815
-    ## 4 Supe~      13          5.01          12.1         9.11            0.651
-    ## # ... with 1 more variable: Measured_Rate_per_month <dbl>
+    ##   Lake     N_Years Mean_Length_1 Mean_Length_2 Total_Growth
+    ##   <chr>      <int>         <dbl>         <dbl>        <dbl>
+    ## 1 Huron         14          5.27          12.5         9.51
+    ## 2 Michigan      14          5.45          13.1        10.1 
+    ## 3 Ontario       13          6.45          14.4        11.4 
+    ## 4 Superior      13          5.01          12.1         9.10
+    ##   Overall_Rate_per_month Measured_Rate_per_month
+    ##                    <dbl>                   <dbl>
+    ## 1                  0.679                   0.603
+    ## 2                  0.724                   0.641
+    ## 3                  0.815                   0.663
+    ## 4                  0.650                   0.591
 
-    ## Warning: Removed 4 rows containing non-finite values (stat_bin).
+#### Lake Erie Rates
 
-![](GLNPO_Long_term_2019_files/figure-gfm/Plot%20Size%20Structure%20Results-4.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/Lake%20Erie%20Rates-1.png)<!-- -->
 
     ## # A tibble: 134 x 10
-    ##     Visit   Sex      Stage  Count Length Embryos  Year Lake  Season Age    
-    ##     <chr>   <chr>    <chr>  <dbl>  <dbl>   <dbl> <dbl> <fct> <fct>  <fct>  
-    ##   1 E15MM12 Female   Early      1  15         30  2012 Erie  Spring (14,20]
-    ##   2 E15MG13 Juvenile <NA>       1   4.63      NA  2013 Erie  Summer (0,14] 
-    ##   3 E063M14 Female   Mid        1  16.5       30  2014 Erie  Spring (14,20]
-    ##   4 E15MM14 Female   Early      1  15.3       28  2014 Erie  Spring (14,20]
-    ##   5 E15MG07 Juvenile <NA>       1   4.5       NA  2007 Erie  Summer (0,14] 
-    ##   6 E15MG07 Juvenile <NA>       1   4         NA  2007 Erie  Summer (0,14] 
-    ##   7 E15MG07 Juvenile <NA>       1   4.5       NA  2007 Erie  Summer (0,14] 
-    ##   8 E15MG07 Juvenile <NA>       1   5         NA  2007 Erie  Summer (0,14] 
-    ##   9 E009G08 Juvenile <NA>       1   4.2       NA  2008 Erie  Summer (0,14] 
-    ##  10 E009G08 Juvenile <NA>       1   4         NA  2008 Erie  Summer (0,14] 
-    ##  11 E009G08 Juvenile <NA>       1   6.6       NA  2008 Erie  Summer (0,14] 
-    ##  12 E009G08 Juvenile <NA>       1   5         NA  2008 Erie  Summer (0,14] 
-    ##  13 E009G08 Juvenile <NA>       1   4         NA  2008 Erie  Summer (0,14] 
-    ##  14 E009G08 Juvenile <NA>       1   4         NA  2008 Erie  Summer (0,14] 
-    ##  15 E009G08 Juvenile <NA>       1   4         NA  2008 Erie  Summer (0,14] 
-    ##  16 E15MG08 Female   <NA>       1  15.5       NA  2008 Erie  Summer (14,20]
-    ##  17 E15MG08 Juvenile <NA>       1   5         NA  2008 Erie  Summer (0,14] 
-    ##  18 E15MG08 Juvenile <NA>       1   4.5       NA  2008 Erie  Summer (0,14] 
-    ##  19 E010G10 Juvenile <NA>       1   4.7       NA  2010 Erie  Summer (0,14] 
-    ##  20 E93bG10 Juvenile <NA>       1   4         NA  2010 Erie  Summer (0,14] 
-    ##  21 E009G15 Juvenile <NA>       1   4.86      NA  2015 Erie  Summer (0,14] 
-    ##  22 E009G15 Juvenile <NA>       1   3.70      NA  2015 Erie  Summer (0,14] 
-    ##  23 E009G15 Juvenile <NA>       1   5.88      NA  2015 Erie  Summer (0,14] 
-    ##  24 E009G15 Juvenile <NA>       1   7.32      NA  2015 Erie  Summer (0,14] 
-    ##  25 E009G15 Juvenile <NA>       1   3.68      NA  2015 Erie  Summer (0,14] 
-    ##  26 E009G15 Juvenile <NA>       1   4.89      NA  2015 Erie  Summer (0,14] 
-    ##  27 E009G15 Juvenile <NA>       1   3.81      NA  2015 Erie  Summer (0,14] 
-    ##  28 E009G15 Juvenile <NA>       1   5.11      NA  2015 Erie  Summer (0,14] 
-    ##  29 E009G15 Juvenile <NA>       1   3.78      NA  2015 Erie  Summer (0,14] 
-    ##  30 E009G15 Juvenile <NA>       1   3.25      NA  2015 Erie  Summer (0,14] 
-    ##  31 E009G15 Juvenile <NA>       1   4.75      NA  2015 Erie  Summer (0,14] 
-    ##  32 E009G15 Juvenile <NA>       1   4.51      NA  2015 Erie  Summer (0,14] 
-    ##  33 E009G15 Juvenile <NA>       1   3.93      NA  2015 Erie  Summer (0,14] 
-    ##  34 E009G15 Juvenile <NA>       1   4.10      NA  2015 Erie  Summer (0,14] 
-    ##  35 E009G15 Juvenile <NA>       1   5.22      NA  2015 Erie  Summer (0,14] 
-    ##  36 E009G15 Juvenile <NA>       1   4.26      NA  2015 Erie  Summer (0,14] 
-    ##  37 E009G15 Juvenile <NA>       1   3.84      NA  2015 Erie  Summer (0,14] 
-    ##  38 E009M18 Female   Early      1  15.3       22  2018 Erie  Spring (14,20]
-    ##  39 E009M18 Male     Mature     1  12.6       NA  2018 Erie  Spring (0,14] 
-    ##  40 E009M18 Female   Early      1  15.6       17  2018 Erie  Spring (14,20]
-    ##  41 E009M18 Male     Mature     1  13.3       NA  2018 Erie  Spring (0,14] 
-    ##  42 E009G18 Juvenile <NA>       1   3.19      NA  2018 Erie  Summer (0,14] 
-    ##  43 E009G18 Juvenile <NA>       1   3.60      NA  2018 Erie  Summer (0,14] 
-    ##  44 E009G18 Juvenile <NA>       1   3.26      NA  2018 Erie  Summer (0,14] 
-    ##  45 E009G18 Juvenile <NA>       1   4.27      NA  2018 Erie  Summer (0,14] 
-    ##  46 E009G18 Juvenile <NA>       1   3.40      NA  2018 Erie  Summer (0,14] 
-    ##  47 E009G18 Juvenile <NA>       1   3.02      NA  2018 Erie  Summer (0,14] 
-    ##  48 E009G18 Juvenile <NA>       1   2.87      NA  2018 Erie  Summer (0,14] 
-    ##  49 E009G18 Juvenile <NA>       1   4.66      NA  2018 Erie  Summer (0,14] 
-    ##  50 E009G18 Juvenile <NA>       1   3.37      NA  2018 Erie  Summer (0,14] 
-    ##  51 E009G18 Juvenile <NA>       1   3.64      NA  2018 Erie  Summer (0,14] 
-    ##  52 E009G18 Juvenile <NA>       1   3.90      NA  2018 Erie  Summer (0,14] 
-    ##  53 E009G18 Juvenile <NA>       1   3.84      NA  2018 Erie  Summer (0,14] 
-    ##  54 E009G18 Juvenile <NA>       1   4.65      NA  2018 Erie  Summer (0,14] 
-    ##  55 E009G18 Juvenile <NA>       1   3.52      NA  2018 Erie  Summer (0,14] 
-    ##  56 E009G18 Juvenile <NA>       1   3.69      NA  2018 Erie  Summer (0,14] 
-    ##  57 E009G18 Juvenile <NA>       1   3.17      NA  2018 Erie  Summer (0,14] 
-    ##  58 E009G18 Juvenile <NA>       1   4.12      NA  2018 Erie  Summer (0,14] 
-    ##  59 E009G18 Juvenile <NA>       1   3.51      NA  2018 Erie  Summer (0,14] 
-    ##  60 E009G18 Juvenile <NA>       1   3.38      NA  2018 Erie  Summer (0,14] 
-    ##  61 E009G18 Juvenile <NA>       1   2.90      NA  2018 Erie  Summer (0,14] 
-    ##  62 E009G18 Juvenile <NA>       1   4.79      NA  2018 Erie  Summer (0,14] 
-    ##  63 E009G18 Juvenile <NA>       1   3.55      NA  2018 Erie  Summer (0,14] 
-    ##  64 E009G18 Juvenile <NA>       1   7.91      NA  2018 Erie  Summer (0,14] 
-    ##  65 E009G18 Juvenile <NA>       1   3.69      NA  2018 Erie  Summer (0,14] 
-    ##  66 E009G18 Juvenile <NA>       1   4.06      NA  2018 Erie  Summer (0,14] 
-    ##  67 E009G18 Juvenile <NA>       1   4.68      NA  2018 Erie  Summer (0,14] 
-    ##  68 E009G18 Juvenile <NA>       1   3.75      NA  2018 Erie  Summer (0,14] 
-    ##  69 E009G18 Juvenile <NA>       1   3.75      NA  2018 Erie  Summer (0,14] 
-    ##  70 E009G18 Juvenile <NA>       1   4.19      NA  2018 Erie  Summer (0,14] 
-    ##  71 E009G18 Juvenile <NA>       1   3.78      NA  2018 Erie  Summer (0,14] 
-    ##  72 E009G18 Juvenile <NA>       1   3.96      NA  2018 Erie  Summer (0,14] 
-    ##  73 E15MG18 Juvenile <NA>       1   3.97      NA  2018 Erie  Summer (0,14] 
-    ##  74 E15MG18 Juvenile <NA>       1   3.39      NA  2018 Erie  Summer (0,14] 
-    ##  75 E15MG18 Juvenile <NA>       1   2.82      NA  2018 Erie  Summer (0,14] 
-    ##  76 E15MG18 Juvenile <NA>       1   2.87      NA  2018 Erie  Summer (0,14] 
-    ##  77 E15MG18 Juvenile <NA>       1   3.26      NA  2018 Erie  Summer (0,14] 
-    ##  78 E15MG18 Juvenile <NA>       1   2.65      NA  2018 Erie  Summer (0,14] 
-    ##  79 E15MG18 Juvenile <NA>       1   5.58      NA  2018 Erie  Summer (0,14] 
-    ##  80 E15MG18 Juvenile <NA>       1   3.65      NA  2018 Erie  Summer (0,14] 
-    ##  81 E15MG18 Juvenile <NA>       1   3.16      NA  2018 Erie  Summer (0,14] 
-    ##  82 E15MG18 Juvenile <NA>       1   3.19      NA  2018 Erie  Summer (0,14] 
-    ##  83 E15MG18 Juvenile <NA>       1   3.03      NA  2018 Erie  Summer (0,14] 
-    ##  84 E15MG18 Juvenile <NA>       1   3.34      NA  2018 Erie  Summer (0,14] 
-    ##  85 E15MG18 Juvenile <NA>       1   3.68      NA  2018 Erie  Summer (0,14] 
-    ##  86 E15MG18 Juvenile <NA>       1   3.66      NA  2018 Erie  Summer (0,14] 
-    ##  87 E15MG18 Juvenile <NA>       1   3.76      NA  2018 Erie  Summer (0,14] 
-    ##  88 E15MG18 Juvenile <NA>       1   3.64      NA  2018 Erie  Summer (0,14] 
-    ##  89 E15MG18 Juvenile <NA>       1   3.18      NA  2018 Erie  Summer (0,14] 
-    ##  90 E15MG18 Juvenile <NA>       1   3.52      NA  2018 Erie  Summer (0,14] 
-    ##  91 E15MG18 Juvenile <NA>       1   2.91      NA  2018 Erie  Summer (0,14] 
-    ##  92 E15MG18 Juvenile <NA>       1   3.26      NA  2018 Erie  Summer (0,14] 
-    ##  93 E15MG18 Juvenile <NA>       1   2.87      NA  2018 Erie  Summer (0,14] 
-    ##  94 E15MG18 Juvenile <NA>       1   3.26      NA  2018 Erie  Summer (0,14] 
-    ##  95 E15MG18 Juvenile <NA>       1   3.04      NA  2018 Erie  Summer (0,14] 
-    ##  96 E063G18 Juvenile <NA>       1   4.89      NA  2018 Erie  Summer (0,14] 
-    ##  97 E063G18 Juvenile <NA>       1   3.41      NA  2018 Erie  Summer (0,14] 
-    ##  98 E063G18 Juvenile <NA>       1   3.66      NA  2018 Erie  Summer (0,14] 
-    ##  99 E063G18 Juvenile <NA>       1   3.4       NA  2018 Erie  Summer (0,14] 
-    ## 100 E063G18 Juvenile <NA>       1   3.84      NA  2018 Erie  Summer (0,14] 
-    ## 101 E063G18 Juvenile <NA>       1   3.79      NA  2018 Erie  Summer (0,14] 
-    ## 102 E063G18 Juvenile <NA>       1   3.33      NA  2018 Erie  Summer (0,14] 
-    ## 103 E063G18 Juvenile <NA>       1   5.13      NA  2018 Erie  Summer (0,14] 
-    ## 104 E063G18 Juvenile <NA>       1   3.31      NA  2018 Erie  Summer (0,14] 
-    ## 105 E063G18 Juvenile <NA>       1   4.33      NA  2018 Erie  Summer (0,14] 
-    ## 106 E063G18 Juvenile <NA>       1   3.44      NA  2018 Erie  Summer (0,14] 
-    ## 107 E063G18 Juvenile <NA>       1   6.90      NA  2018 Erie  Summer (0,14] 
-    ## 108 E009G19 Juvenile <NA>       1   3.31      NA  2019 Erie  Summer (0,14] 
-    ## 109 E009G19 Juvenile <NA>       1   3.19      NA  2019 Erie  Summer (0,14] 
-    ## 110 E009G19 Juvenile <NA>       1   3.58      NA  2019 Erie  Summer (0,14] 
-    ## 111 E009G19 Juvenile <NA>       1   3.99      NA  2019 Erie  Summer (0,14] 
-    ## 112 E009G19 Juvenile <NA>       1   3.79      NA  2019 Erie  Summer (0,14] 
-    ## 113 E009G19 Juvenile <NA>       1   2.65      NA  2019 Erie  Summer (0,14] 
-    ## 114 E009G19 Juvenile <NA>       1   3.64      NA  2019 Erie  Summer (0,14] 
-    ## 115 E009G19 Juvenile <NA>       1   3.61      NA  2019 Erie  Summer (0,14] 
-    ## 116 E009G19 Juvenile <NA>       1   3.46      NA  2019 Erie  Summer (0,14] 
-    ## 117 E009G19 Juvenile <NA>       1   2.37      NA  2019 Erie  Summer (0,14] 
-    ## 118 E009G19 Juvenile <NA>       1   4.37      NA  2019 Erie  Summer (0,14] 
-    ## 119 E009G19 Juvenile <NA>       1   3.35      NA  2019 Erie  Summer (0,14] 
-    ## 120 E009G19 Juvenile <NA>       1   3.36      NA  2019 Erie  Summer (0,14] 
-    ## 121 E009G19 Juvenile <NA>       1   3.28      NA  2019 Erie  Summer (0,14] 
-    ## 122 E009G19 Juvenile <NA>       1   3.65      NA  2019 Erie  Summer (0,14] 
-    ## 123 E009G19 Juvenile <NA>       1   3.82      NA  2019 Erie  Summer (0,14] 
-    ## 124 E009G19 Juvenile <NA>       1   3.75      NA  2019 Erie  Summer (0,14] 
-    ## 125 E009G19 Juvenile <NA>       1   3.23      NA  2019 Erie  Summer (0,14] 
-    ## 126 E009G19 Juvenile <NA>       1   3.45      NA  2019 Erie  Summer (0,14] 
-    ## 127 E009G19 Juvenile <NA>       1   3.52      NA  2019 Erie  Summer (0,14] 
-    ## 128 E009G19 Juvenile <NA>       1   3.79      NA  2019 Erie  Summer (0,14] 
-    ## 129 E93bG19 Juvenile <NA>       1   4.39      NA  2019 Erie  Summer (0,14] 
-    ## 130 E93bG19 Juvenile <NA>       1   2.98      NA  2019 Erie  Summer (0,14] 
-    ## 131 E93bG19 Juvenile <NA>       1   2.82      NA  2019 Erie  Summer (0,14] 
-    ## 132 E93bG19 Juvenile <NA>       1   3.66      NA  2019 Erie  Summer (0,14] 
-    ## 133 E93bG19 Juvenile <NA>       1   3.04      NA  2019 Erie  Summer (0,14] 
-    ## 134 E010A19 Male     Mature     1  12.5       NA  2019 Erie  Spring (0,14]
+    ##     Visit   Sex      Stage Count Length Embryos  Year Lake  Season SeasonSex    
+    ##     <chr>   <chr>    <chr> <dbl>  <dbl>   <dbl> <dbl> <fct> <fct>  <chr>        
+    ##   1 E15MM12 Female   Early     1  15         30  2012 Erie  Spring SpringFemale 
+    ##   2 E15MG13 Juvenile <NA>      1   4.63      NA  2013 Erie  Summer SummerJuveni~
+    ##   3 E063M14 Female   Mid       1  16.5       30  2014 Erie  Spring SpringFemale 
+    ##   4 E15MM14 Female   Early     1  15.3       28  2014 Erie  Spring SpringFemale 
+    ##   5 E15MG07 Juvenile <NA>      1   4.5       NA  2007 Erie  Summer SummerJuveni~
+    ##   6 E15MG07 Juvenile <NA>      1   4         NA  2007 Erie  Summer SummerJuveni~
+    ##   7 E15MG07 Juvenile <NA>      1   4.5       NA  2007 Erie  Summer SummerJuveni~
+    ##   8 E15MG07 Juvenile <NA>      1   5         NA  2007 Erie  Summer SummerJuveni~
+    ##   9 E009G08 Juvenile <NA>      1   4.2       NA  2008 Erie  Summer SummerJuveni~
+    ##  10 E009G08 Juvenile <NA>      1   4         NA  2008 Erie  Summer SummerJuveni~
+    ##  11 E009G08 Juvenile <NA>      1   6.6       NA  2008 Erie  Summer SummerJuveni~
+    ##  12 E009G08 Juvenile <NA>      1   5         NA  2008 Erie  Summer SummerJuveni~
+    ##  13 E009G08 Juvenile <NA>      1   4         NA  2008 Erie  Summer SummerJuveni~
+    ##  14 E009G08 Juvenile <NA>      1   4         NA  2008 Erie  Summer SummerJuveni~
+    ##  15 E009G08 Juvenile <NA>      1   4         NA  2008 Erie  Summer SummerJuveni~
+    ##  16 E15MG08 Female   <NA>      1  15.5       NA  2008 Erie  Summer SummerFemale 
+    ##  17 E15MG08 Juvenile <NA>      1   5         NA  2008 Erie  Summer SummerJuveni~
+    ##  18 E15MG08 Juvenile <NA>      1   4.5       NA  2008 Erie  Summer SummerJuveni~
+    ##  19 E010G10 Juvenile <NA>      1   4.7       NA  2010 Erie  Summer SummerJuveni~
+    ##  20 E93bG10 Juvenile <NA>      1   4         NA  2010 Erie  Summer SummerJuveni~
+    ##  21 E009G15 Juvenile <NA>      1   4.86      NA  2015 Erie  Summer SummerJuveni~
+    ##  22 E009G15 Juvenile <NA>      1   3.70      NA  2015 Erie  Summer SummerJuveni~
+    ##  23 E009G15 Juvenile <NA>      1   5.88      NA  2015 Erie  Summer SummerJuveni~
+    ##  24 E009G15 Juvenile <NA>      1   7.32      NA  2015 Erie  Summer SummerJuveni~
+    ##  25 E009G15 Juvenile <NA>      1   3.68      NA  2015 Erie  Summer SummerJuveni~
+    ##  26 E009G15 Juvenile <NA>      1   4.89      NA  2015 Erie  Summer SummerJuveni~
+    ##  27 E009G15 Juvenile <NA>      1   3.81      NA  2015 Erie  Summer SummerJuveni~
+    ##  28 E009G15 Juvenile <NA>      1   5.11      NA  2015 Erie  Summer SummerJuveni~
+    ##  29 E009G15 Juvenile <NA>      1   3.78      NA  2015 Erie  Summer SummerJuveni~
+    ##  30 E009G15 Juvenile <NA>      1   3.25      NA  2015 Erie  Summer SummerJuveni~
+    ##  31 E009G15 Juvenile <NA>      1   4.75      NA  2015 Erie  Summer SummerJuveni~
+    ##  32 E009G15 Juvenile <NA>      1   4.51      NA  2015 Erie  Summer SummerJuveni~
+    ##  33 E009G15 Juvenile <NA>      1   3.93      NA  2015 Erie  Summer SummerJuveni~
+    ##  34 E009G15 Juvenile <NA>      1   4.10      NA  2015 Erie  Summer SummerJuveni~
+    ##  35 E009G15 Juvenile <NA>      1   5.22      NA  2015 Erie  Summer SummerJuveni~
+    ##  36 E009G15 Juvenile <NA>      1   4.26      NA  2015 Erie  Summer SummerJuveni~
+    ##  37 E009G15 Juvenile <NA>      1   3.84      NA  2015 Erie  Summer SummerJuveni~
+    ##  38 E009M18 Female   Early     1  15.3       22  2018 Erie  Spring SpringFemale 
+    ##  39 E009M18 Male     Matu~     1  12.6       NA  2018 Erie  Spring SpringMale   
+    ##  40 E009M18 Female   Early     1  15.6       17  2018 Erie  Spring SpringFemale 
+    ##  41 E009M18 Male     Matu~     1  13.3       NA  2018 Erie  Spring SpringMale   
+    ##  42 E009G18 Juvenile <NA>      1   3.19      NA  2018 Erie  Summer SummerJuveni~
+    ##  43 E009G18 Juvenile <NA>      1   3.60      NA  2018 Erie  Summer SummerJuveni~
+    ##  44 E009G18 Juvenile <NA>      1   3.26      NA  2018 Erie  Summer SummerJuveni~
+    ##  45 E009G18 Juvenile <NA>      1   4.27      NA  2018 Erie  Summer SummerJuveni~
+    ##  46 E009G18 Juvenile <NA>      1   3.40      NA  2018 Erie  Summer SummerJuveni~
+    ##  47 E009G18 Juvenile <NA>      1   3.02      NA  2018 Erie  Summer SummerJuveni~
+    ##  48 E009G18 Juvenile <NA>      1   2.87      NA  2018 Erie  Summer SummerJuveni~
+    ##  49 E009G18 Juvenile <NA>      1   4.66      NA  2018 Erie  Summer SummerJuveni~
+    ##  50 E009G18 Juvenile <NA>      1   3.37      NA  2018 Erie  Summer SummerJuveni~
+    ##  51 E009G18 Juvenile <NA>      1   3.64      NA  2018 Erie  Summer SummerJuveni~
+    ##  52 E009G18 Juvenile <NA>      1   3.90      NA  2018 Erie  Summer SummerJuveni~
+    ##  53 E009G18 Juvenile <NA>      1   3.84      NA  2018 Erie  Summer SummerJuveni~
+    ##  54 E009G18 Juvenile <NA>      1   4.65      NA  2018 Erie  Summer SummerJuveni~
+    ##  55 E009G18 Juvenile <NA>      1   3.52      NA  2018 Erie  Summer SummerJuveni~
+    ##  56 E009G18 Juvenile <NA>      1   3.69      NA  2018 Erie  Summer SummerJuveni~
+    ##  57 E009G18 Juvenile <NA>      1   3.17      NA  2018 Erie  Summer SummerJuveni~
+    ##  58 E009G18 Juvenile <NA>      1   4.12      NA  2018 Erie  Summer SummerJuveni~
+    ##  59 E009G18 Juvenile <NA>      1   3.51      NA  2018 Erie  Summer SummerJuveni~
+    ##  60 E009G18 Juvenile <NA>      1   3.38      NA  2018 Erie  Summer SummerJuveni~
+    ##  61 E009G18 Juvenile <NA>      1   2.90      NA  2018 Erie  Summer SummerJuveni~
+    ##  62 E009G18 Juvenile <NA>      1   4.79      NA  2018 Erie  Summer SummerJuveni~
+    ##  63 E009G18 Juvenile <NA>      1   3.55      NA  2018 Erie  Summer SummerJuveni~
+    ##  64 E009G18 Juvenile <NA>      1   7.91      NA  2018 Erie  Summer SummerJuveni~
+    ##  65 E009G18 Juvenile <NA>      1   3.69      NA  2018 Erie  Summer SummerJuveni~
+    ##  66 E009G18 Juvenile <NA>      1   4.06      NA  2018 Erie  Summer SummerJuveni~
+    ##  67 E009G18 Juvenile <NA>      1   4.68      NA  2018 Erie  Summer SummerJuveni~
+    ##  68 E009G18 Juvenile <NA>      1   3.75      NA  2018 Erie  Summer SummerJuveni~
+    ##  69 E009G18 Juvenile <NA>      1   3.75      NA  2018 Erie  Summer SummerJuveni~
+    ##  70 E009G18 Juvenile <NA>      1   4.19      NA  2018 Erie  Summer SummerJuveni~
+    ##  71 E009G18 Juvenile <NA>      1   3.78      NA  2018 Erie  Summer SummerJuveni~
+    ##  72 E009G18 Juvenile <NA>      1   3.96      NA  2018 Erie  Summer SummerJuveni~
+    ##  73 E15MG18 Juvenile <NA>      1   3.97      NA  2018 Erie  Summer SummerJuveni~
+    ##  74 E15MG18 Juvenile <NA>      1   3.39      NA  2018 Erie  Summer SummerJuveni~
+    ##  75 E15MG18 Juvenile <NA>      1   2.82      NA  2018 Erie  Summer SummerJuveni~
+    ##  76 E15MG18 Juvenile <NA>      1   2.87      NA  2018 Erie  Summer SummerJuveni~
+    ##  77 E15MG18 Juvenile <NA>      1   3.26      NA  2018 Erie  Summer SummerJuveni~
+    ##  78 E15MG18 Juvenile <NA>      1   2.65      NA  2018 Erie  Summer SummerJuveni~
+    ##  79 E15MG18 Juvenile <NA>      1   5.58      NA  2018 Erie  Summer SummerJuveni~
+    ##  80 E15MG18 Juvenile <NA>      1   3.65      NA  2018 Erie  Summer SummerJuveni~
+    ##  81 E15MG18 Juvenile <NA>      1   3.16      NA  2018 Erie  Summer SummerJuveni~
+    ##  82 E15MG18 Juvenile <NA>      1   3.19      NA  2018 Erie  Summer SummerJuveni~
+    ##  83 E15MG18 Juvenile <NA>      1   3.03      NA  2018 Erie  Summer SummerJuveni~
+    ##  84 E15MG18 Juvenile <NA>      1   3.34      NA  2018 Erie  Summer SummerJuveni~
+    ##  85 E15MG18 Juvenile <NA>      1   3.68      NA  2018 Erie  Summer SummerJuveni~
+    ##  86 E15MG18 Juvenile <NA>      1   3.66      NA  2018 Erie  Summer SummerJuveni~
+    ##  87 E15MG18 Juvenile <NA>      1   3.76      NA  2018 Erie  Summer SummerJuveni~
+    ##  88 E15MG18 Juvenile <NA>      1   3.64      NA  2018 Erie  Summer SummerJuveni~
+    ##  89 E15MG18 Juvenile <NA>      1   3.18      NA  2018 Erie  Summer SummerJuveni~
+    ##  90 E15MG18 Juvenile <NA>      1   3.52      NA  2018 Erie  Summer SummerJuveni~
+    ##  91 E15MG18 Juvenile <NA>      1   2.91      NA  2018 Erie  Summer SummerJuveni~
+    ##  92 E15MG18 Juvenile <NA>      1   3.26      NA  2018 Erie  Summer SummerJuveni~
+    ##  93 E15MG18 Juvenile <NA>      1   2.87      NA  2018 Erie  Summer SummerJuveni~
+    ##  94 E15MG18 Juvenile <NA>      1   3.26      NA  2018 Erie  Summer SummerJuveni~
+    ##  95 E15MG18 Juvenile <NA>      1   3.04      NA  2018 Erie  Summer SummerJuveni~
+    ##  96 E063G18 Juvenile <NA>      1   4.89      NA  2018 Erie  Summer SummerJuveni~
+    ##  97 E063G18 Juvenile <NA>      1   3.41      NA  2018 Erie  Summer SummerJuveni~
+    ##  98 E063G18 Juvenile <NA>      1   3.66      NA  2018 Erie  Summer SummerJuveni~
+    ##  99 E063G18 Juvenile <NA>      1   3.4       NA  2018 Erie  Summer SummerJuveni~
+    ## 100 E063G18 Juvenile <NA>      1   3.84      NA  2018 Erie  Summer SummerJuveni~
+    ## 101 E063G18 Juvenile <NA>      1   3.79      NA  2018 Erie  Summer SummerJuveni~
+    ## 102 E063G18 Juvenile <NA>      1   3.33      NA  2018 Erie  Summer SummerJuveni~
+    ## 103 E063G18 Juvenile <NA>      1   5.13      NA  2018 Erie  Summer SummerJuveni~
+    ## 104 E063G18 Juvenile <NA>      1   3.31      NA  2018 Erie  Summer SummerJuveni~
+    ## 105 E063G18 Juvenile <NA>      1   4.33      NA  2018 Erie  Summer SummerJuveni~
+    ## 106 E063G18 Juvenile <NA>      1   3.44      NA  2018 Erie  Summer SummerJuveni~
+    ## 107 E063G18 Juvenile <NA>      1   6.90      NA  2018 Erie  Summer SummerJuveni~
+    ## 108 E009G19 Juvenile <NA>      1   3.31      NA  2019 Erie  Summer SummerJuveni~
+    ## 109 E009G19 Juvenile <NA>      1   3.19      NA  2019 Erie  Summer SummerJuveni~
+    ## 110 E009G19 Juvenile <NA>      1   3.58      NA  2019 Erie  Summer SummerJuveni~
+    ## 111 E009G19 Juvenile <NA>      1   3.99      NA  2019 Erie  Summer SummerJuveni~
+    ## 112 E009G19 Juvenile <NA>      1   3.79      NA  2019 Erie  Summer SummerJuveni~
+    ## 113 E009G19 Juvenile <NA>      1   2.65      NA  2019 Erie  Summer SummerJuveni~
+    ## 114 E009G19 Juvenile <NA>      1   3.64      NA  2019 Erie  Summer SummerJuveni~
+    ## 115 E009G19 Juvenile <NA>      1   3.61      NA  2019 Erie  Summer SummerJuveni~
+    ## 116 E009G19 Juvenile <NA>      1   3.46      NA  2019 Erie  Summer SummerJuveni~
+    ## 117 E009G19 Juvenile <NA>      1   2.37      NA  2019 Erie  Summer SummerJuveni~
+    ## 118 E009G19 Juvenile <NA>      1   4.37      NA  2019 Erie  Summer SummerJuveni~
+    ## 119 E009G19 Juvenile <NA>      1   3.35      NA  2019 Erie  Summer SummerJuveni~
+    ## 120 E009G19 Juvenile <NA>      1   3.36      NA  2019 Erie  Summer SummerJuveni~
+    ## 121 E009G19 Juvenile <NA>      1   3.28      NA  2019 Erie  Summer SummerJuveni~
+    ## 122 E009G19 Juvenile <NA>      1   3.65      NA  2019 Erie  Summer SummerJuveni~
+    ## 123 E009G19 Juvenile <NA>      1   3.82      NA  2019 Erie  Summer SummerJuveni~
+    ## 124 E009G19 Juvenile <NA>      1   3.75      NA  2019 Erie  Summer SummerJuveni~
+    ## 125 E009G19 Juvenile <NA>      1   3.23      NA  2019 Erie  Summer SummerJuveni~
+    ## 126 E009G19 Juvenile <NA>      1   3.45      NA  2019 Erie  Summer SummerJuveni~
+    ## 127 E009G19 Juvenile <NA>      1   3.52      NA  2019 Erie  Summer SummerJuveni~
+    ## 128 E009G19 Juvenile <NA>      1   3.79      NA  2019 Erie  Summer SummerJuveni~
+    ## 129 E93bG19 Juvenile <NA>      1   4.39      NA  2019 Erie  Summer SummerJuveni~
+    ## 130 E93bG19 Juvenile <NA>      1   2.98      NA  2019 Erie  Summer SummerJuveni~
+    ## 131 E93bG19 Juvenile <NA>      1   2.82      NA  2019 Erie  Summer SummerJuveni~
+    ## 132 E93bG19 Juvenile <NA>      1   3.66      NA  2019 Erie  Summer SummerJuveni~
+    ## 133 E93bG19 Juvenile <NA>      1   3.04      NA  2019 Erie  Summer SummerJuveni~
+    ## 134 E010A19 Male     Matu~     1  12.5       NA  2019 Erie  Spring SpringMale
 
-    ## # A tibble: 4 x 7
-    ##   Season Age    Mean_Length Sd_Length N_Length Rate_per_month_3 Rate_per_month_~
-    ##   <fct>  <fct>        <dbl>     <dbl>    <int>            <dbl>            <dbl>
-    ## 1 Spring (0,14]       12.8      0.444        3             1.23             1.12
-    ## 2 Spring (14,2~       15.5      0.566        5             1.57             1.46
-    ## 3 Summer (0,14]        3.89     0.890      125            NA               NA   
-    ## 4 Summer (14,2~       15.5     NA            1            NA               NA
+    ## # A tibble: 3 x 7
+    ##   Season Cohort Mean_Length N_Length Month  Growth Mortality
+    ##   <fct>  <fct>        <dbl>    <int> <dbl>   <dbl>     <dbl>
+    ## 1 Summer Age-0         3.89      125     0 NaN         0    
+    ## 2 Spring Age-1+       14.5         8     8   1.33      0.984
+    ## 3 Summer Age-1+       15.5         1    12   0.967     0.992
 
-    ## [1] 99.1
+    ## [1] "Proportion" "93.3"
+
+    ## [1] "Proportion,  Spring" "94"
 
 <br> <br>
 
 -----
 
-### Survival estimates
+### Growth and Survival estimates
 
-### Table of life history values between lakes
+#### Age Structure, Mortality, and Growth: Cross-Lakes Comparisons
+
+    ##             Df  Sum Sq Mean Sq F value Pr(>F)  
+    ## Lake         3 0.04503 0.01501   2.629 0.0614 .
+    ## Residuals   46 0.26267 0.00571                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ## 
+    ## Call:
+    ## aov(formula = Prop_1 ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.22904 -0.04525  0.01596  0.04981  0.11446 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   0.71632    0.02181  32.838   <2e-16 ***
+    ## LakeMichigan  0.04488    0.03025   1.484   0.1447    
+    ## LakeHuron     0.05083    0.03025   1.680   0.0997 .  
+    ## LakeOntario   0.08614    0.03085   2.792   0.0076 ** 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.07557 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1464, Adjusted R-squared:  0.09068 
+    ## F-statistic: 2.629 on 3 and 46 DF,  p-value: 0.06137
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Prop_1 ~ Lake, data = SizeStructAnnualSummary %>% filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## $Lake
+    ##                          diff          lwr        upr     p adj
+    ## Michigan-Superior 0.044882731 -0.035750203 0.12551566 0.4554078
+    ## Huron-Superior    0.050829889 -0.029803045 0.13146282 0.3455741
+    ## Ontario-Superior  0.086137544  0.003907764 0.16836733 0.0368448
+    ## Huron-Michigan    0.005947158 -0.073056659 0.08495098 0.9970984
+    ## Ontario-Michigan  0.041254814 -0.039378120 0.12188775 0.5280607
+    ## Ontario-Huron     0.035307655 -0.045325279 0.11594059 0.6502909
+
+    ##             Df Sum Sq Mean Sq F value Pr(>F)
+    ## Lake         3   2135   711.7   2.099  0.113
+    ## Residuals   46  15597   339.1
+
+    ## 
+    ## Call:
+    ## aov(formula = Surv_rate ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -26.489 -14.768  -3.312  12.001  45.440 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    45.132      5.316   8.490 5.66e-11 ***
+    ## LakeMichigan  -15.801      7.371  -2.144   0.0374 *  
+    ## LakeHuron     -12.757      7.371  -1.731   0.0902 .  
+    ## LakeOntario   -16.400      7.517  -2.182   0.0343 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 18.41 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1204, Adjusted R-squared:  0.06304 
+    ## F-statistic: 2.099 on 3 and 46 DF,  p-value: 0.1134
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Surv_rate ~ Lake, data = SizeStructAnnualSummary %>% filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## $Lake
+    ##                          diff       lwr       upr     p adj
+    ## Michigan-Superior -15.8008378 -35.44954  3.847861 0.1548030
+    ## Huron-Superior    -12.7569155 -32.40561  6.891783 0.3199496
+    ## Ontario-Superior  -16.3995373 -36.43736  3.638282 0.1436537
+    ## Huron-Michigan      3.0439222 -16.20779 22.295637 0.9745325
+    ## Ontario-Michigan   -0.5986996 -20.24740 19.049999 0.9998050
+    ## Ontario-Huron      -3.6426218 -23.29132 16.006077 0.9600017
+
+    ##             Df Sum Sq Mean Sq F value Pr(>F)
+    ## Lake         3   2135   711.7   2.099  0.113
+    ## Residuals   46  15597   339.1
+
+    ## 
+    ## Call:
+    ## aov(formula = Mort_rate ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -45.440 -12.001   3.312  14.768  26.489 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    54.868      5.316  10.322 1.47e-13 ***
+    ## LakeMichigan   15.801      7.371   2.144   0.0374 *  
+    ## LakeHuron      12.757      7.371   1.731   0.0902 .  
+    ## LakeOntario    16.400      7.517   2.182   0.0343 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 18.41 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1204, Adjusted R-squared:  0.06304 
+    ## F-statistic: 2.099 on 3 and 46 DF,  p-value: 0.1134
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Mort_rate ~ Lake, data = SizeStructAnnualSummary %>% filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## $Lake
+    ##                         diff        lwr      upr     p adj
+    ## Michigan-Superior 15.8008378  -3.847861 35.44954 0.1548030
+    ## Huron-Superior    12.7569155  -6.891783 32.40561 0.3199496
+    ## Ontario-Superior  16.3995373  -3.638282 36.43736 0.1436537
+    ## Huron-Michigan    -3.0439222 -22.295637 16.20779 0.9745325
+    ## Ontario-Michigan   0.5986996 -19.049999 20.24740 0.9998050
+    ## Ontario-Huron      3.6426218 -16.006077 23.29132 0.9600017
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
+    ## Lake         3 0.02665 0.008883   2.242 0.0961 .
+    ## Residuals   46 0.18230 0.003963                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ## 
+    ## Call:
+    ## aov(formula = Growth_Calc ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.146397 -0.045477  0.008268  0.043373  0.115826 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   0.58857    0.01817  32.387   <2e-16 ***
+    ## LakeMichigan  0.04762    0.02520   1.889   0.0651 .  
+    ## LakeHuron     0.01468    0.02520   0.582   0.5632    
+    ## LakeOntario   0.05702    0.02570   2.219   0.0315 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.06295 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1275, Adjusted R-squared:  0.07064 
+    ## F-statistic: 2.242 on 3 and 46 DF,  p-value: 0.09606
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Growth_Calc ~ Lake, data = SizeStructAnnualSummary %>% filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## $Lake
+    ##                           diff         lwr        upr     p adj
+    ## Michigan-Superior  0.047616953 -0.01955721 0.11479111 0.2466732
+    ## Huron-Superior     0.014675519 -0.05249864 0.08184968 0.9369032
+    ## Ontario-Superior   0.057023216 -0.01148126 0.12552769 0.1333475
+    ## Huron-Michigan    -0.032941434 -0.09875840 0.03287553 0.5464330
+    ## Ontario-Michigan   0.009406263 -0.05776790 0.07658042 0.9820414
+    ## Ontario-Huron      0.042347697 -0.02482646 0.10952186 0.3455321
+
+    ## # A tibble: 8 x 8
+    ## # Groups:   Group, Lake [4]
+    ##   Group Lake  Season Surv_Mean Surv_2_Measured Growth_Mean Overall_Rate_pe~
+    ##   <chr> <ord> <chr>      <dbl>           <dbl>       <dbl>            <dbl>
+    ## 1 GLNP~ Onta~ Spring      NA              88.1        0.68            0.620
+    ## 2 GLNP~ Mich~ Spring      NA             104.         0.56            0.566
+    ## 3 GLNP~ Huron Spring      NA             145.         0.5             0.555
+    ## 4 GLNP~ Supe~ Spring      NA             149.         0.45            0.528
+    ## 5 GLNP~ Onta~ Summer      28.7            24.6        0.65            0.829
+    ## 6 GLNP~ Mich~ Summer      29.3            31.4        0.64            0.724
+    ## 7 GLNP~ Huron Summer      32.4            30.4        0.6             0.679
+    ## 8 GLNP~ Supe~ Summer      45.1            39.6        0.59            0.651
+    ## # ... with 1 more variable: Measured_Rate_per_month <dbl>
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+    ## Warning: Removed 4 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+    ## Warning: Removed 4 row(s) containing missing values (geom_path).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20GLNPO%20Cross-Lake%20Analyses%20and%20Tables-1.png)<!-- -->
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+    
+    ## Warning: Removed 4 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+    ## Warning: Removed 4 row(s) containing missing values (geom_path).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20GLNPO%20Cross-Lake%20Analyses%20and%20Tables-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20GLNPO%20Cross-Lake%20Analyses%20and%20Tables-3.png)<!-- -->
+
+#### Age Structure, Mortality, and Growth: Time Series
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20Time%20Series%20Plots%20and%20Analysis-1.png)<!-- -->
+
+    ##             Df  Sum Sq   Mean Sq F value Pr(>F)
+    ## Year         1 0.00001 0.0000097   0.003  0.955
+    ## Residuals   10 0.02905 0.0029052
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00195 0.001950   0.384  0.548
+    ## Residuals   11 0.05589 0.005081
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00115 0.001154   0.214  0.656
+    ## Residuals    8 0.04318 0.005397               
+    ## 1 observation deleted due to missingness
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00144 0.001445   0.279  0.605
+    ## Residuals   15 0.07765 0.005177               
+    ## 1 observation deleted due to missingness
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00312 0.003121   0.506  0.493
+    ## Residuals   10 0.06173 0.006173
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
+    ## Year         1 0.01834 0.018337   3.609  0.084 .
+    ## Residuals   11 0.05589 0.005081                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00429 0.004289   0.273  0.613
+    ## Residuals   10 0.15734 0.015734               
+    ## 1 observation deleted due to missingness
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00190 0.001899   0.191  0.672
+    ## Residuals   10 0.09965 0.009965
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.07927 -0.05017  0.01124  0.03745  0.07773 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  1.2414048  9.0710186   0.137    0.894
+    ## Year        -0.0002609  0.0045073  -0.058    0.955
+    ## 
+    ## Residual standard error: 0.0539 on 10 degrees of freedom
+    ## Multiple R-squared:  0.000335,   Adjusted R-squared:  -0.09963 
+    ## F-statistic: 0.003351 on 1 and 10 DF,  p-value: 0.955
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.10719 -0.02669 -0.00448  0.05412  0.10331 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -5.824388  10.630346  -0.548    0.595
+    ## Year         0.003273   0.005283   0.620    0.548
+    ## 
+    ## Residual standard error: 0.07128 on 11 degrees of freedom
+    ## Multiple R-squared:  0.03371,    Adjusted R-squared:  -0.05413 
+    ## F-statistic: 0.3838 on 1 and 11 DF,  p-value: 0.5482
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.135301 -0.004639  0.028964  0.040813  0.066809 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  7.809226  15.388198   0.507    0.626
+    ## Year        -0.003534   0.007643  -0.462    0.656
+    ## 
+    ## Residual standard error: 0.07347 on 8 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.02604,    Adjusted R-squared:  -0.09571 
+    ## F-statistic: 0.2139 on 1 and 8 DF,  p-value: 0.6561
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.108347 -0.058517 -0.009735  0.045452  0.130211 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  3.222026   4.703165   0.685    0.504
+    ## Year        -0.001237   0.002342  -0.528    0.605
+    ## 
+    ## Residual standard error: 0.07195 on 15 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01827,    Adjusted R-squared:  -0.04718 
+    ## F-statistic: 0.2791 on 1 and 15 DF,  p-value: 0.605
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.09064 -0.06955 -0.01175  0.06154  0.12387 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) 10.134766  13.222578   0.766    0.461
+    ## Year        -0.004672   0.006570  -0.711    0.493
+    ## 
+    ## Residual standard error: 0.07857 on 10 degrees of freedom
+    ## Multiple R-squared:  0.04812,    Adjusted R-squared:  -0.04706 
+    ## F-statistic: 0.5056 on 1 and 10 DF,  p-value: 0.4933
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.168576 -0.022956 -0.004224  0.051031  0.087385 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) -19.428383  10.630608  -1.828   0.0948 .
+    ## Year          0.010038   0.005284   1.900   0.0840 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.07128 on 11 degrees of freedom
+    ## Multiple R-squared:  0.247,  Adjusted R-squared:  0.1786 
+    ## F-statistic: 3.609 on 1 and 11 DF,  p-value: 0.08399
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.178882 -0.071886  0.002399  0.067569  0.258573 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -9.845207  20.280713  -0.485    0.638
+    ## Year         0.005262   0.010078   0.522    0.613
+    ## 
+    ## Residual standard error: 0.1254 on 10 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.02654,    Adjusted R-squared:  -0.07081 
+    ## F-statistic: 0.2726 on 1 and 10 DF,  p-value: 0.613
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.21629 -0.05194  0.02799  0.06745  0.11993 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  8.136989  16.799774   0.484    0.639
+    ## Year        -0.003644   0.008348  -0.437    0.672
+    ## 
+    ## Residual standard error: 0.09982 on 10 degrees of freedom
+    ## Multiple R-squared:  0.0187, Adjusted R-squared:  -0.07943 
+    ## F-statistic: 0.1906 on 1 and 10 DF,  p-value: 0.6717
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20Time%20Series%20Plots%20and%20Analysis-2.png)<!-- -->
+
+    ##             Df   Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.001615 0.001615   0.568  0.468
+    ## Residuals   10 0.028411 0.002841
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00922 0.009218   1.623  0.229
+    ## Residuals   11 0.06248 0.005680
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00696 0.006958   1.269  0.297
+    ## Residuals    7 0.03837 0.005482               
+    ## 2 observations deleted due to missingness
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00007 0.000069   0.006  0.939
+    ## Residuals   14 0.15749 0.011250               
+    ## 2 observations deleted due to missingness
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00316 0.003163   0.391  0.546
+    ## Residuals   10 0.08096 0.008096
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00012 0.000119   0.033  0.859
+    ## Residuals   11 0.03962 0.003602
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00687 0.006866   0.975  0.352
+    ## Residuals    8 0.05633 0.007041               
+    ## 3 observations deleted due to missingness
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.00030 0.000296   0.073  0.793
+    ## Residuals   10 0.04054 0.004054
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.068393 -0.046681  0.006494  0.027653  0.085826 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -6.173686   8.970442  -0.688    0.507
+    ## Year         0.003360   0.004457   0.754    0.468
+    ## 
+    ## Residual standard error: 0.0533 on 10 degrees of freedom
+    ## Multiple R-squared:  0.05377,    Adjusted R-squared:  -0.04085 
+    ## F-statistic: 0.5683 on 1 and 10 DF,  p-value: 0.4683
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.097195 -0.082757  0.008516  0.060871  0.094476 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -13.682662  11.240368  -1.217    0.249
+    ## Year          0.007117   0.005587   1.274    0.229
+    ## 
+    ## Residual standard error: 0.07537 on 11 degrees of freedom
+    ## Multiple R-squared:  0.1286, Adjusted R-squared:  0.04934 
+    ## F-statistic: 1.623 on 1 and 11 DF,  p-value: 0.229
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.13733 -0.03141 -0.01841  0.05723  0.07787 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) 22.323231  19.250418   1.160    0.284
+    ## Year        -0.010769   0.009558  -1.127    0.297
+    ## 
+    ## Residual standard error: 0.07404 on 7 degrees of freedom
+    ##   (2 observations deleted due to missingness)
+    ## Multiple R-squared:  0.1535, Adjusted R-squared:  0.03258 
+    ## F-statistic: 1.269 on 1 and 7 DF,  p-value: 0.297
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.180640 -0.060706 -0.008538  0.063998  0.175985 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  1.2465827  7.5915267   0.164    0.872
+    ## Year        -0.0002954  0.0037790  -0.078    0.939
+    ## 
+    ## Residual standard error: 0.1061 on 14 degrees of freedom
+    ##   (2 observations deleted due to missingness)
+    ## Multiple R-squared:  0.0004363,  Adjusted R-squared:  -0.07096 
+    ## F-statistic: 0.006111 on 1 and 14 DF,  p-value: 0.9388
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.179652 -0.035858 -0.001753  0.042527  0.138062 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -8.815924  15.143065  -0.582    0.573
+    ## Year         0.004703   0.007524   0.625    0.546
+    ## 
+    ## Residual standard error: 0.08998 on 10 degrees of freedom
+    ## Multiple R-squared:  0.03759,    Adjusted R-squared:  -0.05865 
+    ## F-statistic: 0.3906 on 1 and 10 DF,  p-value: 0.546
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.07787 -0.04689  0.00479  0.03929  0.10193 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -1.0249225  8.9510755  -0.115    0.911
+    ## Year         0.0008092  0.0044488   0.182    0.859
+    ## 
+    ## Residual standard error: 0.06002 on 11 degrees of freedom
+    ## Multiple R-squared:  0.002999,   Adjusted R-squared:  -0.08764 
+    ## F-statistic: 0.03309 on 1 and 11 DF,  p-value: 0.859
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.13287 -0.05180  0.01323  0.04492  0.11837 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) 16.723495  16.439079   1.017    0.339
+    ## Year        -0.008063   0.008166  -0.987    0.352
+    ## 
+    ## Residual standard error: 0.08391 on 8 degrees of freedom
+    ##   (3 observations deleted due to missingness)
+    ## Multiple R-squared:  0.1086, Adjusted R-squared:  -0.002776 
+    ## F-statistic: 0.9751 on 1 and 8 DF,  p-value: 0.3523
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.13849 -0.02376  0.02183  0.04035  0.05970 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  3.539855  10.714836    0.33    0.748
+    ## Year        -0.001438   0.005324   -0.27    0.793
+    ## 
+    ## Residual standard error: 0.06367 on 10 degrees of freedom
+    ## Multiple R-squared:  0.007244,   Adjusted R-squared:  -0.09203 
+    ## F-statistic: 0.07296 on 1 and 10 DF,  p-value: 0.7926
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+    ## Warning: Removed 4 row(s) containing missing values (geom_path).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20Time%20Series%20Plots%20and%20Analysis-3.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20Time%20Series%20Plots%20and%20Analysis-4.png)<!-- -->
+
+### Brooding and Spent Females Relative Densities
+
+### Summary Table and Key Plots of Cross-Lake and Time Series Life History Plots
+
+    ## # A tibble: 4 x 7
+    ##   Lake     Prop_1_Mean Prop_1_2_SE Mort_Mean Mort_2_SE Growth_Mean Growth_2_SE
+    ##   <ord>          <dbl>       <dbl>     <dbl>     <dbl>       <dbl>       <dbl>
+    ## 1 Superior       0.716      0.0294      54.9     10.6         0.59      0.0300
+    ## 2 Michigan       0.761      0.0383      70.7      7.37        0.64      0.0427
+    ## 3 Huron          0.767      0.0438      67.6     11.6         0.6       0.0322
+    ## 4 Ontario        0.802      0.0554      71.3     11.7         0.65      0.0352
+
+    ## Call:
+    ##    aov(formula = Prop_1 ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Terms:
+    ##                      Lake Residuals
+    ## Sum of Squares  0.0450340 0.2626704
+    ## Deg. of Freedom         3        46
+    ## 
+    ## Residual standard error: 0.07556604
+    ## Estimated effects may be unbalanced
+
+    ##             Df  Sum Sq Mean Sq F value Pr(>F)  
+    ## Lake         3 0.04503 0.01501   2.629 0.0614 .
+    ## Residuals   46 0.26267 0.00571                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Prop_1 ~ Lake, data = SizeStructAnnualSummary %>% filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## $Lake
+    ##                          diff          lwr        upr     p adj
+    ## Michigan-Superior 0.044882731 -0.035750203 0.12551566 0.4554078
+    ## Huron-Superior    0.050829889 -0.029803045 0.13146282 0.3455741
+    ## Ontario-Superior  0.086137544  0.003907764 0.16836733 0.0368448
+    ## Huron-Michigan    0.005947158 -0.073056659 0.08495098 0.9970984
+    ## Ontario-Michigan  0.041254814 -0.039378120 0.12188775 0.5280607
+    ## Ontario-Huron     0.035307655 -0.045325279 0.11594059 0.6502909
+
+    ## Call:
+    ##    aov(formula = Mort_rate ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Terms:
+    ##                     Lake Residuals
+    ## Sum of Squares   2135.10  15597.46
+    ## Deg. of Freedom        3        46
+    ## 
+    ## Residual standard error: 18.41399
+    ## Estimated effects may be unbalanced
+
+    ##             Df Sum Sq Mean Sq F value Pr(>F)
+    ## Lake         3   2135   711.7   2.099  0.113
+    ## Residuals   46  15597   339.1
+
+    ## 
+    ## Call:
+    ## aov(formula = Mort_rate ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -45.440 -12.001   3.312  14.768  26.489 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    54.868      5.316  10.322 1.47e-13 ***
+    ## LakeMichigan   15.801      7.371   2.144   0.0374 *  
+    ## LakeHuron      12.757      7.371   1.731   0.0902 .  
+    ## LakeOntario    16.400      7.517   2.182   0.0343 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 18.41 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1204, Adjusted R-squared:  0.06304 
+    ## F-statistic: 2.099 on 3 and 46 DF,  p-value: 0.1134
+
+    ## Call:
+    ##    aov(formula = Growth_Calc ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Terms:
+    ##                       Lake  Residuals
+    ## Sum of Squares  0.02664991 0.18230172
+    ## Deg. of Freedom          3         46
+    ## 
+    ## Residual standard error: 0.06295301
+    ## Estimated effects may be unbalanced
+
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
+    ## Lake         3 0.02665 0.008883   2.242 0.0961 .
+    ## Residuals   46 0.18230 0.003963                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    ## 
+    ## Call:
+    ## aov(formula = Growth_Calc ~ Lake, data = SizeStructAnnualSummary %>% 
+    ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.146397 -0.045477  0.008268  0.043373  0.115826 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   0.58857    0.01817  32.387   <2e-16 ***
+    ## LakeMichigan  0.04762    0.02520   1.889   0.0651 .  
+    ## LakeHuron     0.01468    0.02520   0.582   0.5632    
+    ## LakeOntario   0.05702    0.02570   2.219   0.0315 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.06295 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1275, Adjusted R-squared:  0.07064 
+    ## F-statistic: 2.242 on 3 and 46 DF,  p-value: 0.09606
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-1.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.07927 -0.05017  0.01124  0.03745  0.07773 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  1.2414048  9.0710186   0.137    0.894
+    ## Year        -0.0002609  0.0045073  -0.058    0.955
+    ## 
+    ## Residual standard error: 0.0539 on 10 degrees of freedom
+    ## Multiple R-squared:  0.000335,   Adjusted R-squared:  -0.09963 
+    ## F-statistic: 0.003351 on 1 and 10 DF,  p-value: 0.955
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.10719 -0.02669 -0.00448  0.05412  0.10331 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -5.824388  10.630346  -0.548    0.595
+    ## Year         0.003273   0.005283   0.620    0.548
+    ## 
+    ## Residual standard error: 0.07128 on 11 degrees of freedom
+    ## Multiple R-squared:  0.03371,    Adjusted R-squared:  -0.05413 
+    ## F-statistic: 0.3838 on 1 and 11 DF,  p-value: 0.5482
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.168576 -0.022956 -0.004224  0.051031  0.087385 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) -19.428383  10.630608  -1.828   0.0948 .
+    ## Year          0.010038   0.005284   1.900   0.0840 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.07128 on 11 degrees of freedom
+    ## Multiple R-squared:  0.247,  Adjusted R-squared:  0.1786 
+    ## F-statistic: 3.609 on 1 and 11 DF,  p-value: 0.08399
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.21629 -0.05194  0.02799  0.06745  0.11993 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  8.136989  16.799774   0.484    0.639
+    ## Year        -0.003644   0.008348  -0.437    0.672
+    ## 
+    ## Residual standard error: 0.09982 on 10 degrees of freedom
+    ## Multiple R-squared:  0.0187, Adjusted R-squared:  -0.07943 
+    ## F-statistic: 0.1906 on 1 and 10 DF,  p-value: 0.6717
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-3.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.068393 -0.046681  0.006494  0.027653  0.085826 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -6.173686   8.970442  -0.688    0.507
+    ## Year         0.003360   0.004457   0.754    0.468
+    ## 
+    ## Residual standard error: 0.0533 on 10 degrees of freedom
+    ## Multiple R-squared:  0.05377,    Adjusted R-squared:  -0.04085 
+    ## F-statistic: 0.5683 on 1 and 10 DF,  p-value: 0.4683
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.097195 -0.082757  0.008516  0.060871  0.094476 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -13.682662  11.240368  -1.217    0.249
+    ## Year          0.007117   0.005587   1.274    0.229
+    ## 
+    ## Residual standard error: 0.07537 on 11 degrees of freedom
+    ## Multiple R-squared:  0.1286, Adjusted R-squared:  0.04934 
+    ## F-statistic: 1.623 on 1 and 11 DF,  p-value: 0.229
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.07787 -0.04689  0.00479  0.03929  0.10193 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -1.0249225  8.9510755  -0.115    0.911
+    ## Year         0.0008092  0.0044488   0.182    0.859
+    ## 
+    ## Residual standard error: 0.06002 on 11 degrees of freedom
+    ## Multiple R-squared:  0.002999,   Adjusted R-squared:  -0.08764 
+    ## F-statistic: 0.03309 on 1 and 11 DF,  p-value: 0.859
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.13849 -0.02376  0.02183  0.04035  0.05970 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  3.539855  10.714836    0.33    0.748
+    ## Year        -0.001438   0.005324   -0.27    0.793
+    ## 
+    ## Residual standard error: 0.06367 on 10 degrees of freedom
+    ## Multiple R-squared:  0.007244,   Adjusted R-squared:  -0.09203 
+    ## F-statistic: 0.07296 on 1 and 10 DF,  p-value: 0.7926
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-4.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.108347 -0.058517 -0.009735  0.045452  0.130211 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  3.222026   4.703165   0.685    0.504
+    ## Year        -0.001237   0.002342  -0.528    0.605
+    ## 
+    ## Residual standard error: 0.07195 on 15 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01827,    Adjusted R-squared:  -0.04718 
+    ## F-statistic: 0.2791 on 1 and 15 DF,  p-value: 0.605
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.09064 -0.06955 -0.01175  0.06154  0.12387 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) 10.134766  13.222578   0.766    0.461
+    ## Year        -0.004672   0.006570  -0.711    0.493
+    ## 
+    ## Residual standard error: 0.07857 on 10 degrees of freedom
+    ## Multiple R-squared:  0.04812,    Adjusted R-squared:  -0.04706 
+    ## F-statistic: 0.5056 on 1 and 10 DF,  p-value: 0.4933
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.135301 -0.004639  0.028964  0.040813  0.066809 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  7.809226  15.388198   0.507    0.626
+    ## Year        -0.003534   0.007643  -0.462    0.656
+    ## 
+    ## Residual standard error: 0.07347 on 8 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.02604,    Adjusted R-squared:  -0.09571 
+    ## F-statistic: 0.2139 on 1 and 8 DF,  p-value: 0.6561
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.178882 -0.071886  0.002399  0.067569  0.258573 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -9.845207  20.280713  -0.485    0.638
+    ## Year         0.005262   0.010078   0.522    0.613
+    ## 
+    ## Residual standard error: 0.1254 on 10 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.02654,    Adjusted R-squared:  -0.07081 
+    ## F-statistic: 0.2726 on 1 and 10 DF,  p-value: 0.613
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.180640 -0.060706 -0.008538  0.063998  0.175985 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  1.2465827  7.5915267   0.164    0.872
+    ## Year        -0.0002954  0.0037790  -0.078    0.939
+    ## 
+    ## Residual standard error: 0.1061 on 14 degrees of freedom
+    ##   (2 observations deleted due to missingness)
+    ## Multiple R-squared:  0.0004363,  Adjusted R-squared:  -0.07096 
+    ## F-statistic: 0.006111 on 1 and 14 DF,  p-value: 0.9388
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.179652 -0.035858 -0.001753  0.042527  0.138062 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -8.815924  15.143065  -0.582    0.573
+    ## Year         0.004703   0.007524   0.625    0.546
+    ## 
+    ## Residual standard error: 0.08998 on 10 degrees of freedom
+    ## Multiple R-squared:  0.03759,    Adjusted R-squared:  -0.05865 
+    ## F-statistic: 0.3906 on 1 and 10 DF,  p-value: 0.546
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.13733 -0.03141 -0.01841  0.05723  0.07787 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) 22.323231  19.250418   1.160    0.284
+    ## Year        -0.010769   0.009558  -1.127    0.297
+    ## 
+    ## Residual standard error: 0.07404 on 7 degrees of freedom
+    ##   (2 observations deleted due to missingness)
+    ## Multiple R-squared:  0.1535, Adjusted R-squared:  0.03258 
+    ## F-statistic: 1.269 on 1 and 7 DF,  p-value: 0.297
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.13287 -0.05180  0.01323  0.04492  0.11837 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) 16.723495  16.439079   1.017    0.339
+    ## Year        -0.008063   0.008166  -0.987    0.352
+    ## 
+    ## Residual standard error: 0.08391 on 8 degrees of freedom
+    ##   (3 observations deleted due to missingness)
+    ## Multiple R-squared:  0.1086, Adjusted R-squared:  -0.002776 
+    ## F-statistic: 0.9751 on 1 and 8 DF,  p-value: 0.3523
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-5.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-6.png)<!-- -->
+
+    ##               Df Sum Sq Mean Sq F value Pr(>F)    
+    ## Lake           4   3632     908   42.19 <2e-16 ***
+    ## Length         1   6704    6704  311.51 <2e-16 ***
+    ## Residuals   1089  23436      22                   
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 578 observations deleted due to missingness
+
+    ## 
+    ## Call:
+    ## aov(formula = Embryos ~ Lake + Length, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -16.3794  -2.8854   0.1987   2.8569  18.0086 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    0.06308    2.52288   0.025 0.980058    
+    ## LakeOntario   -6.40320    2.09711  -3.053 0.002318 ** 
+    ## LakeMichigan  -7.63451    2.09768  -3.640 0.000286 ***
+    ## LakeHuron     -8.93372    2.14886  -4.157 3.47e-05 ***
+    ## LakeSuperior -11.33516    2.08526  -5.436 6.73e-08 ***
+    ## Length         1.63056    0.09238  17.650  < 2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 4.639 on 1089 degrees of freedom
+    ##   (578 observations deleted due to missingness)
+    ## Multiple R-squared:  0.3061, Adjusted R-squared:  0.3029 
+    ## F-statistic: 96.06 on 5 and 1089 DF,  p-value: < 2.2e-16
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = Embryos ~ Lake + Length, data = Mysids_BroodingFemales %>% filter(Season == "Spring", Group == "GLNPO_Mys"))
+    ## 
+    ## $Lake
+    ##                          diff        lwr        upr     p adj
+    ## Ontario-Erie       -8.5180812 -14.238769 -2.7973932 0.0004863
+    ## Michigan-Erie      -8.8788136 -14.607181 -3.1504459 0.0002397
+    ## Huron-Erie        -11.0666667 -16.928824 -5.2045092 0.0000029
+    ## Superior-Erie     -12.1436399 -17.839939 -6.4473411 0.0000001
+    ## Michigan-Ontario   -0.3607324  -1.489298  0.7678329 0.9066716
+    ## Huron-Ontario      -2.5485855  -4.229167 -0.8680042 0.0003547
+    ## Superior-Ontario   -3.6255587  -4.578073 -2.6730441 0.0000000
+    ## Huron-Michigan     -2.1878531  -3.894393 -0.4813131 0.0043573
+    ## Superior-Michigan  -3.2648264  -4.262428 -2.2672246 0.0000000
+    ## Superior-Huron     -1.0769733  -2.672562  0.5186154 0.3486140
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-7.png)<!-- -->
+
+    ## # A tibble: 5 x 6
+    ##   Lake    Season Brood_Count_Mean Brood_Count_2_SE BF_Length_Mean BF_Length_2_SE
+    ##   <fct>   <fct>             <dbl>            <dbl>          <dbl>          <dbl>
+    ## 1 Superi~ Spring             12.4            0.330           14.9         0.0873
+    ## 2 Michig~ Spring             15.9            0.468           14.6         0.132 
+    ## 3 Huron   Spring             13.9            0.579           14.6         0.107 
+    ## 4 Erie    Spring             26.2            3.86            15.4         0.296 
+    ## 5 Ontario Spring             15.9            0.662           14.2         0.104
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-8.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Superior"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -8.7135 -3.7135 -0.4467  3.4643 17.5533 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -165.84586  145.85584  -1.137    0.256
+    ## Year           0.08893    0.07242   1.228    0.220
+    ## 
+    ## Residual standard error: 5.043 on 510 degrees of freedom
+    ##   (133 observations deleted due to missingness)
+    ## Multiple R-squared:  0.002949,   Adjusted R-squared:  0.0009936 
+    ## F-statistic: 1.508 on 1 and 510 DF,  p-value: 0.22
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Michigan"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -11.1587  -4.0686  -0.6136   3.5238  19.5238 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) -441.7508   262.2672  -1.684   0.0934 .
+    ## Year           0.2275     0.1302   1.747   0.0819 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.616 on 235 degrees of freedom
+    ##   (236 observations deleted due to missingness)
+    ## Multiple R-squared:  0.01283,    Adjusted R-squared:  0.008626 
+    ## F-statistic: 3.053 on 1 and 235 DF,  p-value: 0.08187
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -10.1809  -2.9954  -0.3182   3.2916  14.4180 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 489.36683  199.54825   2.452   0.0154 *
+    ## Year         -0.23627    0.09914  -2.383   0.0184 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 4.545 on 148 degrees of freedom
+    ##   (13 observations deleted due to missingness)
+    ## Multiple R-squared:  0.03696,    Adjusted R-squared:  0.03045 
+    ## F-statistic: 5.679 on 1 and 148 DF,  p-value: 0.01844
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -11.4580  -3.4580  -0.5941   3.4059  23.4739 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 326.49266   96.41592   3.386 0.000845 ***
+    ## Year         -0.15533    0.04801  -3.235 0.001410 ** 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.398 on 211 degrees of freedom
+    ##   (18 observations deleted due to missingness)
+    ## Multiple R-squared:  0.04726,    Adjusted R-squared:  0.04275 
+    ## F-statistic: 10.47 on 1 and 211 DF,  p-value: 0.00141
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -16.3831  -4.1562   0.7819   4.6376  15.4932 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -61.78143  387.32921  -0.160    0.874
+    ## Year          0.04125    0.19247   0.214    0.831
+    ## 
+    ## Residual standard error: 7.094 on 129 degrees of freedom
+    ##   (12 observations deleted due to missingness)
+    ## Multiple R-squared:  0.000356,   Adjusted R-squared:  -0.007393 
+    ## F-statistic: 0.04594 on 1 and 129 DF,  p-value: 0.8306
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -17.00  -3.96   1.04   5.04  16.64 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 320.57267  159.76269   2.007   0.0464 *
+    ## Year         -0.14869    0.07953  -1.870   0.0632 .
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 7.164 on 171 degrees of freedom
+    ##   (13 observations deleted due to missingness)
+    ## Multiple R-squared:  0.02003,    Adjusted R-squared:  0.0143 
+    ## F-statistic: 3.496 on 1 and 171 DF,  p-value: 0.06323
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Huron"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -9.3258 -3.2184 -0.3818  3.6182 10.7489 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  51.92814  310.89875   0.167    0.868
+    ## Year         -0.01868    0.15448  -0.121    0.904
+    ## 
+    ## Residual standard error: 4.279 on 70 degrees of freedom
+    ##   (41 observations deleted due to missingness)
+    ## Multiple R-squared:  0.0002088,  Adjusted R-squared:  -0.01407 
+    ## F-statistic: 0.01462 on 1 and 70 DF,  p-value: 0.9041
+
+    ## 
+    ## Call:
+    ## lm(formula = Embryos ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Ontario"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -12.892  -3.790  -0.316   3.396  13.651 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -905.01357  193.52951  -4.676 4.63e-06 ***
+    ## Year           0.45756    0.09605   4.764 3.11e-06 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 5.354 on 269 degrees of freedom
+    ##   (166 observations deleted due to missingness)
+    ## Multiple R-squared:  0.07779,    Adjusted R-squared:  0.07437 
+    ## F-statistic: 22.69 on 1 and 269 DF,  p-value: 3.114e-06
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-9.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Superior"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.7651 -1.1234  0.0512  1.0679  4.5479 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -81.89074   34.81724  -2.352  0.01897 * 
+    ## Year          0.04810    0.01729   2.781  0.00557 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.502 on 642 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01191,    Adjusted R-squared:  0.01037 
+    ## F-statistic: 7.736 on 1 and 642 DF,  p-value: 0.005571
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.5039 -1.0943 -0.0943  1.0460  6.5356 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -246.83243   41.97445  -5.881 7.77e-09 ***
+    ## Year           0.12988    0.02086   6.225 1.07e-09 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.719 on 470 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.07617,    Adjusted R-squared:  0.0742 
+    ## F-statistic: 38.75 on 1 and 470 DF,  p-value: 1.068e-09
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Huron"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.9056 -1.0180 -0.0883  0.8695  3.2865 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -211.91722   77.00985  -2.752  0.00692 **
+    ## Year           0.11241    0.03828   2.936  0.00404 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.347 on 111 degrees of freedom
+    ## Multiple R-squared:  0.07207,    Adjusted R-squared:  0.06371 
+    ## F-statistic: 8.622 on 1 and 111 DF,  p-value: 0.004039
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "GLNPO_Mys", Lake == 
+    ##         "Ontario"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.4404 -1.0768 -0.0288  0.9056  4.5360 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept) -87.28339   36.91025  -2.365  0.01848 * 
+    ## Year          0.05045    0.01834   2.752  0.00618 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.515 on 434 degrees of freedom
+    ##   (1 observation deleted due to missingness)
+    ## Multiple R-squared:  0.01715,    Adjusted R-squared:  0.01488 
+    ## F-statistic: 7.571 on 1 and 434 DF,  p-value: 0.006179
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -3.071 -1.052 -0.341  0.757  4.435 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 241.22225   60.87345   3.963 0.000111 ***
+    ## Year         -0.11250    0.03024  -3.720 0.000275 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.449 on 161 degrees of freedom
+    ## Multiple R-squared:  0.07915,    Adjusted R-squared:  0.07343 
+    ## F-statistic: 13.84 on 1 and 161 DF,  p-value: 0.0002749
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Spring", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2545 -1.0088 -0.2802  0.7980  5.1581 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 125.95299   26.45046   4.762  3.4e-06 ***
+    ## Year         -0.05525    0.01317  -4.195  3.9e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.54 on 229 degrees of freedom
+    ## Multiple R-squared:  0.07137,    Adjusted R-squared:  0.06732 
+    ## F-statistic:  17.6 on 1 and 229 DF,  p-value: 3.898e-05
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan", 
+    ##         Year >= 2007))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2817 -1.1458  0.0829  1.0176  4.8485 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) 173.18846   77.85833   2.224   0.0277 *
+    ## Year         -0.07745    0.03869  -2.002   0.0472 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.489 on 141 degrees of freedom
+    ## Multiple R-squared:  0.02764,    Adjusted R-squared:  0.02074 
+    ## F-statistic: 4.007 on 1 and 141 DF,  p-value: 0.04722
+
+    ## 
+    ## Call:
+    ## lm(formula = Length ~ Year, data = Mysids_BroodingFemales %>% 
+    ##     filter(Season == "Fall", Group == "NOAA", Lake == "Michigan"))
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.3329 -1.0907 -0.0107  1.1138  5.1449 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -11.13875   33.49110  -0.333    0.740
+    ## Year          0.01411    0.01667   0.847    0.398
+    ## 
+    ## Residual standard error: 1.54 on 184 degrees of freedom
+    ## Multiple R-squared:  0.003879,   Adjusted R-squared:  -0.001534 
+    ## F-statistic: 0.7166 on 1 and 184 DF,  p-value: 0.3984
+
+# 6\. Compare to food resources
+
+    ## Warning: Removed 21 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-1.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-3.png)<!-- -->
+
+    ## # A tibble: 303 x 8
+    ##    Lake  Season  Year Dens_Pred Biom_Pred Lake_B Annual_Chl_mg_m3
+    ##    <chr> <chr>  <dbl>     <dbl>     <dbl> <fct>             <dbl>
+    ##  1 Mich~ Spring  1995      215.      420. <NA>              NA   
+    ##  2 Mich~ Spring  1996      235.      386. <NA>              NA   
+    ##  3 Mich~ Spring  1997      219.      305. <NA>              NA   
+    ##  4 Mich~ Spring  1998      166.      212. Michi~             1.15
+    ##  5 Mich~ Spring  1999      123.      171. Michi~             1.14
+    ##  6 Mich~ Spring  2000      115.      225. Michi~             1.12
+    ##  7 Mich~ Spring  2001      149.      437. Michi~             1.16
+    ##  8 Mich~ Spring  2002      213.      817. Michi~             1.03
+    ##  9 Mich~ Spring  2003      254.     1079. Michi~             1.03
+    ## 10 Mich~ Spring  2004      228.      933. Michi~             1.00
+    ## # ... with 293 more rows, and 1 more variable: Mar_Jun_Chl_mg_m3 <dbl>
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-5.png)<!-- -->
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Dens_Pred ~ s(Mar_Jun_Chl_mg_m3)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  183.294      6.595   27.79   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##                        edf Ref.df     F p-value    
+    ## s(Mar_Jun_Chl_mg_m3) 3.595  4.432 27.41  <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.593   Deviance explained = 61.1%
+    ## -REML = 459.86  Scale est. = 3653.4    n = 84
+
+    ## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+    ## Using compatibility `.name_repair`.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_warnings()` to see where this warning was generated.
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Biom_Pred ~ s(Mar_Jun_Chl_mg_m3)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   439.56      26.32    16.7   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##                        edf Ref.df     F  p-value    
+    ## s(Mar_Jun_Chl_mg_m3) 3.077  3.817 11.85 1.48e-07 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =   0.35   Deviance explained = 37.5%
+    ## -REML = 572.58  Scale est. = 58178     n = 84
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-6.png)<!-- -->
+
+    ## Warning: Ignoring unknown aesthetics: Group
+
+    ## Warning: Removed 6 rows containing missing values (geom_smooth).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-7.png)<!-- -->
+
+    ## Warning: Ignoring unknown aesthetics: Group
+
+    ## Warning: Removed 5 rows containing missing values (geom_smooth).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-8.png)<!-- -->
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Dens_Pred ~ s(Total)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   143.43       7.89   18.18   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##            edf Ref.df    F  p-value    
+    ## s(Total) 3.145  3.942 24.3 2.46e-15 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.478   Deviance explained = 49.4%
+    ## -REML =  605.3  Scale est. = 6537      n = 105
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Biom_Pred ~ s(Total)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   345.11      24.61   14.02   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##            edf Ref.df     F  p-value    
+    ## s(Total) 2.644  3.327 19.33 7.49e-11 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.379   Deviance explained = 39.5%
+    ## -REML = 721.82  Scale est. = 63587     n = 105
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-9.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-10.png)<!-- -->
+
+    ## 
+    ## Method: REML   Optimizer: outer newton
+    ## full convergence after 5 iterations.
+    ## Gradient range [-8.181811e-07,2.724136e-07]
+    ## (score 459.8621 & scale 3653.374).
+    ## Hessian positive definite, eigenvalue range [1.073102,41.04217].
+    ## Model rank =  10 / 10 
+    ## 
+    ## Basis dimension (k) checking results. Low p-value (k-index<1) may
+    ## indicate that k is too low, especially if edf is close to k'.
+    ## 
+    ##                       k' edf k-index p-value
+    ## s(Mar_Jun_Chl_mg_m3) 9.0 3.6    1.05    0.61
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-11.png)<!-- -->
+
+    ## 
+    ## Method: REML   Optimizer: outer newton
+    ## full convergence after 5 iterations.
+    ## Gradient range [-0.0001042666,3.166405e-06]
+    ## (score 572.5769 & scale 58178.16).
+    ## Hessian positive definite, eigenvalue range [0.8293793,41.02695].
+    ## Model rank =  10 / 10 
+    ## 
+    ## Basis dimension (k) checking results. Low p-value (k-index<1) may
+    ## indicate that k is too low, especially if edf is close to k'.
+    ## 
+    ##                        k'  edf k-index p-value
+    ## s(Mar_Jun_Chl_mg_m3) 9.00 3.08    0.96    0.32
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-12.png)<!-- -->
+
+    ## 
+    ## Method: REML   Optimizer: outer newton
+    ## full convergence after 5 iterations.
+    ## Gradient range [-1.04154e-05,2.887593e-07]
+    ## (score 605.2982 & scale 6537.003).
+    ## Hessian positive definite, eigenvalue range [0.8638103,51.52272].
+    ## Model rank =  10 / 10 
+    ## 
+    ## Basis dimension (k) checking results. Low p-value (k-index<1) may
+    ## indicate that k is too low, especially if edf is close to k'.
+    ## 
+    ##            k'  edf k-index p-value
+    ## s(Total) 9.00 3.14    1.08    0.74
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-13.png)<!-- -->
+
+    ## 
+    ## Method: REML   Optimizer: outer newton
+    ## full convergence after 5 iterations.
+    ## Gradient range [-6.990281e-05,9.471105e-07]
+    ## (score 721.8181 & scale 63587.03).
+    ## Hessian positive definite, eigenvalue range [0.630178,51.51335].
+    ## Model rank =  10 / 10 
+    ## 
+    ## Basis dimension (k) checking results. Low p-value (k-index<1) may
+    ## indicate that k is too low, especially if edf is close to k'.
+    ## 
+    ##            k'  edf k-index p-value
+    ## s(Total) 9.00 2.64    1.14    0.91
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Dens_Pred ~ s(Mar_Jun_Chl_mg_m3)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  183.294      6.595   27.79   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##                        edf Ref.df     F p-value    
+    ## s(Mar_Jun_Chl_mg_m3) 3.595  4.432 27.41  <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.593   Deviance explained = 61.1%
+    ## -REML = 459.86  Scale est. = 3653.4    n = 84
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Biom_Pred ~ s(Mar_Jun_Chl_mg_m3)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   439.56      26.32    16.7   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##                        edf Ref.df     F  p-value    
+    ## s(Mar_Jun_Chl_mg_m3) 3.077  3.817 11.85 1.48e-07 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =   0.35   Deviance explained = 37.5%
+    ## -REML = 572.58  Scale est. = 58178     n = 84
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Dens_Pred ~ s(Total)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   143.43       7.89   18.18   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##            edf Ref.df    F  p-value    
+    ## s(Total) 3.145  3.942 24.3 2.46e-15 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.478   Deviance explained = 49.4%
+    ## -REML =  605.3  Scale est. = 6537      n = 105
+
+    ## 
+    ## Family: gaussian 
+    ## Link function: identity 
+    ## 
+    ## Formula:
+    ## Biom_Pred ~ s(Total)
+    ## 
+    ## Parametric coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   345.11      24.61   14.02   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Approximate significance of smooth terms:
+    ##            edf Ref.df     F  p-value    
+    ## s(Total) 2.644  3.327 19.33 7.49e-11 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## R-sq.(adj) =  0.379   Deviance explained = 39.5%
+    ## -REML = 721.82  Scale est. = 63587     n = 105
+
+    ## Warning: Removed 10 rows containing non-finite values (stat_smooth).
+    
+    ## Warning: Removed 10 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 10 rows containing missing values (geom_label).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food%20all%20in%20one-1.png)<!-- -->
+
+    ## Warning: Removed 10 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 10 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food%20all%20in%20one-2.png)<!-- -->
+
+    ## # A tibble: 1,354 x 9
+    ##     Mean    SE LWR_1_SE UPR_1_SE LWR_2_SE UPR_2_SE Xaxis Food_Type
+    ##    <dbl> <dbl>    <dbl>    <dbl>    <dbl>    <dbl> <dbl> <chr>    
+    ##  1  31.8  19.3     12.5     51.1    -6.80     70.5 0.5   Mar_Jun_~
+    ##  2  35.6  18.6     17.1     54.2    -1.49     72.8 0.51  Mar_Jun_~
+    ##  3  39.4  17.8     21.6     57.3     3.77     75.1 0.52  Mar_Jun_~
+    ##  4  43.2  17.1     26.1     60.4     8.98     77.5 0.53  Mar_Jun_~
+    ##  5  47.0  16.5     30.6     63.5    14.1      79.9 0.54  Mar_Jun_~
+    ##  6  50.8  15.8     35.0     66.6    19.2      82.4 0.55  Mar_Jun_~
+    ##  7  54.6  15.2     39.4     69.8    24.2      85.0 0.56  Mar_Jun_~
+    ##  8  58.4  14.6     43.8     73.0    29.2      87.7 0.57  Mar_Jun_~
+    ##  9  62.2  14.1     48.1     76.3    34.0      90.4 0.580 Mar_Jun_~
+    ## 10  66.0  13.6     52.4     79.6    38.8      93.1 0.59  Mar_Jun_~
+    ## # ... with 1,344 more rows, and 1 more variable: Mysid_Abundance_type <chr>
+
+    ## Warning: Removed 10 rows containing missing values (geom_point).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food%20all%20in%20one-3.png)<!-- -->
+
+    ## # A tibble: 794 x 6
+    ##    Lake     Group      Year Type     TimeFrame             Abundance
+    ##    <fct>    <fct>     <dbl> <chr>    <chr>                     <dbl>
+    ##  1 Michigan GLNPO_Mys  2006 MeanBiom Same_Year                  723.
+    ##  2 Michigan GLNPO_Mys  2006 MeanBiom Summer_to_Next_Spring      790.
+    ##  3 Michigan GLNPO_Mys  2006 MeanBiom Prev_Fall_to_Summer        723.
+    ##  4 Michigan GLNPO_Mys  2007 MeanBiom Same_Year                  354.
+    ##  5 Michigan GLNPO_Mys  2007 MeanBiom Prev_Year                  723.
+    ##  6 Michigan GLNPO_Mys  2007 MeanBiom Summer_to_Next_Spring      359.
+    ##  7 Michigan GLNPO_Mys  2007 MeanBiom Prev_Fall_to_Summer        354.
+    ##  8 Michigan GLNPO_Mys  2008 MeanBiom Same_Year                  386.
+    ##  9 Michigan GLNPO_Mys  2008 MeanBiom Prev_Year                  354.
+    ## 10 Michigan GLNPO_Mys  2008 MeanBiom Summer_to_Next_Spring      299.
+    ## # ... with 784 more rows
+
+    ## # A tibble: 410 x 6
+    ## # Groups:   Lake [5]
+    ##    Lake  Lake_B        Year TimeFrame             SpringChla Group    
+    ##    <chr> <fct>        <int> <chr>                      <dbl> <chr>    
+    ##  1 Erie  Eastern_Erie  1998 Same_Year                   2.97 GLNPO_Mys
+    ##  2 Erie  Eastern_Erie  1998 Summer_to_Next_Spring       2.75 GLNPO_Mys
+    ##  3 Erie  Eastern_Erie  1998 Prev_Fall_to_Summer         2.97 GLNPO_Mys
+    ##  4 Erie  Eastern_Erie  1999 Same_Year                   2.75 GLNPO_Mys
+    ##  5 Erie  Eastern_Erie  1999 Prev_Year                   2.97 GLNPO_Mys
+    ##  6 Erie  Eastern_Erie  1999 Summer_to_Next_Spring       1.46 GLNPO_Mys
+    ##  7 Erie  Eastern_Erie  1999 Prev_Fall_to_Summer         2.75 GLNPO_Mys
+    ##  8 Erie  Eastern_Erie  2000 Same_Year                   1.46 GLNPO_Mys
+    ##  9 Erie  Eastern_Erie  2000 Prev_Year                   2.75 GLNPO_Mys
+    ## 10 Erie  Eastern_Erie  2000 Summer_to_Next_Spring       2.66 GLNPO_Mys
+    ## # ... with 400 more rows
+
+    ## # A tibble: 410 x 5
+    ##    Lake_B        Year TimeFrame             ZoopBiom Group    
+    ##    <chr>        <dbl> <chr>                    <dbl> <chr>    
+    ##  1 Eastern_Erie  1998 Same_Year                 650. GLNPO_Mys
+    ##  2 Eastern_Erie  1998 Summer_to_Next_Spring     648. GLNPO_Mys
+    ##  3 Eastern_Erie  1998 Prev_Fall_to_Summer       650. GLNPO_Mys
+    ##  4 Eastern_Erie  1999 Same_Year                1201. GLNPO_Mys
+    ##  5 Eastern_Erie  1999 Prev_Year                 650. GLNPO_Mys
+    ##  6 Eastern_Erie  1999 Summer_to_Next_Spring    1216. GLNPO_Mys
+    ##  7 Eastern_Erie  1999 Prev_Fall_to_Summer      1201. GLNPO_Mys
+    ##  8 Eastern_Erie  2001 Same_Year                 925. GLNPO_Mys
+    ##  9 Eastern_Erie  2001 Prev_Year                1201. GLNPO_Mys
+    ## 10 Eastern_Erie  2001 Summer_to_Next_Spring    1072. GLNPO_Mys
+    ## # ... with 400 more rows
+
+    ## # A tibble: 1,286 x 8
+    ##    Lake    Group    Year TimeFrame       X_Variable X_Value Rate_Name  Rate_Mean
+    ##    <chr>   <chr>   <dbl> <chr>           <chr>        <dbl> <chr>          <dbl>
+    ##  1 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanBiom   7.90e+2 Mort_rate     91.6  
+    ##  2 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanBiom   7.90e+2 Growth_Ca~     0.602
+    ##  3 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanDens   2.43e+2 Mort_rate     91.6  
+    ##  4 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanDens   2.43e+2 Growth_Ca~     0.602
+    ##  5 Michig~ GLNPO_~  2006 Summer_to_Next~ SpringChla 7.85e-1 Mort_rate     91.6  
+    ##  6 Michig~ GLNPO_~  2006 Summer_to_Next~ SpringChla 7.85e-1 Growth_Ca~     0.602
+    ##  7 Michig~ GLNPO_~  2006 Summer_to_Next~ ZoopBiom   2.56e+3 Mort_rate     91.6  
+    ##  8 Michig~ GLNPO_~  2006 Summer_to_Next~ ZoopBiom   2.56e+3 Growth_Ca~     0.602
+    ##  9 Michig~ GLNPO_~  2006 Prev_Fall_to_S~ MeanBiom   7.23e+2 Dens_A0      240.   
+    ## 10 Michig~ GLNPO_~  2006 Prev_Fall_to_S~ MeanDens   2.21e+2 Dens_A0      240.   
+    ## # ... with 1,276 more rows
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Mysid%20food%20with%20life%20history%20rates-1.png)<!-- -->
+
+    ## # A tibble: 10 x 7
+    ##    Rate             Predictor  Group        SlopeEst   pValue       r2 Signif
+    ##    <chr>            <chr>      <chr>           <dbl>    <dbl>    <dbl> <fct> 
+    ##  1 Dens_A0          SpringChla GLNPO_Mys 100.        0.000427  0.214   "*"   
+    ##  2 Growth_Calc      ZoopBiom   GLNPO_Mys   0.0000490 0.00452   0.150   "*"   
+    ##  3 Mort_rate        ZoopBiom   GLNPO_Mys   0.0106    0.0461    0.0667  "*"   
+    ##  4 Growth_Calc      SpringChla GLNPO_Mys   0.0309    0.0488    0.0646  "*"   
+    ##  5 Brood_Spring     SpringChla GLNPO_Mys   1.43      0.0750    0.0584  "."   
+    ##  6 Brood_Spring     ZoopBiom   GLNPO_Mys   0.00154   0.113     0.0414  ""    
+    ##  7 Dens_A0          ZoopBiom   GLNPO_Mys   0.0498    0.135     0.0260  ""    
+    ##  8 BF_Length_Spring ZoopBiom   GLNPO_Mys   0.0000851 0.686    -0.0193  ""    
+    ##  9 Mort_rate        SpringChla GLNPO_Mys   3.38      0.483    -0.0112  ""    
+    ## 10 BF_Length_Spring SpringChla GLNPO_Mys  -0.173     0.356    -0.00299 ""
+
+    ## # A tibble: 30 x 7
+    ##    Rate             Predictor Group        SlopeEst   pValue        r2 Signif
+    ##    <chr>            <chr>     <chr>           <dbl>    <dbl>     <dbl> <fct> 
+    ##  1 Dens_A0          MeanDens  GLNPO_Mys  1.10       7.32e-24  0.879    "*"   
+    ##  2 Dens_A0          MeanDens  USGS       0.636      3.19e-10  0.861    "*"   
+    ##  3 Dens_A0          MeanBiom  USGS       0.201      3.95e- 8  0.775    "*"   
+    ##  4 Dens_A0          MeanBiom  GLNPO_Mys  0.512      3.10e-16  0.749    "*"   
+    ##  5 Dens_A0          MeanDens  NOAA       0.908      1.09e- 2  0.442    "*"   
+    ##  6 Dens_A0          MeanBiom  NOAA       0.323      1.43e- 2  0.414    "*"   
+    ##  7 BF_Length_Spring MeanDens  NOAA       0.00800    1.17e- 1  0.136    ""    
+    ##  8 Brood_Spring     MeanDens  NOAA      -0.0334     1.34e- 1  0.119    ""    
+    ##  9 Mort_rate        MeanBiom  NOAA      -0.0149     8.79e- 1 -0.108    ""    
+    ## 10 Mort_rate        MeanDens  NOAA      -0.0469     8.69e- 1 -0.108    ""    
+    ## 11 Brood_Fall       MeanDens  NOAA      -0.0555     1.50e- 1  0.104    ""    
+    ## 12 Growth_Calc      MeanBiom  NOAA      -0.00000563 9.85e- 1 -0.100    ""    
+    ## 13 Growth_Calc      MeanDens  NOAA       0.000148   8.71e- 1 -0.0969   ""    
+    ## 14 BF_Length_Spring MeanBiom  NOAA       0.00247    1.59e- 1  0.0963   ""    
+    ## 15 Brood_Spring     MeanBiom  NOAA      -0.0105     1.66e- 1  0.0906   ""    
+    ## 16 BF_Length_Fall   MeanDens  NOAA      -0.000630   9.19e- 1 -0.0898   ""    
+    ## 17 BF_Length_Fall   MeanBiom  NOAA       0.000544   7.91e- 1 -0.0837   ""    
+    ## 18 Mort_rate        MeanDens  USGS      -0.0348     5.86e- 1 -0.0399   ""    
+    ## 19 Mort_rate        MeanBiom  USGS      -0.0250     2.26e- 1  0.0310   ""    
+    ## 20 Growth_Calc      MeanBiom  USGS       0.0000789  4.87e- 1 -0.0283   ""    
+    ## 21 Mort_rate        MeanDens  GLNPO_Mys  0.0401     1.26e- 1  0.0282   ""    
+    ## 22 Brood_Fall       MeanBiom  NOAA      -0.0143     2.76e- 1  0.0255   ""    
+    ## 23 Growth_Calc      MeanBiom  GLNPO_Mys  0.00000570 8.99e- 1 -0.0205   ""    
+    ## 24 Growth_Calc      MeanDens  GLNPO_Mys  0.0000169  8.53e- 1 -0.0201   ""    
+    ## 25 Mort_rate        MeanBiom  GLNPO_Mys  0.0179     1.65e- 1  0.0197   ""    
+    ## 26 BF_Length_Spring MeanBiom  GLNPO_Mys -0.000584   2.53e- 1  0.00702  ""    
+    ## 27 Growth_Calc      MeanDens  USGS       0.000373   3.17e- 1  0.00353  ""    
+    ## 28 Brood_Spring     MeanBiom  GLNPO_Mys  0.00274    3.30e- 1 -0.000623 ""    
+    ## 29 Brood_Spring     MeanDens  GLNPO_Mys  0.00547    3.25e- 1 -0.000132 ""    
+    ## 30 BF_Length_Spring MeanDens  GLNPO_Mys -0.000998   3.24e- 1 -0.000111 ""
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##   2.000   2.000   4.000   3.084   4.000   4.000
+
+    ## # A tibble: 0 x 8
+    ## # ... with 8 variables: Lake <chr>, Group <chr>, Year <dbl>, TimeFrame <chr>,
+    ## #   X_Variable <chr>, X_Value <dbl>, Rate_Name <chr>, Rate_Mean <dbl>
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##       1       1       1       1       1       1
+
+![](GLNPO_Long_term_2019_files/figure-gfm/Mysid%20food%20with%20life%20history%20rates-2.png)<!-- -->
+
+    ## # A tibble: 33 x 7
+    ##    Lake     Rate             Group      pValue Signif       r2   SlopeEst
+    ##    <chr>    <chr>            <chr>       <dbl> <fct>     <dbl>      <dbl>
+    ##  1 Huron    BF_Length_Spring GLNPO_Mys 0.144   ""      0.121     0.0851  
+    ##  2 Huron    Brood_Spring     GLNPO_Mys 0.791   ""     -0.115    -0.106   
+    ##  3 Huron    Dens_A0          GLNPO_Mys 0.198   ""      0.0679   -1.72    
+    ##  4 Huron    Dens_A0          USGS      0.694   ""     -0.0822    1.02    
+    ##  5 Huron    Growth_Calc      GLNPO_Mys 0.859   ""     -0.0876    0.000809
+    ##  6 Huron    Growth_Calc      USGS      0.352   ""     -0.00278  -0.00806 
+    ##  7 Huron    Mort_rate        GLNPO_Mys 0.502   ""     -0.0452    1.10    
+    ##  8 Huron    Mort_rate        USGS      0.566   ""     -0.0767   -1.25    
+    ##  9 Michigan BF_Length_Fall   NOAA      0.571   ""     -0.0581   -0.0310  
+    ## 10 Michigan BF_Length_Spring GLNPO_Mys 0.0974  "."     0.160     0.106   
+    ## 11 Michigan BF_Length_Spring NOAA      0.00529 "*"     0.478    -0.125   
+    ## 12 Michigan Brood_Fall       NOAA      0.195   ""      0.0700    0.449   
+    ## 13 Michigan Brood_Spring     GLNPO_Mys 0.215   ""      0.0833    0.332   
+    ## 14 Michigan Brood_Spring     NOAA      0.841   ""     -0.0867    0.0465  
+    ## 15 Michigan Dens_A0          GLNPO_Mys 0.411   ""     -0.0230   -3.09    
+    ## 16 Michigan Dens_A0          NOAA      0.176   ""      0.0928   -4.05    
+    ## 17 Michigan Dens_A0          USGS      0.611   ""     -0.0869   -3.04    
+    ## 18 Michigan Growth_Calc      GLNPO_Mys 0.229   ""      0.0493    0.00712 
+    ## 19 Michigan Growth_Calc      NOAA      0.546   ""     -0.0586    0.00470 
+    ## 20 Michigan Growth_Calc      USGS      0.297   ""      0.0326   -0.0108  
+    ## 21 Michigan Mort_rate        GLNPO_Mys 0.585   ""     -0.0604    0.570   
+    ## 22 Michigan Mort_rate        NOAA      0.337   ""      0.00301   2.29    
+    ## 23 Michigan Mort_rate        USGS      0.401   ""     -0.0256   -1.71    
+    ## 24 Ontario  BF_Length_Spring GLNPO_Mys 0.460   ""     -0.0387    0.0462  
+    ## 25 Ontario  Brood_Spring     GLNPO_Mys 0.329   ""      0.00650   0.345   
+    ## 26 Ontario  Dens_A0          GLNPO_Mys 0.301   ""      0.0168  -17.8     
+    ## 27 Ontario  Growth_Calc      GLNPO_Mys 0.793   ""     -0.0920   -0.00144 
+    ## 28 Ontario  Mort_rate        GLNPO_Mys 0.670   ""     -0.0792   -0.774   
+    ## 29 Superior BF_Length_Spring GLNPO_Mys 0.196   ""      0.0775    0.0659  
+    ## 30 Superior Brood_Spring     GLNPO_Mys 0.166   ""      0.100     0.194   
+    ## 31 Superior Dens_A0          GLNPO_Mys 0.541   ""     -0.0576    3.38    
+    ## 32 Superior Growth_Calc      GLNPO_Mys 0.468   ""     -0.0409    0.00336 
+    ## 33 Superior Mort_rate        GLNPO_Mys 0.266   ""      0.0343    1.77
+
+    ## # A tibble: 1 x 6
+    ##   Lake     Rate             Group  pValue    r2 SlopeEst
+    ##   <chr>    <chr>            <chr>   <dbl> <dbl>    <dbl>
+    ## 1 Michigan BF_Length_Spring NOAA  0.00529 0.522   -0.125
+
+    ## # A tibble: 6 x 6
+    ##   Predictor Rate    Group       pValue    r2 SlopeEst
+    ##   <chr>     <chr>   <chr>        <dbl> <dbl>    <dbl>
+    ## 1 MeanBiom  Dens_A0 GLNPO_Mys 3.10e-16 0.754    0.512
+    ## 2 MeanBiom  Dens_A0 NOAA      1.43e- 2 0.467    0.323
+    ## 3 MeanBiom  Dens_A0 USGS      3.95e- 8 0.786    0.201
+    ## 4 MeanDens  Dens_A0 GLNPO_Mys 7.32e-24 0.881    1.10 
+    ## 5 MeanDens  Dens_A0 NOAA      1.09e- 2 0.493    0.908
+    ## 6 MeanDens  Dens_A0 USGS      3.19e-10 0.867    0.636
+
+    ## # A tibble: 4 x 6
+    ##   Predictor  Rate        Group       pValue     r2    SlopeEst
+    ##   <chr>      <chr>       <chr>        <dbl>  <dbl>       <dbl>
+    ## 1 SpringChla Dens_A0     GLNPO_Mys 0.000427 0.230  100.       
+    ## 2 SpringChla Growth_Calc GLNPO_Mys 0.0488   0.0854   0.0309   
+    ## 3 ZoopBiom   Growth_Calc GLNPO_Mys 0.00452  0.169    0.0000490
+    ## 4 ZoopBiom   Mort_rate   GLNPO_Mys 0.0461   0.0874   0.0106
 
 # End of Script.
