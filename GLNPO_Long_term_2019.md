@@ -125,6 +125,11 @@ OK: plot `Zoop...` data on ‘Y’ axis and `Mys...` data on ‘X’ axis.
     ##                        <dbl>                      <dbl>
     ## 1                      0.754                      0.289
 
+    ## # A tibble: 1 x 4
+    ##   Density_Proporti~ Biomass_Proporti~ Density_Proportion_g~ Biomass_Proportion_~
+    ##               <dbl>             <dbl>                 <dbl>                <dbl>
+    ## 1             0.769             0.370                 0.696                0.276
+
 *(Adjusted r^2 values for the linear fits plotted above):*
 
   - *Density: 0.61*
@@ -1306,7 +1311,13 @@ Whole Table
 
     ## Warning: Removed 10 rows containing missing values (geom_col).
 
-![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-4.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-5.png)<!-- -->
+![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-4.png)<!-- -->
+
+    ## Warning: Removed 10 rows containing missing values (geom_col).
+
+    ## Warning: Removed 50 rows containing missing values (geom_text).
+
+![](GLNPO_Long_term_2019_files/figure-gfm/TukeyHSD%20Results-5.png)<!-- -->
 
 <br>
 
@@ -1863,31 +1874,31 @@ GAM model fits are not plotted with these data.
     ## # A tibble: 220,631 x 2
     ##    Visit    Length
     ##    <chr>     <dbl>
-    ##  1 06GB50M5    2.4
+    ##  1 06GB50M5    2.5
     ##  2 06GB50M5    2.4
-    ##  3 06GB50M5    2.4
-    ##  4 06GB50M5    2.4
-    ##  5 06GB50M5    2.1
-    ##  6 06GB50M5    2.3
-    ##  7 06GB50M5    2.6
-    ##  8 06GB50M5    2.4
-    ##  9 06GB50M5    2.2
-    ## 10 06GB50M5    2.1
+    ##  3 06GB50M5    2.8
+    ##  4 06GB50M5    2.7
+    ##  5 06GB50M5    2.2
+    ##  6 06GB50M5    2.7
+    ##  7 06GB50M5    2.7
+    ##  8 06GB50M5    2.8
+    ##  9 06GB50M5    2.3
+    ## 10 06GB50M5    2.5
     ## # ... with 220,621 more rows
 
     ## # A tibble: 215,785 x 5
     ##    Visit    Length Lake   Year Season
     ##    <chr>     <dbl> <fct> <int> <fct> 
-    ##  1 06GB50M5    2.4 Huron  2006 Summer
+    ##  1 06GB50M5    2.5 Huron  2006 Summer
     ##  2 06GB50M5    2.4 Huron  2006 Summer
-    ##  3 06GB50M5    2.4 Huron  2006 Summer
-    ##  4 06GB50M5    2.4 Huron  2006 Summer
-    ##  5 06GB50M5    2.1 Huron  2006 Summer
-    ##  6 06GB50M5    2.3 Huron  2006 Summer
-    ##  7 06GB50M5    2.6 Huron  2006 Summer
-    ##  8 06GB50M5    2.4 Huron  2006 Summer
-    ##  9 06GB50M5    2.2 Huron  2006 Summer
-    ## 10 06GB50M5    2.1 Huron  2006 Summer
+    ##  3 06GB50M5    2.8 Huron  2006 Summer
+    ##  4 06GB50M5    2.7 Huron  2006 Summer
+    ##  5 06GB50M5    2.2 Huron  2006 Summer
+    ##  6 06GB50M5    2.7 Huron  2006 Summer
+    ##  7 06GB50M5    2.7 Huron  2006 Summer
+    ##  8 06GB50M5    2.8 Huron  2006 Summer
+    ##  9 06GB50M5    2.3 Huron  2006 Summer
+    ## 10 06GB50M5    2.5 Huron  2006 Summer
     ## # ... with 215,775 more rows
 
 #### Wrangle USGS and NOAA Individual Data
@@ -3415,14 +3426,14 @@ Mysid_SizeStruct <-
     ## # A tibble: 4 x 7
     ##   Lake     N_Years Mean_Length_1 Mean_Length_2 Total_Growth
     ##   <chr>      <int>         <dbl>         <dbl>        <dbl>
-    ## 1 Huron         14          5.27          12.5         9.51
-    ## 2 Michigan      14          5.45          13.1        10.1 
-    ## 3 Ontario       13          6.45          14.4        11.4 
+    ## 1 Huron         14          5.26          12.5         9.52
+    ## 2 Michigan      14          5.44          13.1        10.1 
+    ## 3 Ontario       13          6.46          14.4        11.4 
     ## 4 Superior      13          5.01          12.1         9.10
     ##   Overall_Rate_per_month Measured_Rate_per_month
     ##                    <dbl>                   <dbl>
-    ## 1                  0.679                   0.603
-    ## 2                  0.724                   0.641
+    ## 1                  0.680                   0.604
+    ## 2                  0.723                   0.640
     ## 3                  0.815                   0.663
     ## 4                  0.650                   0.591
 
@@ -3587,9 +3598,9 @@ Mysid_SizeStruct <-
 
 #### Age Structure, Mortality, and Growth: Cross-Lakes Comparisons
 
-    ##             Df  Sum Sq Mean Sq F value Pr(>F)  
-    ## Lake         3 0.04503 0.01501   2.629 0.0614 .
-    ## Residuals   46 0.26267 0.00571                 
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
+    ## Lake         3 0.04579 0.015262   2.708  0.056 .
+    ## Residuals   46 0.25922 0.005635                 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3600,20 +3611,20 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.22904 -0.04525  0.01596  0.04981  0.11446 
+    ## -0.23027 -0.04557  0.01529  0.05056  0.11409 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)   0.71632    0.02181  32.838   <2e-16 ***
-    ## LakeMichigan  0.04488    0.03025   1.484   0.1447    
-    ## LakeHuron     0.05083    0.03025   1.680   0.0997 .  
-    ## LakeOntario   0.08614    0.03085   2.792   0.0076 ** 
+    ## (Intercept)   0.71634    0.02167  33.056  < 2e-16 ***
+    ## LakeMichigan  0.04440    0.03005   1.478  0.14635    
+    ## LakeHuron     0.05149    0.03005   1.713  0.09338 .  
+    ## LakeOntario   0.08680    0.03065   2.832  0.00684 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.07557 on 46 degrees of freedom
-    ## Multiple R-squared:  0.1464, Adjusted R-squared:  0.09068 
-    ## F-statistic: 2.629 on 3 and 46 DF,  p-value: 0.06137
+    ## Residual standard error: 0.07507 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1501, Adjusted R-squared:  0.09469 
+    ## F-statistic: 2.708 on 3 and 46 DF,  p-value: 0.056
 
     ##   Tukey multiple comparisons of means
     ##     95% family-wise confidence level
@@ -3622,16 +3633,16 @@ Mysid_SizeStruct <-
     ## 
     ## $Lake
     ##                          diff          lwr        upr     p adj
-    ## Michigan-Superior 0.044882731 -0.035750203 0.12551566 0.4554078
-    ## Huron-Superior    0.050829889 -0.029803045 0.13146282 0.3455741
-    ## Ontario-Superior  0.086137544  0.003907764 0.16836733 0.0368448
-    ## Huron-Michigan    0.005947158 -0.073056659 0.08495098 0.9970984
-    ## Ontario-Michigan  0.041254814 -0.039378120 0.12188775 0.5280607
-    ## Ontario-Huron     0.035307655 -0.045325279 0.11594059 0.6502909
+    ## Michigan-Superior 0.044401511 -0.035699632 0.12450265 0.4590602
+    ## Huron-Superior    0.051488582 -0.028612560 0.13158972 0.3285925
+    ## Ontario-Superior  0.086795329  0.005107872 0.16848279 0.0333822
+    ## Huron-Michigan    0.007087071 -0.071395699 0.08556984 0.9950263
+    ## Ontario-Michigan  0.042393818 -0.037707324 0.12249496 0.4992608
+    ## Ontario-Huron     0.035306747 -0.044794395 0.11540789 0.6455243
 
     ##             Df Sum Sq Mean Sq F value Pr(>F)
-    ## Lake         3   2135   711.7   2.099  0.113
-    ## Residuals   46  15597   339.1
+    ## Lake         3   2154   718.0   2.168  0.105
+    ## Residuals   46  15230   331.1
 
     ## 
     ## Call:
@@ -3640,20 +3651,20 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -26.489 -14.768  -3.312  12.001  45.440 
+    ## -26.442 -14.697  -3.328  12.056  44.593 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    45.132      5.316   8.490 5.66e-11 ***
-    ## LakeMichigan  -15.801      7.371  -2.144   0.0374 *  
-    ## LakeHuron     -12.757      7.371  -1.731   0.0902 .  
-    ## LakeOntario   -16.400      7.517  -2.182   0.0343 *  
+    ## (Intercept)    45.126      5.253   8.591 4.04e-11 ***
+    ## LakeMichigan  -15.780      7.284  -2.166   0.0355 *  
+    ## LakeHuron     -12.984      7.284  -1.782   0.0813 .  
+    ## LakeOntario   -16.503      7.429  -2.222   0.0313 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 18.41 on 46 degrees of freedom
-    ## Multiple R-squared:  0.1204, Adjusted R-squared:  0.06304 
-    ## F-statistic: 2.099 on 3 and 46 DF,  p-value: 0.1134
+    ## Residual standard error: 18.2 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1239, Adjusted R-squared:  0.06676 
+    ## F-statistic: 2.168 on 3 and 46 DF,  p-value: 0.1046
 
     ##   Tukey multiple comparisons of means
     ##     95% family-wise confidence level
@@ -3662,16 +3673,16 @@ Mysid_SizeStruct <-
     ## 
     ## $Lake
     ##                          diff       lwr       upr     p adj
-    ## Michigan-Superior -15.8008378 -35.44954  3.847861 0.1548030
-    ## Huron-Superior    -12.7569155 -32.40561  6.891783 0.3199496
-    ## Ontario-Superior  -16.3995373 -36.43736  3.638282 0.1436537
-    ## Huron-Michigan      3.0439222 -16.20779 22.295637 0.9745325
-    ## Ontario-Michigan   -0.5986996 -20.24740 19.049999 0.9998050
-    ## Ontario-Huron      -3.6426218 -23.29132 16.006077 0.9600017
+    ## Michigan-Superior -15.7798562 -35.19599  3.636278 0.1480405
+    ## Huron-Superior    -12.9836535 -32.39979  6.432481 0.2947201
+    ## Ontario-Superior  -16.5027003 -36.30335  3.297949 0.1326036
+    ## Huron-Michigan      2.7962027 -16.22765 21.820051 0.9793454
+    ## Ontario-Michigan   -0.7228441 -20.13898 18.693290 0.9996447
+    ## Ontario-Huron      -3.5190468 -22.93518 15.897087 0.9624670
 
     ##             Df Sum Sq Mean Sq F value Pr(>F)
-    ## Lake         3   2135   711.7   2.099  0.113
-    ## Residuals   46  15597   339.1
+    ## Lake         3   2154   718.0   2.168  0.105
+    ## Residuals   46  15230   331.1
 
     ## 
     ## Call:
@@ -3680,20 +3691,20 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -45.440 -12.001   3.312  14.768  26.489 
+    ## -44.593 -12.056   3.328  14.697  26.442 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    54.868      5.316  10.322 1.47e-13 ***
-    ## LakeMichigan   15.801      7.371   2.144   0.0374 *  
-    ## LakeHuron      12.757      7.371   1.731   0.0902 .  
-    ## LakeOntario    16.400      7.517   2.182   0.0343 *  
+    ## (Intercept)    54.874      5.253  10.447 9.95e-14 ***
+    ## LakeMichigan   15.780      7.284   2.166   0.0355 *  
+    ## LakeHuron      12.984      7.284   1.782   0.0813 .  
+    ## LakeOntario    16.503      7.429   2.222   0.0313 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 18.41 on 46 degrees of freedom
-    ## Multiple R-squared:  0.1204, Adjusted R-squared:  0.06304 
-    ## F-statistic: 2.099 on 3 and 46 DF,  p-value: 0.1134
+    ## Residual standard error: 18.2 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1239, Adjusted R-squared:  0.06676 
+    ## F-statistic: 2.168 on 3 and 46 DF,  p-value: 0.1046
 
     ##   Tukey multiple comparisons of means
     ##     95% family-wise confidence level
@@ -3702,16 +3713,16 @@ Mysid_SizeStruct <-
     ## 
     ## $Lake
     ##                         diff        lwr      upr     p adj
-    ## Michigan-Superior 15.8008378  -3.847861 35.44954 0.1548030
-    ## Huron-Superior    12.7569155  -6.891783 32.40561 0.3199496
-    ## Ontario-Superior  16.3995373  -3.638282 36.43736 0.1436537
-    ## Huron-Michigan    -3.0439222 -22.295637 16.20779 0.9745325
-    ## Ontario-Michigan   0.5986996 -19.049999 20.24740 0.9998050
-    ## Ontario-Huron      3.6426218 -16.006077 23.29132 0.9600017
+    ## Michigan-Superior 15.7798562  -3.636278 35.19599 0.1480405
+    ## Huron-Superior    12.9836535  -6.432481 32.39979 0.2947201
+    ## Ontario-Superior  16.5027003  -3.297949 36.30335 0.1326036
+    ## Huron-Michigan    -2.7962027 -21.820051 16.22765 0.9793454
+    ## Ontario-Michigan   0.7228441 -18.693290 20.13898 0.9996447
+    ## Ontario-Huron      3.5190468 -15.897087 22.93518 0.9624670
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
-    ## Lake         3 0.02665 0.008883   2.242 0.0961 .
-    ## Residuals   46 0.18230 0.003963                 
+    ## Lake         3 0.02627 0.008757   2.233  0.097 .
+    ## Residuals   46 0.18042 0.003922                 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3722,20 +3733,20 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.146397 -0.045477  0.008268  0.043373  0.115826 
+    ## -0.147220 -0.047035  0.007684  0.043675  0.115751 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)   0.58857    0.01817  32.387   <2e-16 ***
-    ## LakeMichigan  0.04762    0.02520   1.889   0.0651 .  
-    ## LakeHuron     0.01468    0.02520   0.582   0.5632    
-    ## LakeOntario   0.05702    0.02570   2.219   0.0315 *  
+    ## (Intercept)   0.58852    0.01808  32.553   <2e-16 ***
+    ## LakeMichigan  0.04669    0.02507   1.862   0.0689 .  
+    ## LakeHuron     0.01566    0.02507   0.625   0.5352    
+    ## LakeOntario   0.05766    0.02557   2.255   0.0289 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.06295 on 46 degrees of freedom
-    ## Multiple R-squared:  0.1275, Adjusted R-squared:  0.07064 
-    ## F-statistic: 2.242 on 3 and 46 DF,  p-value: 0.09606
+    ## Residual standard error: 0.06263 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1271, Adjusted R-squared:  0.07018 
+    ## F-statistic: 2.233 on 3 and 46 DF,  p-value: 0.09704
 
     ##   Tukey multiple comparisons of means
     ##     95% family-wise confidence level
@@ -3743,25 +3754,25 @@ Mysid_SizeStruct <-
     ## Fit: aov(formula = Growth_Calc ~ Lake, data = SizeStructAnnualSummary %>% filter(Group == "GLNPO_Mys", Season == "Summer"))
     ## 
     ## $Lake
-    ##                           diff         lwr        upr     p adj
-    ## Michigan-Superior  0.047616953 -0.01955721 0.11479111 0.2466732
-    ## Huron-Superior     0.014675519 -0.05249864 0.08184968 0.9369032
-    ## Ontario-Superior   0.057023216 -0.01148126 0.12552769 0.1333475
-    ## Huron-Michigan    -0.032941434 -0.09875840 0.03287553 0.5464330
-    ## Ontario-Michigan   0.009406263 -0.05776790 0.07658042 0.9820414
-    ## Ontario-Huron      0.042347697 -0.02482646 0.10952186 0.3455321
+    ##                          diff         lwr        upr     p adj
+    ## Michigan-Superior  0.04669123 -0.02013530 0.11351777 0.2583139
+    ## Huron-Superior     0.01566289 -0.05116365 0.08248943 0.9236062
+    ## Ontario-Superior   0.05765640 -0.01049356 0.12580637 0.1238704
+    ## Huron-Michigan    -0.03102834 -0.09650471 0.03444802 0.5906242
+    ## Ontario-Michigan   0.01096517 -0.05586137 0.07779171 0.9716882
+    ## Ontario-Huron      0.04199352 -0.02483302 0.10882005 0.3483423
 
     ## # A tibble: 8 x 8
     ## # Groups:   Group, Lake [4]
     ##   Group Lake  Season Surv_Mean Surv_2_Measured Growth_Mean Overall_Rate_pe~
     ##   <chr> <ord> <chr>      <dbl>           <dbl>       <dbl>            <dbl>
-    ## 1 GLNP~ Onta~ Spring      NA              88.1        0.68            0.620
-    ## 2 GLNP~ Mich~ Spring      NA             104.         0.56            0.566
-    ## 3 GLNP~ Huron Spring      NA             145.         0.5             0.555
-    ## 4 GLNP~ Supe~ Spring      NA             149.         0.45            0.528
-    ## 5 GLNP~ Onta~ Summer      28.7            24.6        0.65            0.829
-    ## 6 GLNP~ Mich~ Summer      29.3            31.4        0.64            0.724
-    ## 7 GLNP~ Huron Summer      32.4            30.4        0.6             0.679
+    ## 1 GLNP~ Onta~ Spring      NA              88.2        0.68            0.619
+    ## 2 GLNP~ Mich~ Spring      NA             105.         0.56            0.565
+    ## 3 GLNP~ Huron Spring      NA             145.         0.5             0.557
+    ## 4 GLNP~ Supe~ Spring      NA             149.         0.45            0.527
+    ## 5 GLNP~ Onta~ Summer      28.6            24.5        0.65            0.830
+    ## 6 GLNP~ Mich~ Summer      29.4            31.5        0.64            0.723
+    ## 7 GLNP~ Huron Summer      32.1            30.2        0.6             0.680
     ## 8 GLNP~ Supe~ Summer      45.1            39.6        0.59            0.651
     ## # ... with 1 more variable: Measured_Rate_per_month <dbl>
 
@@ -3789,13 +3800,13 @@ Mysid_SizeStruct <-
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20Time%20Series%20Plots%20and%20Analysis-1.png)<!-- -->
 
-    ##             Df  Sum Sq   Mean Sq F value Pr(>F)
-    ## Year         1 0.00001 0.0000097   0.003  0.955
-    ## Residuals   10 0.02905 0.0029052
+    ##             Df   Sum Sq  Mean Sq F value Pr(>F)
+    ## Year         1 0.000011 1.12e-05   0.004  0.952
+    ## Residuals   10 0.029103 2.91e-03
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.00195 0.001950   0.384  0.548
-    ## Residuals   11 0.05589 0.005081
+    ## Year         1 0.00217 0.002175   0.436  0.523
+    ## Residuals   11 0.05488 0.004990
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
     ## Year         1 0.00115 0.001154   0.214  0.656
@@ -3803,7 +3814,7 @@ Mysid_SizeStruct <-
     ## 1 observation deleted due to missingness
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.00144 0.001445   0.279  0.605
+    ## Year         1 0.00145 0.001447    0.28  0.605
     ## Residuals   15 0.07765 0.005177               
     ## 1 observation deleted due to missingness
 
@@ -3812,8 +3823,8 @@ Mysid_SizeStruct <-
     ## Residuals   10 0.06173 0.006173
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
-    ## Year         1 0.01834 0.018337   3.609  0.084 .
-    ## Residuals   11 0.05589 0.005081                 
+    ## Year         1 0.01816 0.018159   3.682 0.0813 .
+    ## Residuals   11 0.05425 0.004932                 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -3823,8 +3834,8 @@ Mysid_SizeStruct <-
     ## 1 observation deleted due to missingness
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.00190 0.001899   0.191  0.672
-    ## Residuals   10 0.09965 0.009965
+    ## Year         1 0.00181 0.001807   0.183  0.678
+    ## Residuals   10 0.09883 0.009883
 
     ## 
     ## Call:
@@ -3832,33 +3843,33 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.07927 -0.05017  0.01124  0.03745  0.07773 
+    ## -0.07903 -0.05084  0.01147  0.03715  0.07740 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  1.2414048  9.0710186   0.137    0.894
-    ## Year        -0.0002609  0.0045073  -0.058    0.955
+    ## (Intercept)  1.2807295  9.0789720   0.141    0.891
+    ## Year        -0.0002804  0.0045113  -0.062    0.952
     ## 
-    ## Residual standard error: 0.0539 on 10 degrees of freedom
-    ## Multiple R-squared:  0.000335,   Adjusted R-squared:  -0.09963 
-    ## F-statistic: 0.003351 on 1 and 10 DF,  p-value: 0.955
+    ## Residual standard error: 0.05395 on 10 degrees of freedom
+    ## Multiple R-squared:  0.0003863,  Adjusted R-squared:  -0.09958 
+    ## F-statistic: 0.003864 on 1 and 10 DF,  p-value: 0.9517
 
     ## 
     ## Call:
     ## lm(formula = Prop_1 ~ Year, data = .)
     ## 
     ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -0.10719 -0.02669 -0.00448  0.05412  0.10331 
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.107018 -0.024601 -0.006357  0.055589  0.103994 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -5.824388  10.630346  -0.548    0.595
-    ## Year         0.003273   0.005283   0.620    0.548
+    ## (Intercept) -6.194625  10.534687  -0.588    0.568
+    ## Year         0.003457   0.005236   0.660    0.523
     ## 
-    ## Residual standard error: 0.07128 on 11 degrees of freedom
-    ## Multiple R-squared:  0.03371,    Adjusted R-squared:  -0.05413 
-    ## F-statistic: 0.3838 on 1 and 11 DF,  p-value: 0.5482
+    ## Residual standard error: 0.07064 on 11 degrees of freedom
+    ## Multiple R-squared:  0.03812,    Adjusted R-squared:  -0.04933 
+    ## F-statistic: 0.4359 on 1 and 11 DF,  p-value: 0.5227
 
     ## 
     ## Call:
@@ -3884,17 +3895,17 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.108347 -0.058517 -0.009735  0.045452  0.130211 
+    ## -0.108344 -0.058516 -0.009735  0.045437  0.130208 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  3.222026   4.703165   0.685    0.504
-    ## Year        -0.001237   0.002342  -0.528    0.605
+    ## (Intercept)  3.223764   4.703208   0.685    0.504
+    ## Year        -0.001238   0.002342  -0.529    0.605
     ## 
     ## Residual standard error: 0.07195 on 15 degrees of freedom
     ##   (1 observation deleted due to missingness)
-    ## Multiple R-squared:  0.01827,    Adjusted R-squared:  -0.04718 
-    ## F-statistic: 0.2791 on 1 and 15 DF,  p-value: 0.605
+    ## Multiple R-squared:  0.01829,    Adjusted R-squared:  -0.04715 
+    ## F-statistic: 0.2795 on 1 and 15 DF,  p-value: 0.6048
 
     ## 
     ## Call:
@@ -3919,18 +3930,18 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.168576 -0.022956 -0.004224  0.051031  0.087385 
+    ## -0.166271 -0.021673 -0.003987  0.051220  0.086330 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)  
-    ## (Intercept) -19.428383  10.630608  -1.828   0.0948 .
-    ## Year          0.010038   0.005284   1.900   0.0840 .
+    ## (Intercept) -19.329419  10.473415  -1.846   0.0920 .
+    ## Year          0.009989   0.005205   1.919   0.0813 .
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.07128 on 11 degrees of freedom
-    ## Multiple R-squared:  0.247,  Adjusted R-squared:  0.1786 
-    ## F-statistic: 3.609 on 1 and 11 DF,  p-value: 0.08399
+    ## Residual standard error: 0.07023 on 11 degrees of freedom
+    ## Multiple R-squared:  0.2508, Adjusted R-squared:  0.1827 
+    ## F-statistic: 3.682 on 1 and 11 DF,  p-value: 0.08131
 
     ## 
     ## Call:
@@ -3956,26 +3967,26 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.21629 -0.05194  0.02799  0.06745  0.11993 
+    ## -0.21782 -0.04960  0.02714  0.06750  0.11942 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  8.136989  16.799774   0.484    0.639
-    ## Year        -0.003644   0.008348  -0.437    0.672
+    ## (Intercept)  7.958026  16.730586   0.476    0.645
+    ## Year        -0.003555   0.008313  -0.428    0.678
     ## 
-    ## Residual standard error: 0.09982 on 10 degrees of freedom
-    ## Multiple R-squared:  0.0187, Adjusted R-squared:  -0.07943 
-    ## F-statistic: 0.1906 on 1 and 10 DF,  p-value: 0.6717
+    ## Residual standard error: 0.09941 on 10 degrees of freedom
+    ## Multiple R-squared:  0.01796,    Adjusted R-squared:  -0.08024 
+    ## F-statistic: 0.1829 on 1 and 10 DF,  p-value: 0.678
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Age%20Structure,%20Mortality,%20and%20Growth%20Time%20Series%20Plots%20and%20Analysis-2.png)<!-- -->
 
     ##             Df   Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.001615 0.001615   0.568  0.468
-    ## Residuals   10 0.028411 0.002841
+    ## Year         1 0.001603 0.001603   0.552  0.475
+    ## Residuals   10 0.029034 0.002903
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.00922 0.009218   1.623  0.229
-    ## Residuals   11 0.06248 0.005680
+    ## Year         1 0.00949 0.009490   1.705  0.218
+    ## Residuals   11 0.06124 0.005568
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
     ## Year         1 0.00696 0.006958   1.269  0.297
@@ -3984,7 +3995,7 @@ Mysid_SizeStruct <-
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
     ## Year         1 0.00007 0.000069   0.006  0.939
-    ## Residuals   14 0.15749 0.011250               
+    ## Residuals   14 0.15750 0.011250               
     ## 2 observations deleted due to missingness
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
@@ -3992,8 +4003,8 @@ Mysid_SizeStruct <-
     ## Residuals   10 0.08096 0.008096
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.00012 0.000119   0.033  0.859
-    ## Residuals   11 0.03962 0.003602
+    ## Year         1 0.00005 0.000046   0.014  0.909
+    ## Residuals   11 0.03694 0.003358
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
     ## Year         1 0.00687 0.006866   0.975  0.352
@@ -4001,25 +4012,25 @@ Mysid_SizeStruct <-
     ## 3 observations deleted due to missingness
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)
-    ## Year         1 0.00030 0.000296   0.073  0.793
-    ## Residuals   10 0.04054 0.004054
+    ## Year         1 0.00020 0.000201   0.048  0.831
+    ## Residuals   10 0.04186 0.004186
 
     ## 
     ## Call:
     ## lm(formula = Growth_Calc ~ Year, data = .)
     ## 
     ## Residuals:
-    ##       Min        1Q    Median        3Q       Max 
-    ## -0.068393 -0.046681  0.006494  0.027653  0.085826 
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.06910 -0.04698  0.00678  0.02843  0.08747 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -6.173686   8.970442  -0.688    0.507
-    ## Year         0.003360   0.004457   0.754    0.468
+    ## (Intercept) -6.150152   9.068258  -0.678    0.513
+    ## Year         0.003348   0.004506   0.743    0.475
     ## 
-    ## Residual standard error: 0.0533 on 10 degrees of freedom
-    ## Multiple R-squared:  0.05377,    Adjusted R-squared:  -0.04085 
-    ## F-statistic: 0.5683 on 1 and 10 DF,  p-value: 0.4683
+    ## Residual standard error: 0.05388 on 10 degrees of freedom
+    ## Multiple R-squared:  0.05233,    Adjusted R-squared:  -0.04244 
+    ## F-statistic: 0.5522 on 1 and 10 DF,  p-value: 0.4745
 
     ## 
     ## Call:
@@ -4027,16 +4038,16 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.097195 -0.082757  0.008516  0.060871  0.094476 
+    ## -0.096392 -0.081246  0.000611  0.062989  0.094088 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -13.682662  11.240368  -1.217    0.249
-    ## Year          0.007117   0.005587   1.274    0.229
+    ## (Intercept) -13.893749  11.128338  -1.249    0.238
+    ## Year          0.007221   0.005531   1.306    0.218
     ## 
-    ## Residual standard error: 0.07537 on 11 degrees of freedom
-    ## Multiple R-squared:  0.1286, Adjusted R-squared:  0.04934 
-    ## F-statistic: 1.623 on 1 and 11 DF,  p-value: 0.229
+    ## Residual standard error: 0.07462 on 11 degrees of freedom
+    ## Multiple R-squared:  0.1342, Adjusted R-squared:  0.05546 
+    ## F-statistic: 1.705 on 1 and 11 DF,  p-value: 0.2183
 
     ## 
     ## Call:
@@ -4062,17 +4073,17 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.180640 -0.060706 -0.008538  0.063998  0.175985 
+    ## -0.180640 -0.060707 -0.008539  0.064000  0.175991 
     ## 
     ## Coefficients:
-    ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  1.2465827  7.5915267   0.164    0.872
-    ## Year        -0.0002954  0.0037790  -0.078    0.939
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  1.245713   7.591695   0.164    0.872
+    ## Year        -0.000295   0.003779  -0.078    0.939
     ## 
     ## Residual standard error: 0.1061 on 14 degrees of freedom
     ##   (2 observations deleted due to missingness)
-    ## Multiple R-squared:  0.0004363,  Adjusted R-squared:  -0.07096 
-    ## F-statistic: 0.006111 on 1 and 14 DF,  p-value: 0.9388
+    ## Multiple R-squared:  0.000435,   Adjusted R-squared:  -0.07096 
+    ## F-statistic: 0.006093 on 1 and 14 DF,  p-value: 0.9389
 
     ## 
     ## Call:
@@ -4096,17 +4107,17 @@ Mysid_SizeStruct <-
     ## lm(formula = Growth_Calc ~ Year, data = .)
     ## 
     ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -0.07787 -0.04689  0.00479  0.03929  0.10193 
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.075076 -0.048348 -0.004698  0.035495  0.097962 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -1.0249225  8.9510755  -0.115    0.911
-    ## Year         0.0008092  0.0044488   0.182    0.859
+    ## (Intercept) -0.4102306  8.6423449  -0.047    0.963
+    ## Year         0.0005042  0.0042954   0.117    0.909
     ## 
-    ## Residual standard error: 0.06002 on 11 degrees of freedom
-    ## Multiple R-squared:  0.002999,   Adjusted R-squared:  -0.08764 
-    ## F-statistic: 0.03309 on 1 and 11 DF,  p-value: 0.859
+    ## Residual standard error: 0.05795 on 11 degrees of freedom
+    ## Multiple R-squared:  0.001251,   Adjusted R-squared:  -0.08954 
+    ## F-statistic: 0.01378 on 1 and 11 DF,  p-value: 0.9087
 
     ## 
     ## Call:
@@ -4132,16 +4143,16 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.13849 -0.02376  0.02183  0.04035  0.05970 
+    ## -0.14070 -0.02271  0.02203  0.04125  0.06153 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  3.539855  10.714836    0.33    0.748
-    ## Year        -0.001438   0.005324   -0.27    0.793
+    ## (Intercept)  3.030875  10.888837   0.278    0.786
+    ## Year        -0.001185   0.005411  -0.219    0.831
     ## 
-    ## Residual standard error: 0.06367 on 10 degrees of freedom
-    ## Multiple R-squared:  0.007244,   Adjusted R-squared:  -0.09203 
-    ## F-statistic: 0.07296 on 1 and 10 DF,  p-value: 0.7926
+    ## Residual standard error: 0.0647 on 10 degrees of freedom
+    ## Multiple R-squared:  0.004773,   Adjusted R-squared:  -0.09475 
+    ## F-statistic: 0.04796 on 1 and 10 DF,  p-value: 0.8311
 
     ## Warning: Removed 4 rows containing missing values (geom_point).
 
@@ -4156,26 +4167,26 @@ Mysid_SizeStruct <-
     ## # A tibble: 4 x 7
     ##   Lake     Prop_1_Mean Prop_1_2_SE Mort_Mean Mort_2_SE Growth_Mean Growth_2_SE
     ##   <ord>          <dbl>       <dbl>     <dbl>     <dbl>       <dbl>       <dbl>
-    ## 1 Superior       0.716      0.0294      54.9     10.6         0.59      0.0300
-    ## 2 Michigan       0.761      0.0383      70.7      7.37        0.64      0.0427
-    ## 3 Huron          0.767      0.0438      67.6     11.6         0.6       0.0322
-    ## 4 Ontario        0.802      0.0554      71.3     11.7         0.65      0.0352
+    ## 1 Superior       0.716      0.0294      54.9     10.6         0.59      0.0306
+    ## 2 Michigan       0.761      0.0383      70.6      7.31        0.64      0.0427
+    ## 3 Huron          0.768      0.0433      67.9     11.3         0.6       0.0311
+    ## 4 Ontario        0.803      0.0554      71.4     11.6         0.65      0.0358
 
     ## Call:
     ##    aov(formula = Prop_1 ~ Lake, data = SizeStructAnnualSummary %>% 
     ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
     ## 
     ## Terms:
-    ##                      Lake Residuals
-    ## Sum of Squares  0.0450340 0.2626704
-    ## Deg. of Freedom         3        46
+    ##                       Lake  Residuals
+    ## Sum of Squares  0.04578512 0.25921712
+    ## Deg. of Freedom          3         46
     ## 
-    ## Residual standard error: 0.07556604
+    ## Residual standard error: 0.07506767
     ## Estimated effects may be unbalanced
 
-    ##             Df  Sum Sq Mean Sq F value Pr(>F)  
-    ## Lake         3 0.04503 0.01501   2.629 0.0614 .
-    ## Residuals   46 0.26267 0.00571                 
+    ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
+    ## Lake         3 0.04579 0.015262   2.708  0.056 .
+    ## Residuals   46 0.25922 0.005635                 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -4186,28 +4197,28 @@ Mysid_SizeStruct <-
     ## 
     ## $Lake
     ##                          diff          lwr        upr     p adj
-    ## Michigan-Superior 0.044882731 -0.035750203 0.12551566 0.4554078
-    ## Huron-Superior    0.050829889 -0.029803045 0.13146282 0.3455741
-    ## Ontario-Superior  0.086137544  0.003907764 0.16836733 0.0368448
-    ## Huron-Michigan    0.005947158 -0.073056659 0.08495098 0.9970984
-    ## Ontario-Michigan  0.041254814 -0.039378120 0.12188775 0.5280607
-    ## Ontario-Huron     0.035307655 -0.045325279 0.11594059 0.6502909
+    ## Michigan-Superior 0.044401511 -0.035699632 0.12450265 0.4590602
+    ## Huron-Superior    0.051488582 -0.028612560 0.13158972 0.3285925
+    ## Ontario-Superior  0.086795329  0.005107872 0.16848279 0.0333822
+    ## Huron-Michigan    0.007087071 -0.071395699 0.08556984 0.9950263
+    ## Ontario-Michigan  0.042393818 -0.037707324 0.12249496 0.4992608
+    ## Ontario-Huron     0.035306747 -0.044794395 0.11540789 0.6455243
 
     ## Call:
     ##    aov(formula = Mort_rate ~ Lake, data = SizeStructAnnualSummary %>% 
     ##     filter(Group == "GLNPO_Mys", Season == "Summer"))
     ## 
     ## Terms:
-    ##                     Lake Residuals
-    ## Sum of Squares   2135.10  15597.46
-    ## Deg. of Freedom        3        46
+    ##                      Lake Residuals
+    ## Sum of Squares   2153.878 15230.417
+    ## Deg. of Freedom         3        46
     ## 
-    ## Residual standard error: 18.41399
+    ## Residual standard error: 18.19604
     ## Estimated effects may be unbalanced
 
     ##             Df Sum Sq Mean Sq F value Pr(>F)
-    ## Lake         3   2135   711.7   2.099  0.113
-    ## Residuals   46  15597   339.1
+    ## Lake         3   2154   718.0   2.168  0.105
+    ## Residuals   46  15230   331.1
 
     ## 
     ## Call:
@@ -4216,20 +4227,20 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -45.440 -12.001   3.312  14.768  26.489 
+    ## -44.593 -12.056   3.328  14.697  26.442 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    54.868      5.316  10.322 1.47e-13 ***
-    ## LakeMichigan   15.801      7.371   2.144   0.0374 *  
-    ## LakeHuron      12.757      7.371   1.731   0.0902 .  
-    ## LakeOntario    16.400      7.517   2.182   0.0343 *  
+    ## (Intercept)    54.874      5.253  10.447 9.95e-14 ***
+    ## LakeMichigan   15.780      7.284   2.166   0.0355 *  
+    ## LakeHuron      12.984      7.284   1.782   0.0813 .  
+    ## LakeOntario    16.503      7.429   2.222   0.0313 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 18.41 on 46 degrees of freedom
-    ## Multiple R-squared:  0.1204, Adjusted R-squared:  0.06304 
-    ## F-statistic: 2.099 on 3 and 46 DF,  p-value: 0.1134
+    ## Residual standard error: 18.2 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1239, Adjusted R-squared:  0.06676 
+    ## F-statistic: 2.168 on 3 and 46 DF,  p-value: 0.1046
 
     ## Call:
     ##    aov(formula = Growth_Calc ~ Lake, data = SizeStructAnnualSummary %>% 
@@ -4237,15 +4248,15 @@ Mysid_SizeStruct <-
     ## 
     ## Terms:
     ##                       Lake  Residuals
-    ## Sum of Squares  0.02664991 0.18230172
+    ## Sum of Squares  0.02627235 0.18041980
     ## Deg. of Freedom          3         46
     ## 
-    ## Residual standard error: 0.06295301
+    ## Residual standard error: 0.06262723
     ## Estimated effects may be unbalanced
 
     ##             Df  Sum Sq  Mean Sq F value Pr(>F)  
-    ## Lake         3 0.02665 0.008883   2.242 0.0961 .
-    ## Residuals   46 0.18230 0.003963                 
+    ## Lake         3 0.02627 0.008757   2.233  0.097 .
+    ## Residuals   46 0.18042 0.003922                 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -4256,20 +4267,20 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.146397 -0.045477  0.008268  0.043373  0.115826 
+    ## -0.147220 -0.047035  0.007684  0.043675  0.115751 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)   0.58857    0.01817  32.387   <2e-16 ***
-    ## LakeMichigan  0.04762    0.02520   1.889   0.0651 .  
-    ## LakeHuron     0.01468    0.02520   0.582   0.5632    
-    ## LakeOntario   0.05702    0.02570   2.219   0.0315 *  
+    ## (Intercept)   0.58852    0.01808  32.553   <2e-16 ***
+    ## LakeMichigan  0.04669    0.02507   1.862   0.0689 .  
+    ## LakeHuron     0.01566    0.02507   0.625   0.5352    
+    ## LakeOntario   0.05766    0.02557   2.255   0.0289 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.06295 on 46 degrees of freedom
-    ## Multiple R-squared:  0.1275, Adjusted R-squared:  0.07064 
-    ## F-statistic: 2.242 on 3 and 46 DF,  p-value: 0.09606
+    ## Residual standard error: 0.06263 on 46 degrees of freedom
+    ## Multiple R-squared:  0.1271, Adjusted R-squared:  0.07018 
+    ## F-statistic: 2.233 on 3 and 46 DF,  p-value: 0.09704
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-1.png)<!-- -->
 
@@ -4279,33 +4290,16 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.07927 -0.05017  0.01124  0.03745  0.07773 
+    ## -0.07903 -0.05084  0.01147  0.03715  0.07740 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  1.2414048  9.0710186   0.137    0.894
-    ## Year        -0.0002609  0.0045073  -0.058    0.955
+    ## (Intercept)  1.2807295  9.0789720   0.141    0.891
+    ## Year        -0.0002804  0.0045113  -0.062    0.952
     ## 
-    ## Residual standard error: 0.0539 on 10 degrees of freedom
-    ## Multiple R-squared:  0.000335,   Adjusted R-squared:  -0.09963 
-    ## F-statistic: 0.003351 on 1 and 10 DF,  p-value: 0.955
-
-    ## 
-    ## Call:
-    ## lm(formula = Prop_1 ~ Year, data = .)
-    ## 
-    ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -0.10719 -0.02669 -0.00448  0.05412  0.10331 
-    ## 
-    ## Coefficients:
-    ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -5.824388  10.630346  -0.548    0.595
-    ## Year         0.003273   0.005283   0.620    0.548
-    ## 
-    ## Residual standard error: 0.07128 on 11 degrees of freedom
-    ## Multiple R-squared:  0.03371,    Adjusted R-squared:  -0.05413 
-    ## F-statistic: 0.3838 on 1 and 11 DF,  p-value: 0.5482
+    ## Residual standard error: 0.05395 on 10 degrees of freedom
+    ## Multiple R-squared:  0.0003863,  Adjusted R-squared:  -0.09958 
+    ## F-statistic: 0.003864 on 1 and 10 DF,  p-value: 0.9517
 
     ## 
     ## Call:
@@ -4313,18 +4307,35 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.168576 -0.022956 -0.004224  0.051031  0.087385 
+    ## -0.107018 -0.024601 -0.006357  0.055589  0.103994 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -6.194625  10.534687  -0.588    0.568
+    ## Year         0.003457   0.005236   0.660    0.523
+    ## 
+    ## Residual standard error: 0.07064 on 11 degrees of freedom
+    ## Multiple R-squared:  0.03812,    Adjusted R-squared:  -0.04933 
+    ## F-statistic: 0.4359 on 1 and 11 DF,  p-value: 0.5227
+
+    ## 
+    ## Call:
+    ## lm(formula = Prop_1 ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.166271 -0.021673 -0.003987  0.051220  0.086330 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)  
-    ## (Intercept) -19.428383  10.630608  -1.828   0.0948 .
-    ## Year          0.010038   0.005284   1.900   0.0840 .
+    ## (Intercept) -19.329419  10.473415  -1.846   0.0920 .
+    ## Year          0.009989   0.005205   1.919   0.0813 .
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.07128 on 11 degrees of freedom
-    ## Multiple R-squared:  0.247,  Adjusted R-squared:  0.1786 
-    ## F-statistic: 3.609 on 1 and 11 DF,  p-value: 0.08399
+    ## Residual standard error: 0.07023 on 11 degrees of freedom
+    ## Multiple R-squared:  0.2508, Adjusted R-squared:  0.1827 
+    ## F-statistic: 3.682 on 1 and 11 DF,  p-value: 0.08131
 
     ## 
     ## Call:
@@ -4332,16 +4343,16 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.21629 -0.05194  0.02799  0.06745  0.11993 
+    ## -0.21782 -0.04960  0.02714  0.06750  0.11942 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  8.136989  16.799774   0.484    0.639
-    ## Year        -0.003644   0.008348  -0.437    0.672
+    ## (Intercept)  7.958026  16.730586   0.476    0.645
+    ## Year        -0.003555   0.008313  -0.428    0.678
     ## 
-    ## Residual standard error: 0.09982 on 10 degrees of freedom
-    ## Multiple R-squared:  0.0187, Adjusted R-squared:  -0.07943 
-    ## F-statistic: 0.1906 on 1 and 10 DF,  p-value: 0.6717
+    ## Residual standard error: 0.09941 on 10 degrees of freedom
+    ## Multiple R-squared:  0.01796,    Adjusted R-squared:  -0.08024 
+    ## F-statistic: 0.1829 on 1 and 10 DF,  p-value: 0.678
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-2.png)<!-- -->![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-3.png)<!-- -->
 
@@ -4350,17 +4361,17 @@ Mysid_SizeStruct <-
     ## lm(formula = Growth_Calc ~ Year, data = .)
     ## 
     ## Residuals:
-    ##       Min        1Q    Median        3Q       Max 
-    ## -0.068393 -0.046681  0.006494  0.027653  0.085826 
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.06910 -0.04698  0.00678  0.02843  0.08747 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -6.173686   8.970442  -0.688    0.507
-    ## Year         0.003360   0.004457   0.754    0.468
+    ## (Intercept) -6.150152   9.068258  -0.678    0.513
+    ## Year         0.003348   0.004506   0.743    0.475
     ## 
-    ## Residual standard error: 0.0533 on 10 degrees of freedom
-    ## Multiple R-squared:  0.05377,    Adjusted R-squared:  -0.04085 
-    ## F-statistic: 0.5683 on 1 and 10 DF,  p-value: 0.4683
+    ## Residual standard error: 0.05388 on 10 degrees of freedom
+    ## Multiple R-squared:  0.05233,    Adjusted R-squared:  -0.04244 
+    ## F-statistic: 0.5522 on 1 and 10 DF,  p-value: 0.4745
 
     ## 
     ## Call:
@@ -4368,16 +4379,33 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.097195 -0.082757  0.008516  0.060871  0.094476 
+    ## -0.096392 -0.081246  0.000611  0.062989  0.094088 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -13.682662  11.240368  -1.217    0.249
-    ## Year          0.007117   0.005587   1.274    0.229
+    ## (Intercept) -13.893749  11.128338  -1.249    0.238
+    ## Year          0.007221   0.005531   1.306    0.218
     ## 
-    ## Residual standard error: 0.07537 on 11 degrees of freedom
-    ## Multiple R-squared:  0.1286, Adjusted R-squared:  0.04934 
-    ## F-statistic: 1.623 on 1 and 11 DF,  p-value: 0.229
+    ## Residual standard error: 0.07462 on 11 degrees of freedom
+    ## Multiple R-squared:  0.1342, Adjusted R-squared:  0.05546 
+    ## F-statistic: 1.705 on 1 and 11 DF,  p-value: 0.2183
+
+    ## 
+    ## Call:
+    ## lm(formula = Growth_Calc ~ Year, data = .)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.075076 -0.048348 -0.004698  0.035495  0.097962 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept) -0.4102306  8.6423449  -0.047    0.963
+    ## Year         0.0005042  0.0042954   0.117    0.909
+    ## 
+    ## Residual standard error: 0.05795 on 11 degrees of freedom
+    ## Multiple R-squared:  0.001251,   Adjusted R-squared:  -0.08954 
+    ## F-statistic: 0.01378 on 1 and 11 DF,  p-value: 0.9087
 
     ## 
     ## Call:
@@ -4385,33 +4413,16 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.07787 -0.04689  0.00479  0.03929  0.10193 
-    ## 
-    ## Coefficients:
-    ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept) -1.0249225  8.9510755  -0.115    0.911
-    ## Year         0.0008092  0.0044488   0.182    0.859
-    ## 
-    ## Residual standard error: 0.06002 on 11 degrees of freedom
-    ## Multiple R-squared:  0.002999,   Adjusted R-squared:  -0.08764 
-    ## F-statistic: 0.03309 on 1 and 11 DF,  p-value: 0.859
-
-    ## 
-    ## Call:
-    ## lm(formula = Growth_Calc ~ Year, data = .)
-    ## 
-    ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -0.13849 -0.02376  0.02183  0.04035  0.05970 
+    ## -0.14070 -0.02271  0.02203  0.04125  0.06153 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  3.539855  10.714836    0.33    0.748
-    ## Year        -0.001438   0.005324   -0.27    0.793
+    ## (Intercept)  3.030875  10.888837   0.278    0.786
+    ## Year        -0.001185   0.005411  -0.219    0.831
     ## 
-    ## Residual standard error: 0.06367 on 10 degrees of freedom
-    ## Multiple R-squared:  0.007244,   Adjusted R-squared:  -0.09203 
-    ## F-statistic: 0.07296 on 1 and 10 DF,  p-value: 0.7926
+    ## Residual standard error: 0.0647 on 10 degrees of freedom
+    ## Multiple R-squared:  0.004773,   Adjusted R-squared:  -0.09475 
+    ## F-statistic: 0.04796 on 1 and 10 DF,  p-value: 0.8311
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Summary%20life%20history%20rate%20comparison%20tests-4.png)<!-- -->
 
@@ -4421,17 +4432,17 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.108347 -0.058517 -0.009735  0.045452  0.130211 
+    ## -0.108344 -0.058516 -0.009735  0.045437  0.130208 
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  3.222026   4.703165   0.685    0.504
-    ## Year        -0.001237   0.002342  -0.528    0.605
+    ## (Intercept)  3.223764   4.703208   0.685    0.504
+    ## Year        -0.001238   0.002342  -0.529    0.605
     ## 
     ## Residual standard error: 0.07195 on 15 degrees of freedom
     ##   (1 observation deleted due to missingness)
-    ## Multiple R-squared:  0.01827,    Adjusted R-squared:  -0.04718 
-    ## F-statistic: 0.2791 on 1 and 15 DF,  p-value: 0.605
+    ## Multiple R-squared:  0.01829,    Adjusted R-squared:  -0.04715 
+    ## F-statistic: 0.2795 on 1 and 15 DF,  p-value: 0.6048
 
     ## 
     ## Call:
@@ -4492,17 +4503,17 @@ Mysid_SizeStruct <-
     ## 
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.180640 -0.060706 -0.008538  0.063998  0.175985 
+    ## -0.180640 -0.060707 -0.008539  0.064000  0.175991 
     ## 
     ## Coefficients:
-    ##               Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)  1.2465827  7.5915267   0.164    0.872
-    ## Year        -0.0002954  0.0037790  -0.078    0.939
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  1.245713   7.591695   0.164    0.872
+    ## Year        -0.000295   0.003779  -0.078    0.939
     ## 
     ## Residual standard error: 0.1061 on 14 degrees of freedom
     ##   (2 observations deleted due to missingness)
-    ## Multiple R-squared:  0.0004363,  Adjusted R-squared:  -0.07096 
-    ## F-statistic: 0.006111 on 1 and 14 DF,  p-value: 0.9388
+    ## Multiple R-squared:  0.000435,   Adjusted R-squared:  -0.07096 
+    ## F-statistic: 0.006093 on 1 and 14 DF,  p-value: 0.9389
 
     ## 
     ## Call:
@@ -5104,7 +5115,7 @@ Mysid_SizeStruct <-
     ## indicate that k is too low, especially if edf is close to k'.
     ## 
     ##                       k' edf k-index p-value
-    ## s(Mar_Jun_Chl_mg_m3) 9.0 3.6    1.05    0.61
+    ## s(Mar_Jun_Chl_mg_m3) 9.0 3.6    1.05    0.58
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-11.png)<!-- -->
 
@@ -5136,7 +5147,7 @@ Mysid_SizeStruct <-
     ## indicate that k is too low, especially if edf is close to k'.
     ## 
     ##            k'  edf k-index p-value
-    ## s(Total) 9.00 3.14    1.08    0.74
+    ## s(Total) 9.00 3.14    1.08    0.78
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/mysid%20food-13.png)<!-- -->
 
@@ -5152,7 +5163,7 @@ Mysid_SizeStruct <-
     ## indicate that k is too low, especially if edf is close to k'.
     ## 
     ##            k'  edf k-index p-value
-    ## s(Total) 9.00 2.64    1.14    0.91
+    ## s(Total) 9.00 2.64    1.14    0.88
 
     ## 
     ## Family: gaussian 
@@ -5321,73 +5332,73 @@ Mysid_SizeStruct <-
     ## 10 Eastern_Erie  2001 Summer_to_Next_Spring    1072. GLNPO_Mys
     ## # ... with 400 more rows
 
-    ## # A tibble: 1,286 x 8
+    ## # A tibble: 1,536 x 8
     ##    Lake    Group    Year TimeFrame       X_Variable X_Value Rate_Name  Rate_Mean
     ##    <chr>   <chr>   <dbl> <chr>           <chr>        <dbl> <chr>          <dbl>
-    ##  1 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanBiom   7.90e+2 Mort_rate     91.6  
-    ##  2 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanBiom   7.90e+2 Growth_Ca~     0.602
-    ##  3 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanDens   2.43e+2 Mort_rate     91.6  
-    ##  4 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanDens   2.43e+2 Growth_Ca~     0.602
-    ##  5 Michig~ GLNPO_~  2006 Summer_to_Next~ SpringChla 7.85e-1 Mort_rate     91.6  
-    ##  6 Michig~ GLNPO_~  2006 Summer_to_Next~ SpringChla 7.85e-1 Growth_Ca~     0.602
-    ##  7 Michig~ GLNPO_~  2006 Summer_to_Next~ ZoopBiom   2.56e+3 Mort_rate     91.6  
-    ##  8 Michig~ GLNPO_~  2006 Summer_to_Next~ ZoopBiom   2.56e+3 Growth_Ca~     0.602
-    ##  9 Michig~ GLNPO_~  2006 Prev_Fall_to_S~ MeanBiom   7.23e+2 Dens_A0      240.   
-    ## 10 Michig~ GLNPO_~  2006 Prev_Fall_to_S~ MeanDens   2.21e+2 Dens_A0      240.   
-    ## # ... with 1,276 more rows
+    ##  1 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanBiom   7.90e+2 Mort_rate     91.3  
+    ##  2 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanBiom   7.90e+2 Growth_Ca~     0.592
+    ##  3 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanDens   2.43e+2 Mort_rate     91.3  
+    ##  4 Michig~ GLNPO_~  2006 Summer_to_Next~ MeanDens   2.43e+2 Growth_Ca~     0.592
+    ##  5 Michig~ GLNPO_~  2006 Summer_to_Next~ SpringChla 7.85e-1 Mort_rate     91.3  
+    ##  6 Michig~ GLNPO_~  2006 Summer_to_Next~ SpringChla 7.85e-1 Growth_Ca~     0.592
+    ##  7 Michig~ GLNPO_~  2006 Summer_to_Next~ ZoopBiom   2.56e+3 Mort_rate     91.3  
+    ##  8 Michig~ GLNPO_~  2006 Summer_to_Next~ ZoopBiom   2.56e+3 Growth_Ca~     0.592
+    ##  9 Michig~ GLNPO_~  2006 Prev_Fall_to_S~ MeanBiom   7.23e+2 Prop_A0        0.656
+    ## 10 Michig~ GLNPO_~  2006 Prev_Fall_to_S~ MeanDens   2.21e+2 Prop_A0        0.656
+    ## # ... with 1,526 more rows
 
 ![](GLNPO_Long_term_2019_files/figure-gfm/Mysid%20food%20with%20life%20history%20rates-1.png)<!-- -->
 
     ## # A tibble: 10 x 7
-    ##    Rate             Predictor  Group        SlopeEst   pValue       r2 Signif
-    ##    <chr>            <chr>      <chr>           <dbl>    <dbl>    <dbl> <fct> 
-    ##  1 Dens_A0          SpringChla GLNPO_Mys 100.        0.000427  0.214   "*"   
-    ##  2 Growth_Calc      ZoopBiom   GLNPO_Mys   0.0000490 0.00452   0.150   "*"   
-    ##  3 Mort_rate        ZoopBiom   GLNPO_Mys   0.0106    0.0461    0.0667  "*"   
-    ##  4 Growth_Calc      SpringChla GLNPO_Mys   0.0309    0.0488    0.0646  "*"   
-    ##  5 Brood_Spring     SpringChla GLNPO_Mys   1.43      0.0750    0.0584  "."   
-    ##  6 Brood_Spring     ZoopBiom   GLNPO_Mys   0.00154   0.113     0.0414  ""    
-    ##  7 Dens_A0          ZoopBiom   GLNPO_Mys   0.0498    0.135     0.0260  ""    
-    ##  8 BF_Length_Spring ZoopBiom   GLNPO_Mys   0.0000851 0.686    -0.0193  ""    
-    ##  9 Mort_rate        SpringChla GLNPO_Mys   3.38      0.483    -0.0112  ""    
-    ## 10 BF_Length_Spring SpringChla GLNPO_Mys  -0.173     0.356    -0.00299 ""
+    ##    Rate             Predictor  Group        SlopeEst  pValue       r2 Signif
+    ##    <chr>            <chr>      <chr>           <dbl>   <dbl>    <dbl> <fct> 
+    ##  1 Growth_Calc      ZoopBiom   GLNPO_Mys  0.0000461  0.00745 0.152    "*"   
+    ##  2 Growth_Calc      SpringChla GLNPO_Mys  0.0310     0.0467  0.0870   "*"   
+    ##  3 Mort_rate        ZoopBiom   GLNPO_Mys  0.0103     0.0502  0.0844   "."   
+    ##  4 Brood_Spring     SpringChla GLNPO_Mys  1.43       0.0750  0.0831   "."   
+    ##  5 Brood_Spring     ZoopBiom   GLNPO_Mys  0.00154    0.113   0.0666   ""    
+    ##  6 Prop_A0          SpringChla GLNPO_Mys  0.0199     0.290   0.0233   ""    
+    ##  7 BF_Length_Spring SpringChla GLNPO_Mys -0.173      0.356   0.0198   ""    
+    ##  8 Mort_rate        SpringChla GLNPO_Mys  3.35       0.482   0.0113   ""    
+    ##  9 BF_Length_Spring ZoopBiom   GLNPO_Mys  0.0000851  0.686   0.00383  ""    
+    ## 10 Prop_A0          ZoopBiom   GLNPO_Mys  0.00000197 0.925   0.000186 ""
 
     ## # A tibble: 30 x 7
-    ##    Rate             Predictor Group        SlopeEst   pValue        r2 Signif
-    ##    <chr>            <chr>     <chr>           <dbl>    <dbl>     <dbl> <fct> 
-    ##  1 Dens_A0          MeanDens  GLNPO_Mys  1.10       7.32e-24  0.879    "*"   
-    ##  2 Dens_A0          MeanDens  USGS       0.636      3.19e-10  0.861    "*"   
-    ##  3 Dens_A0          MeanBiom  USGS       0.201      3.95e- 8  0.775    "*"   
-    ##  4 Dens_A0          MeanBiom  GLNPO_Mys  0.512      3.10e-16  0.749    "*"   
-    ##  5 Dens_A0          MeanDens  NOAA       0.908      1.09e- 2  0.442    "*"   
-    ##  6 Dens_A0          MeanBiom  NOAA       0.323      1.43e- 2  0.414    "*"   
-    ##  7 BF_Length_Spring MeanDens  NOAA       0.00800    1.17e- 1  0.136    ""    
-    ##  8 Brood_Spring     MeanDens  NOAA      -0.0334     1.34e- 1  0.119    ""    
-    ##  9 Mort_rate        MeanBiom  NOAA      -0.0149     8.79e- 1 -0.108    ""    
-    ## 10 Mort_rate        MeanDens  NOAA      -0.0469     8.69e- 1 -0.108    ""    
-    ## 11 Brood_Fall       MeanDens  NOAA      -0.0555     1.50e- 1  0.104    ""    
-    ## 12 Growth_Calc      MeanBiom  NOAA      -0.00000563 9.85e- 1 -0.100    ""    
-    ## 13 Growth_Calc      MeanDens  NOAA       0.000148   8.71e- 1 -0.0969   ""    
-    ## 14 BF_Length_Spring MeanBiom  NOAA       0.00247    1.59e- 1  0.0963   ""    
-    ## 15 Brood_Spring     MeanBiom  NOAA      -0.0105     1.66e- 1  0.0906   ""    
-    ## 16 BF_Length_Fall   MeanDens  NOAA      -0.000630   9.19e- 1 -0.0898   ""    
-    ## 17 BF_Length_Fall   MeanBiom  NOAA       0.000544   7.91e- 1 -0.0837   ""    
-    ## 18 Mort_rate        MeanDens  USGS      -0.0348     5.86e- 1 -0.0399   ""    
-    ## 19 Mort_rate        MeanBiom  USGS      -0.0250     2.26e- 1  0.0310   ""    
-    ## 20 Growth_Calc      MeanBiom  USGS       0.0000789  4.87e- 1 -0.0283   ""    
-    ## 21 Mort_rate        MeanDens  GLNPO_Mys  0.0401     1.26e- 1  0.0282   ""    
-    ## 22 Brood_Fall       MeanBiom  NOAA      -0.0143     2.76e- 1  0.0255   ""    
-    ## 23 Growth_Calc      MeanBiom  GLNPO_Mys  0.00000570 8.99e- 1 -0.0205   ""    
-    ## 24 Growth_Calc      MeanDens  GLNPO_Mys  0.0000169  8.53e- 1 -0.0201   ""    
-    ## 25 Mort_rate        MeanBiom  GLNPO_Mys  0.0179     1.65e- 1  0.0197   ""    
-    ## 26 BF_Length_Spring MeanBiom  GLNPO_Mys -0.000584   2.53e- 1  0.00702  ""    
-    ## 27 Growth_Calc      MeanDens  USGS       0.000373   3.17e- 1  0.00353  ""    
-    ## 28 Brood_Spring     MeanBiom  GLNPO_Mys  0.00274    3.30e- 1 -0.000623 ""    
-    ## 29 Brood_Spring     MeanDens  GLNPO_Mys  0.00547    3.25e- 1 -0.000132 ""    
-    ## 30 BF_Length_Spring MeanDens  GLNPO_Mys -0.000998   3.24e- 1 -0.000111 ""
+    ##    Rate             Predictor Group        SlopeEst pValue        r2 Signif
+    ##    <chr>            <chr>     <chr>           <dbl>  <dbl>     <dbl> <fct> 
+    ##  1 Prop_A0          MeanDens  GLNPO_Mys  0.000201   0.0522 0.0762    "."   
+    ##  2 BF_Length_Spring MeanDens  NOAA       0.00800    0.117  0.208     ""    
+    ##  3 Brood_Spring     MeanDens  NOAA      -0.0334     0.134  0.193     ""    
+    ##  4 Brood_Fall       MeanDens  NOAA      -0.0555     0.150  0.179     ""    
+    ##  5 BF_Length_Spring MeanBiom  NOAA       0.00247    0.159  0.172     ""    
+    ##  6 Brood_Spring     MeanBiom  NOAA      -0.0105     0.166  0.166     ""    
+    ##  7 Brood_Fall       MeanBiom  NOAA      -0.0143     0.276  0.107     ""    
+    ##  8 Mort_rate        MeanBiom  USGS      -0.0250     0.226  0.0848    ""    
+    ##  9 Growth_Calc      MeanDens  USGS       0.000373   0.317  0.0589    ""    
+    ## 10 Mort_rate        MeanDens  GLNPO_Mys  0.0394     0.129  0.0473    ""    
+    ## 11 Mort_rate        MeanBiom  GLNPO_Mys  0.0175     0.171  0.0387    ""    
+    ## 12 Growth_Calc      MeanBiom  USGS       0.0000789  0.487  0.0289    ""    
+    ## 13 Prop_A0          MeanBiom  NOAA      -0.000174   0.604  0.0279    ""    
+    ## 14 BF_Length_Spring MeanBiom  GLNPO_Mys -0.000584   0.253  0.0277    ""    
+    ## 15 Brood_Spring     MeanDens  GLNPO_Mys  0.00547    0.325  0.0237    ""    
+    ## 16 Brood_Spring     MeanBiom  GLNPO_Mys  0.00274    0.330  0.0232    ""    
+    ## 17 Prop_A0          MeanDens  NOAA      -0.000416   0.651  0.0213    ""    
+    ## 18 BF_Length_Spring MeanDens  GLNPO_Mys -0.000998   0.324  0.0207    ""    
+    ## 19 Mort_rate        MeanDens  USGS      -0.0348     0.586  0.0178    ""    
+    ## 20 Prop_A0          MeanDens  USGS      -0.000158   0.603  0.0137    ""    
+    ## 21 Prop_A0          MeanBiom  GLNPO_Mys  0.0000407  0.442  0.0123    ""    
+    ## 22 Prop_A0          MeanBiom  USGS      -0.0000473  0.641  0.0111    ""    
+    ## 23 BF_Length_Fall   MeanBiom  NOAA       0.000544   0.791  0.00663   ""    
+    ## 24 Mort_rate        MeanDens  NOAA      -0.0469     0.869  0.00319   ""    
+    ## 25 Growth_Calc      MeanDens  NOAA       0.000148   0.871  0.00279   ""    
+    ## 26 Mort_rate        MeanBiom  NOAA      -0.0149     0.879  0.00270   ""    
+    ## 27 BF_Length_Fall   MeanDens  NOAA      -0.000630   0.919  0.000982  ""    
+    ## 28 Growth_Calc      MeanDens  GLNPO_Mys  0.0000135  0.881  0.000469  ""    
+    ## 29 Growth_Calc      MeanBiom  GLNPO_Mys  0.00000305 0.945  0.0000985 ""    
+    ## 30 Growth_Calc      MeanBiom  NOAA      -0.00000563 0.985  0.0000351 ""
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   2.000   2.000   4.000   3.084   4.000   4.000
+    ##   1.000   2.000   4.000   3.066   4.000   4.000
 
     ## # A tibble: 0 x 8
     ## # ... with 8 variables: Lake <chr>, Group <chr>, Year <dbl>, TimeFrame <chr>,
@@ -5399,63 +5410,72 @@ Mysid_SizeStruct <-
 ![](GLNPO_Long_term_2019_files/figure-gfm/Mysid%20food%20with%20life%20history%20rates-2.png)<!-- -->
 
     ## # A tibble: 33 x 7
-    ##    Lake     Rate             Group      pValue Signif       r2   SlopeEst
-    ##    <chr>    <chr>            <chr>       <dbl> <fct>     <dbl>      <dbl>
-    ##  1 Huron    BF_Length_Spring GLNPO_Mys 0.144   ""      0.121     0.0851  
-    ##  2 Huron    Brood_Spring     GLNPO_Mys 0.791   ""     -0.115    -0.106   
-    ##  3 Huron    Dens_A0          GLNPO_Mys 0.198   ""      0.0679   -1.72    
-    ##  4 Huron    Dens_A0          USGS      0.694   ""     -0.0822    1.02    
-    ##  5 Huron    Growth_Calc      GLNPO_Mys 0.859   ""     -0.0876    0.000809
-    ##  6 Huron    Growth_Calc      USGS      0.352   ""     -0.00278  -0.00806 
-    ##  7 Huron    Mort_rate        GLNPO_Mys 0.502   ""     -0.0452    1.10    
-    ##  8 Huron    Mort_rate        USGS      0.566   ""     -0.0767   -1.25    
-    ##  9 Michigan BF_Length_Fall   NOAA      0.571   ""     -0.0581   -0.0310  
-    ## 10 Michigan BF_Length_Spring GLNPO_Mys 0.0974  "."     0.160     0.106   
-    ## 11 Michigan BF_Length_Spring NOAA      0.00529 "*"     0.478    -0.125   
-    ## 12 Michigan Brood_Fall       NOAA      0.195   ""      0.0700    0.449   
-    ## 13 Michigan Brood_Spring     GLNPO_Mys 0.215   ""      0.0833    0.332   
-    ## 14 Michigan Brood_Spring     NOAA      0.841   ""     -0.0867    0.0465  
-    ## 15 Michigan Dens_A0          GLNPO_Mys 0.411   ""     -0.0230   -3.09    
-    ## 16 Michigan Dens_A0          NOAA      0.176   ""      0.0928   -4.05    
-    ## 17 Michigan Dens_A0          USGS      0.611   ""     -0.0869   -3.04    
-    ## 18 Michigan Growth_Calc      GLNPO_Mys 0.229   ""      0.0493    0.00712 
-    ## 19 Michigan Growth_Calc      NOAA      0.546   ""     -0.0586    0.00470 
-    ## 20 Michigan Growth_Calc      USGS      0.297   ""      0.0326   -0.0108  
-    ## 21 Michigan Mort_rate        GLNPO_Mys 0.585   ""     -0.0604    0.570   
-    ## 22 Michigan Mort_rate        NOAA      0.337   ""      0.00301   2.29    
-    ## 23 Michigan Mort_rate        USGS      0.401   ""     -0.0256   -1.71    
-    ## 24 Ontario  BF_Length_Spring GLNPO_Mys 0.460   ""     -0.0387    0.0462  
-    ## 25 Ontario  Brood_Spring     GLNPO_Mys 0.329   ""      0.00650   0.345   
-    ## 26 Ontario  Dens_A0          GLNPO_Mys 0.301   ""      0.0168  -17.8     
-    ## 27 Ontario  Growth_Calc      GLNPO_Mys 0.793   ""     -0.0920   -0.00144 
-    ## 28 Ontario  Mort_rate        GLNPO_Mys 0.670   ""     -0.0792   -0.774   
-    ## 29 Superior BF_Length_Spring GLNPO_Mys 0.196   ""      0.0775    0.0659  
-    ## 30 Superior Brood_Spring     GLNPO_Mys 0.166   ""      0.100     0.194   
-    ## 31 Superior Dens_A0          GLNPO_Mys 0.541   ""     -0.0576    3.38    
-    ## 32 Superior Growth_Calc      GLNPO_Mys 0.468   ""     -0.0409    0.00336 
-    ## 33 Superior Mort_rate        GLNPO_Mys 0.266   ""      0.0343    1.77
+    ##    Lake     Rate             Group      pValue Signif       r2  SlopeEst
+    ##    <chr>    <chr>            <chr>       <dbl> <fct>     <dbl>     <dbl>
+    ##  1 Huron    BF_Length_Spring GLNPO_Mys 0.144   ""     0.201     0.0851  
+    ##  2 Huron    Brood_Spring     GLNPO_Mys 0.791   ""     0.00930  -0.106   
+    ##  3 Huron    Growth_Calc      GLNPO_Mys 0.909   ""     0.00125   0.000504
+    ##  4 Huron    Growth_Calc      USGS      0.352   ""     0.109    -0.00806 
+    ##  5 Huron    Mort_rate_MvAv3  GLNPO_Mys 0.0852  "."    0.267     1.37    
+    ##  6 Huron    Mort_rate_MvAv3  USGS      0.576   ""     0.0324    1.17    
+    ##  7 Huron    Prop_A0          GLNPO_Mys 0.0813  "."    0.251     0.00999 
+    ##  8 Huron    Prop_A0          USGS      0.613   ""     0.0265    0.00526 
+    ##  9 Michigan BF_Length_Fall   NOAA      0.571   ""     0.0301   -0.0310  
+    ## 10 Michigan BF_Length_Spring GLNPO_Mys 0.0974  "."    0.230     0.106   
+    ## 11 Michigan BF_Length_Spring NOAA      0.00529 "*"    0.522    -0.125   
+    ## 12 Michigan Brood_Fall       NOAA      0.195   ""     0.147     0.449   
+    ## 13 Michigan Brood_Spring     GLNPO_Mys 0.215   ""     0.185     0.332   
+    ## 14 Michigan Brood_Spring     NOAA      0.841   ""     0.00384   0.0465  
+    ## 15 Michigan Growth_Calc      GLNPO_Mys 0.218   ""     0.134     0.00722 
+    ## 16 Michigan Growth_Calc      NOAA      0.546   ""     0.0376    0.00470 
+    ## 17 Michigan Growth_Calc      USGS      0.297   ""     0.154    -0.0108  
+    ## 18 Michigan Mort_rate_MvAv3  GLNPO_Mys 0.0396  "*"    0.359     1.15    
+    ## 19 Michigan Mort_rate_MvAv3  NOAA      0.674   ""     0.0185    0.814   
+    ## 20 Michigan Mort_rate_MvAv3  USGS      0.198   ""     0.198     3.56    
+    ## 21 Michigan Prop_A0          GLNPO_Mys 0.523   ""     0.0381    0.00346 
+    ## 22 Michigan Prop_A0          NOAA      0.493   ""     0.0481   -0.00467 
+    ## 23 Michigan Prop_A0          USGS      0.656   ""     0.0260   -0.00353 
+    ## 24 Ontario  BF_Length_Spring GLNPO_Mys 0.460   ""     0.0557    0.0462  
+    ## 25 Ontario  Brood_Spring     GLNPO_Mys 0.329   ""     0.106     0.345   
+    ## 26 Ontario  Growth_Calc      GLNPO_Mys 0.831   ""     0.00477  -0.00118 
+    ## 27 Ontario  Mort_rate_MvAv3  GLNPO_Mys 0.149   ""     0.217    -1.08    
+    ## 28 Ontario  Prop_A0          GLNPO_Mys 0.678   ""     0.0180   -0.00356 
+    ## 29 Superior BF_Length_Spring GLNPO_Mys 0.196   ""     0.161     0.0659  
+    ## 30 Superior Brood_Spring     GLNPO_Mys 0.166   ""     0.182     0.194   
+    ## 31 Superior Growth_Calc      GLNPO_Mys 0.475   ""     0.0523    0.00335 
+    ## 32 Superior Mort_rate_MvAv3  GLNPO_Mys 0.102   ""     0.269     1.30    
+    ## 33 Superior Prop_A0          GLNPO_Mys 0.952   ""     0.000386 -0.000280
+
+    ## # A tibble: 14 x 6
+    ##    Lake     Rate             Group      pValue    r2 SlopeEst
+    ##    <chr>    <chr>            <chr>       <dbl> <dbl>    <dbl>
+    ##  1 Huron    BF_Length_Spring GLNPO_Mys 0.144   0.201  0.0851 
+    ##  2 Huron    Mort_rate_MvAv3  GLNPO_Mys 0.0852  0.267  1.37   
+    ##  3 Huron    Prop_A0          GLNPO_Mys 0.0813  0.251  0.00999
+    ##  4 Michigan BF_Length_Spring GLNPO_Mys 0.0974  0.230  0.106  
+    ##  5 Michigan BF_Length_Spring NOAA      0.00529 0.522 -0.125  
+    ##  6 Michigan Brood_Fall       NOAA      0.195   0.147  0.449  
+    ##  7 Michigan Brood_Spring     GLNPO_Mys 0.215   0.185  0.332  
+    ##  8 Michigan Growth_Calc      USGS      0.297   0.154 -0.0108 
+    ##  9 Michigan Mort_rate_MvAv3  GLNPO_Mys 0.0396  0.359  1.15   
+    ## 10 Michigan Mort_rate_MvAv3  USGS      0.198   0.198  3.56   
+    ## 11 Ontario  Mort_rate_MvAv3  GLNPO_Mys 0.149   0.217 -1.08   
+    ## 12 Superior BF_Length_Spring GLNPO_Mys 0.196   0.161  0.0659 
+    ## 13 Superior Brood_Spring     GLNPO_Mys 0.166   0.182  0.194  
+    ## 14 Superior Mort_rate_MvAv3  GLNPO_Mys 0.102   0.269  1.30
+
+    ## # A tibble: 5 x 6
+    ##   Predictor Rate             Group pValue    r2 SlopeEst
+    ##   <chr>     <chr>            <chr>  <dbl> <dbl>    <dbl>
+    ## 1 MeanBiom  BF_Length_Spring NOAA   0.159 0.172  0.00247
+    ## 2 MeanBiom  Brood_Spring     NOAA   0.166 0.166 -0.0105 
+    ## 3 MeanDens  BF_Length_Spring NOAA   0.117 0.208  0.00800
+    ## 4 MeanDens  Brood_Fall       NOAA   0.150 0.179 -0.0555 
+    ## 5 MeanDens  Brood_Spring     NOAA   0.134 0.193 -0.0334
 
     ## # A tibble: 1 x 6
-    ##   Lake     Rate             Group  pValue    r2 SlopeEst
-    ##   <chr>    <chr>            <chr>   <dbl> <dbl>    <dbl>
-    ## 1 Michigan BF_Length_Spring NOAA  0.00529 0.522   -0.125
-
-    ## # A tibble: 6 x 6
-    ##   Predictor Rate    Group       pValue    r2 SlopeEst
-    ##   <chr>     <chr>   <chr>        <dbl> <dbl>    <dbl>
-    ## 1 MeanBiom  Dens_A0 GLNPO_Mys 3.10e-16 0.754    0.512
-    ## 2 MeanBiom  Dens_A0 NOAA      1.43e- 2 0.467    0.323
-    ## 3 MeanBiom  Dens_A0 USGS      3.95e- 8 0.786    0.201
-    ## 4 MeanDens  Dens_A0 GLNPO_Mys 7.32e-24 0.881    1.10 
-    ## 5 MeanDens  Dens_A0 NOAA      1.09e- 2 0.493    0.908
-    ## 6 MeanDens  Dens_A0 USGS      3.19e-10 0.867    0.636
-
-    ## # A tibble: 4 x 6
-    ##   Predictor  Rate        Group       pValue     r2    SlopeEst
-    ##   <chr>      <chr>       <chr>        <dbl>  <dbl>       <dbl>
-    ## 1 SpringChla Dens_A0     GLNPO_Mys 0.000427 0.230  100.       
-    ## 2 SpringChla Growth_Calc GLNPO_Mys 0.0488   0.0854   0.0309   
-    ## 3 ZoopBiom   Growth_Calc GLNPO_Mys 0.00452  0.169    0.0000490
-    ## 4 ZoopBiom   Mort_rate   GLNPO_Mys 0.0461   0.0874   0.0106
+    ##   Predictor Rate        Group      pValue    r2  SlopeEst
+    ##   <chr>     <chr>       <chr>       <dbl> <dbl>     <dbl>
+    ## 1 ZoopBiom  Growth_Calc GLNPO_Mys 0.00745 0.152 0.0000461
 
 # End of Script.
